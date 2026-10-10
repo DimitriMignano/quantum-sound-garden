@@ -284,3 +284,9 @@
 .synced { margin: 0; display: flex; gap: 0.4rem; flex-wrap: wrap; }
 .synced__chip { font-size: 0.82rem; color: var(--vine); border: 1px solid rgba(84,238,190,0.5); border-radius: 999px; padding: 0.15rem 0.6rem; }
 .is-still .tile, .is-still .tile__fill, .is-still .tile__sound { transition: none; }
+
+/* the success moment */
+.success { display: grid; gap: 0.7rem; padding: 1rem 1.1rem; border-radius: var(--radius); border: 1px solid var(--good); background: rgba(84,238,190,0.08); box-shadow: 0 0 0 1px rgba(84,238,190,0.25), 0 8px 30px rgba(84,238,190,0.12); }
+.success__text { display: grid; gap: 0.15rem; }
+.success__title { font-family: var(--font-display); font-size: 1.6rem; color: var(--good); margin: 0; }
+.success__body { margin: 0; color: var(--ink); }

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { QuantumEngine } from '../engine/types';
 import { assignmentFor, LESSONS, LESSON_TRACKS, type Lesson } from '../content/content';
 import { useGarden } from './useGarden';
+import { nameFor } from '../audio/mixer';
 import { GardenView } from './GardenView';
 import { Board } from './Board';
 import { CodePanel } from './CodePanel';
@@ -55,8 +56,13 @@ export function TutorialScene({ engine, details, onDone }: Props) {
     );
   }
 
-  const caption = garden.playback?.finished && played === lesson.id ? lesson.hear
-    : garden.busy ? undefined
+  const onLessonMix = sameOps(garden.circuit.ops, lesson.ops);
+  const playing = !!garden.playback && !garden.playback.finished;
+  const locked = garden.busy || playing;
+  const heard = garden.playback?.finished && garden.result?.memory?.[0] ? nameFor(assignment, garden.result.memory[0]) : null;
+  const caption = garden.playback?.finished && played === lesson.id && onLessonMix ? lesson.hear
+    : heard ? `You heard: ${heard}. This is your own mix, not the page’s: the tile shows its odds. Try it loads the page’s mix again.`
+    : locked ? undefined
     : lesson.show.length === 0 ? 'Press Try it.'
     : `Press Try it, or build it yourself with ${lesson.show.length === 1 ? 'the move' : 'the moves'} below and press Play.`;
 
@@ -71,16 +77,16 @@ export function TutorialScene({ engine, details, onDone }: Props) {
       <GardenView garden={garden} tracks={tracks} assignment={assignment} details={details} caption={caption} />
 
       <div className="lesson__actions">
-        <button type="button" className="primary" onClick={tryIt} disabled={garden.busy}>Try it</button>
-        {step > 0 && <button type="button" className="ghost" onClick={() => go(step - 1)} disabled={garden.busy}>Back</button>}
-        {!last && <button type="button" className={`ghost${played === lesson.id ? ' is-next' : ''}`} onClick={() => go(step + 1)} disabled={garden.busy}>Next</button>}
-        {last && <button type="button" className="primary learn__go" onClick={onDone} disabled={garden.busy}>Start the puzzles</button>}
-        {!last && <button type="button" className="linklike learn__go" onClick={onDone} disabled={garden.busy}>Skip to the puzzles</button>}
+        <button type="button" className="primary" onClick={tryIt} disabled={locked}>Try it</button>
+        {step > 0 && <button type="button" className="ghost" onClick={() => go(step - 1)} disabled={locked}>Back</button>}
+        {!last && <button type="button" className={`ghost${played === lesson.id ? ' is-next' : ''}`} onClick={() => go(step + 1)} disabled={locked}>Next</button>}
+        {last && <button type="button" className="primary learn__go" onClick={onDone} disabled={locked}>Start the puzzles</button>}
+        {!last && <button type="button" className="linklike learn__go" onClick={onDone} disabled={locked}>Skip to the puzzles</button>}
       </div>
 
-      <Board seedNames={trackNames} allowed={lesson.show} ops={garden.circuit.ops} disabled={garden.busy} showGates={details}
+      <Board seedNames={trackNames} allowed={lesson.show} ops={garden.circuit.ops} disabled={locked} showGates={details}
         onAdd={(op) => { setPlayed(null); garden.addOp(op); }} onRemove={(i) => { setPlayed(null); garden.removeOp(i); }} onReset={() => { setPlayed(null); garden.reset([]); }}
-        bloom={{ label: garden.busy ? 'Playing…' : 'Play', onClick: play }}
+        bloom={{ label: locked ? 'Playing…' : 'Play', onClick: play }}
         extra={garden.playback && !garden.playback.finished ? <button type="button" className="ghost" onClick={garden.stopPlayback}>Stop</button> : null} />
       {details && <CodePanel load={() => garden.code(lesson.beats)} />}
     </div>

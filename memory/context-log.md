@@ -278,3 +278,27 @@ corrections go in a new entry. Newest at the bottom. Fill every field (`n/a` if 
   and short, while rain and thunder stay recordings because textures are what synthesis does worst.
 - Deferred work: a human listening pass; keyboard; phone width.
 - Risks: the car and bell are judged by design, not by ear; thunder is a distant rumble.
+
+### 2026-10-10 22:50 — Nothing sounds but Play; no bleed; an honest caption; a success moment
+- Branch / worktree: `main`
+- Task: the founder's screenshot showed "Rain, every time" while the car played: the learner had removed the first Shuffle bead
+  and the caption was the lesson's static text. Also: sounds bleed and overlap when Play is spammed; the other sound was
+  audible underneath; sounds must never play without Play; and a "great job" moment with a ding.
+- Files changed: `web/src/audio/mixer.ts` (bed 0; other layers cut hard at the start of a Play; events struck once per Play;
+  ding()), `web/src/audio/sounds.ts` (Layer.clock waits a full interval before its first repeat, which also ends the double
+  thunder and the skipped second car; a one-shot recording plays only when struck), `web/src/app/useGarden.ts` (no preview on
+  change), `web/src/app/TutorialScene.tsx` (caption shows "You heard: X. This is your own mix…" when the board differs from
+  the page; Try it / Play / Back / Next / Skip locked while a sound plays), `web/src/app/ChallengeScene.tsx` (no closeness
+  chord, "Closeness: far…" as words; success banner with ding, once; Keep playing), `web/src/app/StudioScene.tsx` (Play locked
+  while playing), `web/src/content/content.ts` (the cue lesson removed; intro says nothing plays until Play), `web/src/styles.css`,
+  `qollab/`, `WORKLOG.md`
+- Verification run: tsc clean; `npm run check` green (pytest 27 + 1 skipped, vitest 69, bundle 765 KB). Live in Chrome with the
+  meter: intro 0.000, Tracks page 0.000, Try it → car 0.144 with Try it and Play disabled during the sound, silence 0.000 after,
+  Try it enabled again; puzzle arrival 0.000, after Swap 0.000 (no cue), Play → "Rain falling" → "Solved. You heard Rain." with
+  the "Great job!" banner (Next puzzle / Keep playing) and a ding peak 0.208.
+- Commit hash: this commit (parent fef3e3c)
+- Seams (§22): unchanged
+- Decisions: the single rule "nothing sounds unless Play is pressed" beats the eyes-closed cue idea; closeness stays as a word;
+  the ding is feedback on a Play, so it is allowed; a caption must describe the board, never the page's expectation.
+- Deferred work: a human listening pass; keyboard; phone width.
+- Risks: a 3 s lock on every Play may feel slow to someone who wants to spam Play on a Shuffle page; the thunder cut is a rumble.

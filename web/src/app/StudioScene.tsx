@@ -62,7 +62,7 @@ export function StudioScene({ engine, backends, defaultBackendId, details }: Pro
 
       <Board seedNames={TRACKS} allowed={['flip', 'split', 'twist', 'link']} turns={[0.5, 0.25, 0.125, -0.25]} ops={garden.circuit.ops} disabled={garden.busy} showGates={details}
         onAdd={garden.addOp} onRemove={garden.removeOp} onReset={() => garden.reset([])}
-        bloom={{ label: garden.busy ? 'Playing…' : garden.result ? 'Play again' : 'Play', onClick: play }}
+        bloom={{ label: garden.busy || playing ? 'Playing…' : garden.result ? 'Play again' : 'Play', onClick: play, disabled: !!playing }}
         extra={<>
           {garden.result && !playing && <button type="button" className="ghost" onClick={garden.replay} disabled={garden.busy}>Hear it again</button>}
           {playing && <button type="button" className="ghost" onClick={garden.stopPlayback}>Stop</button>}

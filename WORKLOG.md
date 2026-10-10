@@ -85,3 +85,11 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
   Track A = car/rain, Track B = bell/thunder (rain and thunder are the recordings); the tutorial is single-track until Sync, so the
   first six pages have one tile and no track selector; the selector reads "Moves apply to"; the intro and the Sync page say Play
   plays every track at once, one sound each. Events no longer double-trigger (the level's clock fires once; no explicit trigger).
+- 10-10 22:50 founder: a page said "rain every time" while the car played (the learner had removed a bead; the caption was the page's
+  static text); sounds bleed (a quiet "bed" of the other sounds under every Play, a previous Play's tail, overlapping Plays from
+  spamming, and events skipped on a second Play because their repeat clock was still armed); nothing should sound unless Play is
+  pressed; and a Duolingo-style "great job" with a ding. Done: bed 0 and a hard cut of other layers at each Play; events struck
+  once per Play and clocks wait a full interval; Try it / Play / Next locked while a sound plays; the tutorial caption reports what
+  actually played when the board no longer matches the page; the odds preview and the closeness chord are gone (closeness is a
+  word on the page); a "Great job!" banner with a two-note ding, Next puzzle or Keep playing. Measured: arrival 0.000 everywhere,
+  after a move 0.000, after a Play 0.000, buttons disabled during the sound, ding peak 0.21.

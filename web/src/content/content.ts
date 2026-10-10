@@ -252,7 +252,7 @@ export const LESSONS: Lesson[] = [
     'This is a sound studio with two tracks. Each track has two sounds. Track A plays a car driving by, or rain. Track B plays a bell, or thunder. Press Play and every track plays one of its two sounds, once, all at the same time.',
     'The twist: a track does not have to decide which sound until you press Play. It can be truly undecided. And two tracks can be tied together so they always decide the same way.',
     'You get four moves to shape a track: Swap, Shuffle, Turn, Sync. A move applies to the track you have selected. The tile for each track shows how likely each of its sounds is right now. Play tells you what every track actually landed on.',
-    'First, learn the moves by ear, one page each. Then solve four puzzles: after each move, a short chord tells you how close you are. Then build your own.',
+    'Nothing plays until you press Play. First, learn the moves by ear, one page each. Then solve four puzzles: the page tells you how close you are. Then build your own.',
     'Everything you hear comes from a real quantum circuit being measured. That is the whole trick, and you do not need to know what that means yet.',
   ] },
   { id: 'tracks', title: 'A track', tracks: 1, text: 'A track has two sounds. Track A plays a car driving by, or it plays rain. Press Try it: you hear one of them, once. Press it again: same answer, because nothing has changed the track.', show: [], ops: [], beats: 6, hear: 'A car. Nothing changed the track, so it is the car every time you press Play.' },
@@ -263,7 +263,6 @@ export const LESSONS: Lesson[] = [
   { id: 'turn2', title: 'Turn, then Shuffle', tracks: 1, text: 'The next Shuffle hears the dial. Turn halfway, then Shuffle: every Play is rain.', show: ['split', 'twist'], ops: [{ op: 'split', q: 0 }, { op: 'twist', q: 0, turns: 0.5 }, { op: 'split', q: 0 }], beats: 6, hear: 'Rain, every time. Without the Turn, two Shuffles would have given the car every time.' },
   { id: 'sync', title: 'Sync', tracks: 2, text: 'A second track: Track B plays a bell, or thunder. Play always plays every track at once, one sound each. Sync makes Track B follow Track A: when A is on rain, B is on thunder.', show: ['flip', 'link'], ops: [{ op: 'flip', q: 0 }, SYNC], beats: 6, hear: 'Rain with thunder, together. B followed A.' },
   { id: 'sync2', title: 'Sync a shuffled track', tracks: 2, text: 'Shuffle Track A, then Sync it to Track B: two coin tosses that always agree. Rain with thunder, or the car with the bell. Press Play several times.', show: ['flip', 'split', 'link'], ops: [{ op: 'split', q: 0 }, SYNC], beats: 8, hear: 'One landing. Press Play more: sometimes the car with the bell, sometimes rain with thunder. Never rain with the bell, never thunder with the car.' },
-  { id: 'hum', title: 'The cue', tracks: 2, text: 'The studio stays silent until you press Play. Each move gives you one second of the odds: the likelier a sound, the louder it is in that second. In a puzzle a short chord follows it: rough when far from the goal, smooth when you are there. Eyes closed works.', show: ['flip', 'split', 'twist', 'link'], ops: [{ op: 'split', q: 0 }, SYNC], beats: 8, hear: 'That was the pair again. Make a move and listen for the one-second cue. Then try a puzzle.' },
 ];
 
 export const DEFAULT_STUDIO_ASSIGNMENT: Record<string, string[]> = {

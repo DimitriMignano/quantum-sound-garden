@@ -102,6 +102,19 @@ export class GardenMixer {
     for (const [id, m] of Object.entries(mass)) this.ensure(id)?.setLevel(m * this.blendScale, ramp);
   }
 
+  /** A short rising two-note chime: a puzzle was solved. */
+  ding(): void {
+    if (!audio.ctx || !audio.bus) return;
+    const ctx = audio.ctx, t = ctx.currentTime;
+    for (const [f, at] of [[659.25, 0], [880, 0.14]] as const) {
+      const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = f;
+      const o2 = ctx.createOscillator(); o2.type = 'sine'; o2.frequency.value = f * 2;
+      const g = ctx.createGain(); g.gain.value = 0; o.connect(g); const g2 = ctx.createGain(); g2.gain.value = 0.25; o2.connect(g2).connect(g); g.connect(audio.bus);
+      g.gain.setValueAtTime(0, t + at); g.gain.linearRampToValueAtTime(0.35, t + at + 0.01); g.gain.exponentialRampToValueAtTime(0.001, t + at + 0.9);
+      o.start(t + at); o.stop(t + at + 1); o2.start(t + at); o2.stop(t + at + 1);
+    }
+  }
+
   /** The closeness cue: a short chord for a number 0..1; null cuts it. */
   hum(closeness: number | null, hold?: number): void {
     if (closeness === null) { this.goal?.off(0.2); return; }
@@ -138,7 +151,7 @@ export class GardenMixer {
   playSequence(assignment: Assignment, sequence: string[], probabilities: Record<string, number>, opts: SequenceOptions = {}): PlaybackHandle {
     this.stopSequence();
     const step = opts.step ?? 0.9;
-    const bed = opts.bed ?? 0.12;
+    const bed = opts.bed ?? 0; // a Play is the chosen sounds and nothing else
     const mass = soundMass(assignment, probabilities);
     const timers: number[] = [];
     let stopped = false;
@@ -148,6 +161,7 @@ export class GardenMixer {
     const allIds = new Set<string>();
     for (const ids of Object.values(assignment)) for (const id of ids) allIds.add(id);
     for (const id of allIds) this.ensure(id);
+    for (const [id, inst] of this.layers) if (!allIds.has(id)) inst.setLevel(0, 0.05);
 
     const moment = (i: number) => {
       if (stopped) return;
@@ -158,11 +172,12 @@ export class GardenMixer {
         if (!inst) continue;
         if (active.has(id)) {
           // the sound comes up, holds for most of its time, then fades before the end
-          // raising the level starts a texture, or an event's own clock (which fires once right away): no extra trigger
+          // textures come up with the level; events are struck once here (their clock only repeats after its interval)
           inst.setLevel(1, 0.08);
+          if (soundById(id).kind === 'event') inst.trigger();
           timers.push(window.setTimeout(() => { if (!stopped) inst.setLevel(0, 0.9); }, Math.max(300, step * 1000 - 1000)));
         } else {
-          inst.setLevel(bed * (mass[id] ?? 0), 0.2);
+          inst.setLevel(bed * (mass[id] ?? 0), 0.05);
         }
       }
       opts.onMoment?.(i, outcome, captionFor(assignment, outcome));

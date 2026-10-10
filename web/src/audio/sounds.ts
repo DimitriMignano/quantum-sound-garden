@@ -98,7 +98,8 @@ abstract class Layer implements SoundInstance {
     setTimeout(() => this.teardown(), (fade + 0.1) * 1000);
   }
   protected abstract teardown(): void;
-  /** Run `fn` while the level is up, re-scheduling itself with `nextMs()`. */
+  /** Run `fn` while the level is up, re-scheduling itself with `nextMs()`. The first run waits a full interval:
+   *  a Play strikes an event itself, so the clock only adds repeats for sounds that keep going (footsteps, birds). */
   protected clock(fn: () => void, nextMs: () => number): void {
     if (this.timer !== null) return;
     const tick = () => {
@@ -106,7 +107,7 @@ abstract class Layer implements SoundInstance {
       fn();
       this.timer = window.setTimeout(tick, nextMs());
     };
-    this.timer = window.setTimeout(tick, 60);
+    this.timer = window.setTimeout(tick, nextMs());
   }
   protected stopClock(): void { if (this.timer !== null) { clearTimeout(this.timer); this.timer = null; } }
 }
@@ -465,7 +466,7 @@ class Sample extends Layer {
   private wanted = false;
   constructor(ctx: AudioContext, out: AudioNode, weight: number, id: string, url: string, private loop: boolean) {
     super(ctx, out, weight);
-    decodeSample(ctx, id, url).then((b) => { this.buffer = b; if (this.wanted && !this.stopped) this.play(); }).catch(() => { /* stays silent; the engine label is still honest */ });
+    decodeSample(ctx, id, url).then((b) => { this.buffer = b; if (this.wanted && !this.stopped && (this.loop || this.currentLevel > 0.001)) this.play(); }).catch(() => { /* stays silent; the engine label is still honest */ });
   }
   private play(): void {
     if (!this.buffer || this.src) return;
@@ -478,13 +479,14 @@ class Sample extends Layer {
   }
   protected override onLevel(): void {
     this.wanted = this.currentLevel > 0.001;
-    if (this.wanted) this.play();
+    if (this.wanted) { if (this.loop) this.play(); }
     else if (this.src) { const s = this.src; this.src = null; try { s.stop(this.ctx.currentTime + 1.0); } catch { /* */ } }
   }
   override trigger(): void {
-    if (this.loop || !this.buffer || this.stopped) return;
+    if (this.loop || this.stopped) return;
+    this.wanted = true;
     if (this.src) { try { this.src.stop(); } catch { /* */ } this.src = null; }
-    this.play();
+    this.play(); // a one-shot plays from the top when struck; if still decoding, it plays as soon as it can
   }
   protected teardown(): void { if (this.src) { try { this.src.stop(); } catch { /* */ } } this.level.disconnect(); }
 }

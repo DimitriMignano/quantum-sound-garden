@@ -53,16 +53,14 @@ export function ChallengeScene({ engine, challenge, details, onNext, onSolved, i
     setBaseline({ fidelity: garden.measuredFidelity, ops: garden.circuit.ops.length });
   }, [phase, challenge, garden.measuredFidelity, garden.circuit.ops.length, baseline]);
 
-  // the eyes-closed progress bar: after each move, a short chord says how close the mix is (silent otherwise)
+  // how close the mix is to the goal: a word on the page (nothing sounds unless Play is pressed)
   const closeness = useMemo(() => closenessOf(challenge, garden.ideal.probabilities, garden.circuit.ops.length), [challenge, garden.ideal, garden.circuit.ops.length]);
-  const cued = useRef<{ circuit: unknown; closeness: number } | null>(null);
+  // the success moment: once, when the goal is met after a Play
+  const [celebrate, setCelebrate] = useState(false);
+  const dinged = useRef(false);
   useEffect(() => {
-    const prev = cued.current;
-    cued.current = { circuit: garden.circuit, closeness };
-    if (!prev || (prev.circuit === garden.circuit && prev.closeness === closeness)) return; // arrival (and StrictMode's second run) stay silent
-    mixer.hum(closeness);
-  }, [closeness, garden.circuit]);
-  useEffect(() => () => mixer.hum(null), []);
+    if (phase === 'result' && goalMet && !dinged.current) { dinged.current = true; setCelebrate(true); mixer.ding(); }
+  }, [phase, goalMet]);
 
   const play = useCallback(async () => {
     setPhase('playing');
@@ -86,7 +84,7 @@ export function ChallengeScene({ engine, challenge, details, onNext, onSolved, i
       caption += baseline && garden.circuit.ops.length < baseline.ops ? ` (it was ${pct(baseline.fidelity)} with ${baseline.ops} moves; yours has ${garden.circuit.ops.length}).` : '.';
     }
   } else {
-    caption = `${challenge.goal} The hum says: ${closenessWord(closeness)}.`;
+    caption = `${challenge.goal} Closeness: ${closenessWord(closeness)}.`;
   }
 
   return (
@@ -99,7 +97,19 @@ export function ChallengeScene({ engine, challenge, details, onNext, onSolved, i
 
       <GardenView garden={garden} tracks={challenge.tracks} assignment={assignment} details={readings} caption={caption} />
 
-      {phase === 'result' && garden.result && (
+      {celebrate && (
+        <div className="success" role="status">
+          <div className="success__text">
+            <p className="success__title">Great job!</p>
+            <p className="success__body">{isLast ? 'That was the last puzzle. The studio is yours.' : 'You solved it. Ready for the next one, or keep playing with this mix.'}</p>
+          </div>
+          <div className="row">
+            <button type="button" className="primary" onClick={onNext}>{isLast ? 'Open the studio' : 'Next puzzle'}</button>
+            <button type="button" className="ghost" onClick={() => setCelebrate(false)}>Keep playing</button>
+          </div>
+        </div>
+      )}
+      {phase === 'result' && garden.result && !celebrate && (
         <div className={`verdict${goalMet ? ' is-good' : ''}`} aria-live="polite">
           <div className="row">
             {goalMet && <button type="button" className="primary" onClick={onNext}>{isLast ? 'Open the studio' : 'Next puzzle'}</button>}
