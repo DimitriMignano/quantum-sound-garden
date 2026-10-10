@@ -57,7 +57,9 @@ export function TutorialScene({ engine, details, onDone }: Props) {
     );
   }
 
-  const onLessonMix = sameOps(garden.circuit.ops, lesson.ops);
+  // on a page about the dial, any amount on the Turn still counts as the page's mix
+  const shape = (ops: unknown[]) => JSON.stringify(ops.map((o) => (o && typeof o === 'object' && (o as { op: string }).op === 'twist' ? { ...(o as object), turns: 0 } : o)));
+  const onLessonMix = lesson.turns ? shape(garden.circuit.ops) === shape(lesson.ops) : sameOps(garden.circuit.ops, lesson.ops);
   const playing = !!garden.playback && !garden.playback.finished;
   const locked = garden.busy || playing;
   const heard = garden.playback?.finished && garden.result?.memory?.[0] ? nameFor(assignment, garden.result.memory[0]) : null;
@@ -85,8 +87,8 @@ export function TutorialScene({ engine, details, onDone }: Props) {
         {!last && <button type="button" className="linklike learn__go" onClick={onDone} disabled={locked}>Skip to the puzzles</button>}
       </div>
 
-      <Board steady={Array.from({ length: count }, (_, q) => { const p = marginalOne(garden.ideal.probabilities, q); return p < 1e-6 || p > 1 - 1e-6; })} seedNames={trackNames} allowed={lesson.show} ops={garden.circuit.ops} disabled={locked} showGates={details}
-        onAdd={(op) => { setPlayed(null); garden.addOp(op); }} onRemove={(i) => { setPlayed(null); garden.removeOp(i); }} onReset={() => { setPlayed(null); garden.reset([]); }}
+      <Board turns={lesson.turns} steady={Array.from({ length: count }, (_, q) => { const p = marginalOne(garden.ideal.probabilities, q); return p < 1e-6 || p > 1 - 1e-6; })} seedNames={trackNames} allowed={lesson.show} ops={garden.circuit.ops} disabled={locked} showGates={details}
+        onRetune={(i, t) => garden.setOps(garden.circuit.ops.map((o, k) => (k === i && o.op === 'twist' ? { ...o, turns: t } : o)))} onAdd={(op) => { setPlayed(null); garden.addOp(op); }} onRemove={(i) => { setPlayed(null); garden.removeOp(i); }} onReset={() => { setPlayed(null); garden.reset([]); }}
         bloom={{ label: locked ? 'Playing…' : 'Play', onClick: play }}
         extra={garden.playback && !garden.playback.finished ? <button type="button" className="ghost" onClick={garden.stopPlayback}>Stop</button> : null} />
       {details && <CodePanel load={() => garden.code(lesson.beats)} />}

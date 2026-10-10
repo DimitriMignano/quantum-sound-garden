@@ -127,7 +127,7 @@ export function ChallengeScene({ engine, challenge, details, onNext, onSolved, i
         </div>
       )}
       <Board steady={Array.from({ length: challenge.tracks.length }, (_, q) => { const p = marginalOne(garden.ideal.probabilities, q); return p < 1e-6 || p > 1 - 1e-6; })} seedNames={trackNames} allowed={challenge.allowed} ops={garden.circuit.ops} disabled={busy} showGates={gates}
-        onAdd={garden.addOp} onRemove={garden.removeOp} onReset={() => garden.reset()}
+        onRetune={(i, t) => garden.setOps(garden.circuit.ops.map((o, k) => (k === i && o.op === 'twist' ? { ...o, turns: t } : o)))} onAdd={garden.addOp} onRemove={garden.removeOp} onReset={() => garden.reset()}
         bloom={{ label: phase === 'playing' ? 'Playing…' : 'Play', onClick: play }}
         extra={phase === 'playing' && garden.playback && !garden.playback.finished ? <button type="button" className="ghost" onClick={garden.skip}>Skip</button> : null} />
       {garden.error && <p className="error" role="alert">{garden.error}</p>}

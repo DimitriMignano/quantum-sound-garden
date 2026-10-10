@@ -321,3 +321,22 @@ corrections go in a new entry. Newest at the bottom. Fill every field (`n/a` if 
 - Deferred work: a human listening pass; keyboard; phone width.
 - Risks: "steady" is judged on the hit chance alone (0 or 1); it is exact for one track, and for a track in a Bell pair it reads
   50/50 and the hint stays off, which is right (a Turn there does change the state).
+
+### 2026-10-10 23:30 — Turn gets its demo: the dial sets the odds
+- Branch / worktree: `main`
+- Task: the founder asked whether Turn is useless, since no demo showed it doing anything.
+- Files changed: `web/src/app/Board.tsx` (the Turn amount chips retune the selected track's last Turn when one exists:
+  `onRetune`; the selected chip reflects that Turn's amount), `web/src/app/{TutorialScene,ChallengeScene,StudioScene}.tsx`
+  (pass onRetune via garden.setOps; the tutorial passes per-page Turn amounts and keeps the page's caption for any amount on
+  a dial page), `web/src/content/content.ts` (lesson "The dial sets the odds" with ½ ¼ ⅛; Turn page foreshadows), `qollab/`,
+  `WORKLOG.md`
+- Verification run: tsc clean; `npm run check` green. Live in Chrome on the new page: Try it loads Shuffle · Turn ⅛ · Shuffle
+  (85% · 15%); tapping ½ → "always Rain", ¼ → "50% · 50%", ⅛ → "85% · 15%" with the beads updating in place.
+- Commit hash: this commit (parent e0e4d29)
+- Seams (§22): unchanged
+- Decisions: Turn is taught as the dial that sets the odds (sin²(θ/2) after Shuffle · Turn θ · Shuffle), which is the one thing
+  only Turn can do; the amount chips edit an existing Turn in place because adding and removing beads to change an amount
+  buried the lesson.
+- Deferred work: a human listening pass; keyboard; phone width; a public static deploy on quantumnuggets.com if the founder
+  wants it (static build, browser-math fallback labeled, Qollab stays the judged artifact).
+- Risks: none new.

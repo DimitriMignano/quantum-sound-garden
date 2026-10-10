@@ -62,7 +62,7 @@ export function StudioScene({ engine, backends, defaultBackendId, details }: Pro
       </div>
 
       <Board steady={Array.from({ length: 2 }, (_, q) => { const p = marginalOne(garden.ideal.probabilities, q); return p < 1e-6 || p > 1 - 1e-6; })} seedNames={TRACKS} allowed={['flip', 'split', 'twist', 'link']} turns={[0.5, 0.25, 0.125, -0.25]} ops={garden.circuit.ops} disabled={garden.busy} showGates={details}
-        onAdd={garden.addOp} onRemove={garden.removeOp} onReset={() => garden.reset([])}
+        onRetune={(i, t) => garden.setOps(garden.circuit.ops.map((o, k) => (k === i && o.op === 'twist' ? { ...o, turns: t } : o)))} onAdd={garden.addOp} onRemove={garden.removeOp} onReset={() => garden.reset([])}
         bloom={{ label: garden.busy || playing ? 'Playing…' : garden.result ? 'Play again' : 'Play', onClick: play, disabled: !!playing }}
         extra={<>
           {garden.result && !playing && <button type="button" className="ghost" onClick={garden.replay} disabled={garden.busy}>Hear it again</button>}

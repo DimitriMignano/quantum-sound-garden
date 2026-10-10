@@ -98,3 +98,7 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
   the dial only exists on a shuffled track). Fixed the copy on the Turn pages (all three moves named, the rule stated), renamed the
   page "Shuffle, Turn, Shuffle", and the Turn button now reads "no effect: track is steady" whenever the selected track's odds are
   0 or 1. Verified by hand in Chrome: Turn on a fresh track keeps "always Car"; Shuffle, Turn, Shuffle gives "always Rain".
+- 10-10 23:30 founder: "are we basically just saying Turn is useless?" Not in the physics, but in the demos: nothing showed it. Added
+  "The dial sets the odds": Shuffle, Turn, Shuffle on the board and the Turn amount chips now turn the existing Turn live (½ → always
+  rain, ¼ → coin toss, ⅛ → rain about one in seven), with the odds bar moving as you tap. The chips act as a live dial everywhere a
+  Turn already exists on the selected track. The Turn page foreshadows it ("silent now, decisive on the next two pages").

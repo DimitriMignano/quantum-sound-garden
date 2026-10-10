@@ -13,6 +13,8 @@ interface Props {
   turns?: number[];
   /** per track: true when the track is steady (always one sound), so a Turn would do nothing */
   steady?: boolean[];
+  /** change the amount of an existing Turn (index into ops); with this, the amount chips act as a live dial */
+  onRetune?(index: number, turns: number): void;
   onAdd(op: Op): void;
   onRemove(index: number): void;
   onReset(): void;
@@ -26,11 +28,16 @@ const TURN: Record<string, { label: string; math: string }> = {
 };
 
 /** The board: which track, the four moves, Play, and the mix as beads underneath. Every mix is a circuit. */
-export function Board({ seedNames, allowed, ops, disabled, showGates, turns = [0.5, 0.25], steady, onAdd, onRemove, onReset, bloom, extra }: Props) {
+export function Board({ seedNames, allowed, ops, disabled, showGates, turns = [0.5, 0.25], steady, onAdd, onRemove, onReset, onRetune, bloom, extra }: Props) {
   const [seed, setSeed] = useState(0);
   const [turn, setTurn] = useState(turns[0]);
   const n = seedNames.length;
   const other = n > 1 ? (seed + 1) % n : seed;
+  // the last Turn on the selected track, if any: the amount chips then turn that dial live
+  let lastTurn = -1;
+  ops.forEach((o, i) => { if (o.op === 'twist' && o.q === seed) lastTurn = i; });
+  const dial = lastTurn >= 0 && onRetune ? (ops[lastTurn] as { turns: number }).turns : turn;
+  const pick = (t: number) => { setTurn(t); if (lastTurn >= 0 && onRetune) onRetune(lastTurn, t); };
 
   const move = (kind: Op['op'], op: Op) => {
     if (!allowed.includes(kind)) return null;
@@ -61,10 +68,10 @@ export function Board({ seedNames, allowed, ops, disabled, showGates, turns = [0
         {allowed.includes('twist') && (
           <div className="move-group">
             {move('twist', { op: 'twist', q: seed, turns: turn })}
-            <div className="move-group__amounts" role="group" aria-label="Twist amount">
+            <div className="move-group__amounts" role="group" aria-label={lastTurn >= 0 && onRetune ? 'Turn amount (changes the Turn on this track)' : 'Turn amount'}>
               {turns.map((t) => (
-                <button key={t} type="button" className={`chip chip--small${turn === t ? ' is-on' : ''}`} aria-pressed={turn === t} disabled={disabled} onClick={() => setTurn(t)}
-                  title={`${TURN[String(t)]?.label ?? t} turn${showGates ? ` (${TURN[String(t)]?.math})` : ''}`}>
+                <button key={t} type="button" className={`chip chip--small${dial === t ? ' is-on' : ''}`} aria-pressed={dial === t} disabled={disabled} onClick={() => pick(t)}
+                  title={`${TURN[String(t)]?.label ?? t} turn${lastTurn >= 0 && onRetune ? ' (turns the dial already on this track)' : ''}${showGates ? ` (${TURN[String(t)]?.math})` : ''}`}>
                   {TURN[String(t)]?.label ?? t}{showGates && <small> {TURN[String(t)]?.math}</small>}
                 </button>
               ))}
