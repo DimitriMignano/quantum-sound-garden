@@ -37,7 +37,7 @@ except Exception:  # pragma: no cover
 # "teaching" is exaggerated on purpose (roughly 20x) so a two-gate circuit audibly differs from a ten-gate one.
 NOISE_PRESETS: dict[str, dict[str, float]] = {
     "ionq-inspired": {"p1": 0.0005, "p2": 0.006, "readout": 0.005},
-    "teaching": {"p1": 0.02, "p2": 0.10, "readout": 0.03},
+    "teaching": {"p1": 0.02, "p2": 0.06, "readout": 0.02},
 }
 ONE_QUBIT_GATES = ["x", "h", "p", "rz", "ry", "rx", "sx", "s", "sdg", "u", "u1", "u2", "u3", "id", "z"]
 TWO_QUBIT_GATES = ["cx", "cz", "swap"]

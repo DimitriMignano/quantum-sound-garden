@@ -1,0 +1,21 @@
+{
+  "name": "quantum-sound-garden",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Hear quantum behavior, predict it, manipulate it, create with it — natural sounds rendered from real Qiskit circuits.",
+  "license": "MIT",
+  "scripts": {
+    "dev": "concurrently -k -n server,web -c blue,magenta \"npm:dev:server\" \"npm:dev:web\"",
+    "dev:server": "cd server && .venv/bin/python -m uvicorn qsg.api:app --port 8765 --reload",
+    "dev:web": "cd web && npx vite --port 5173",
+    "test:py": "cd server && .venv/bin/python -m pytest -q -p no:cacheprovider",
+    "typecheck": "cd web && npx tsc -b",
+    "test:web": "cd web && npx vitest run",
+    "build:web": "cd web && npx vite build",
+    "build:qollab": "node scripts/build-qollab.mjs",
+    "check": "npm run test:py && npm run typecheck && npm run test:web && npm run build:qollab"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
