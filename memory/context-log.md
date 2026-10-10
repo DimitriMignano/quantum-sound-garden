@@ -150,3 +150,28 @@ corrections go in a new entry. Newest at the bottom. Fill every field (`n/a` if 
   as the safety net, just later (−6 dB).
 - Deferred work: a human listening pass on levels and the hum; phone width; keyboard.
 - Risks: loudness judged by a meter, not by an ear; the drum timbres are a first guess.
+
+### 2026-10-10 19:20 — Silent until you play
+- Branch / worktree: `main`
+- Task: the founder heard a loud high-pitched sound the whole time the page was open. It was the "hearing the odds" bed
+  (crickets + wind from the moment the tutorial mounted) plus the closeness drone in puzzles. Requirement: silent unless
+  you play something.
+- Files changed: `web/src/audio/mixer.ts` (preview(): one second of the odds then fade; GoalHum.set() is a cue that
+  fades itself; silence() clears the preview timer; the hit drum gained a highpassed noise burst at 1.4 and a falling
+  triangle tone), `web/src/audio/sounds.ts` (crickets 3.1/3.5 kHz, sine chirp, Q 3, weight 0.14), `web/src/app/useGarden.ts`
+  (preview only when the odds change by value; no bed on mount or page change; stopPlayback no longer re-blends),
+  `web/src/app/ChallengeScene.tsx` (closeness cue after a move, compared by value, never on arrival),
+  `web/src/content/content.ts` (intro and "The cue" copy), `qollab/` (rebuilt), `WORKLOG.md`
+- Verification run: tsc clean; `npm run check` green (pytest 27 passed + 1 skipped, vitest 69 passed, bundle 403 KB).
+  Live in Chrome with the master-bus meter (RMS): intro 0.000 · Tracks page 0.000 · Swap page 0.000 · puzzle arrival 0.000 ·
+  Swap cue peak 0.106, back to 0.001 within 2.4 s, 0.000 after · Play in puzzle 1 peak 0.227 (0.071 before the snap fix).
+  A first guard ("skip the first effect run") failed under StrictMode's double effects and on tutorial page changes (reset
+  to a new empty array): both measured as non-zero arrival, fixed by comparing the odds by value.
+- Commit hash: this commit (parent 0961580)
+- Seams (§22): unchanged
+- Decisions: nothing sounds on its own; every sound is caused by a press (Play, Try it) or is a one-second cue after a
+  move. The closeness feedback survives as a cue, not a drone. Chrome's hung audio service (new contexts never resume)
+  is an environment fault, not app code: the app's Start waits on resume() by design so it cannot claim audio it does
+  not have.
+- Deferred work: a human listening pass; phone width; keyboard.
+- Risks: levels judged by a meter; the cue length (1 s) and the crickets timbre are guesses until someone listens.

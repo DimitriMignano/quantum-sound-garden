@@ -52,3 +52,9 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
   Every beat now carries a drum per track (low thump for the first sound, bright snap for the hit, panned left/right by track), the
   textures hit instead of crossfading, default volume 0.85, limiter −6 dB, ceiling 0.9: Play peaks RMS 0.31 at the master (was 0.17).
   Learn opens on a "What's going on" page: five numbered lines of context, then "Learn the moves".
+- 10-10 19:20 founder: "the whole time the website is open its playing a loud crazy high pitched sound -- it should be silent unless
+  you play something". The constant sound was the odds bed (crickets at 4.3/4.9 kHz with square-wave chirps, plus wind) and the
+  closeness drone. Now: silent by default; a move gives a one-second preview of the odds and, in a puzzle, a short closeness chord; the
+  crickets are lower and softer; the hit drum got a body so an all-hits Play lands as hard as an all-thumps one. Measured: arrival 0.000
+  on the intro, Tracks, Swap and puzzle pages; cue peak 0.11 then 0.000; puzzle Play peak 0.23 (was 0.07). Also found and worked
+  around: Chrome's audio service on this Mac had hung (new AudioContexts never resumed); a full Chrome restart fixed it.

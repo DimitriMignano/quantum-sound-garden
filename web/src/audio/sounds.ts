@@ -217,10 +217,10 @@ class Crickets extends Layer {
   private nodes: AudioNode[] = [];
   constructor(ctx: AudioContext, out: AudioNode, weight: number) {
     super(ctx, out, weight);
-    for (const [freq, rate] of [[4300, 13], [4900, 11.3]] as const) {
+    for (const [freq, rate] of [[3100, 9], [3500, 7.3]] as const) {
       const osc = ctx.createOscillator(); osc.frequency.value = freq;
       const am = ctx.createGain(); am.gain.value = 0;
-      const pulse = ctx.createOscillator(); pulse.type = 'square'; pulse.frequency.value = rate;
+      const pulse = ctx.createOscillator(); pulse.type = 'sine'; pulse.frequency.value = rate;
       const pulseG = ctx.createGain(); pulseG.gain.value = 0.5;
       const off = ctx.createConstantSource(); off.offset.value = 0.5;
       pulse.connect(pulseG).connect(am.gain); off.connect(am.gain);
@@ -228,7 +228,7 @@ class Crickets extends Layer {
       const slow = ctx.createOscillator(); slow.frequency.value = 0.4 + Math.random() * 0.3;
       const slowG = ctx.createGain(); slowG.gain.value = 0.5;
       slow.connect(slowG).connect(chirpWindow.gain);
-      const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = freq; bp.Q.value = 6;
+      const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = freq; bp.Q.value = 3;
       osc.connect(am).connect(chirpWindow).connect(bp).connect(this.level);
       osc.start(); pulse.start(); off.start(); slow.start();
       this.nodes.push(osc, am, pulse, pulseG, off, chirpWindow, slow, slowG, bp);
@@ -365,7 +365,7 @@ export const SOUND_LIBRARY: SoundAsset[] = [
   mk('footsteps', 'Footsteps', 'event', 'footsteps on the path', 0.7, (c, o) => new Footsteps(c, o, 0.7)),
   mk('heartbeat', 'Heartbeat', 'event', 'a heartbeat', 0.8, (c, o) => new Heartbeat(c, o, 0.8)),
   mk('bells', 'Bells', 'event', 'bells ringing', 0.45, (c, o) => new Bells(c, o, 0.45)),
-  mk('crickets', 'Crickets', 'texture', 'crickets in the grass', 0.3, (c, o) => new Crickets(c, o, 0.3)),
+  mk('crickets', 'Crickets', 'texture', 'crickets in the grass', 0.14, (c, o) => new Crickets(c, o, 0.14)),
   mk('city', 'City at night', 'texture', 'a distant city', 0.5, (c, o) => new City(c, o, 0.5)),
   mk('glitch', 'Glitch', 'event', 'a soft electronic glitch', 0.4, (c, o) => new Glitch(c, o, 0.4)),
 ];

@@ -97,11 +97,18 @@ export function useGarden(engine: QuantumEngine, nQubits: number, assignment: As
     if (hideOddsUntilAsked) setOddsHidden(true);
   }, [ideal, hideOddsUntilAsked]);
 
-  // hear the odds whenever they are allowed to be heard (circuit or sound assignment changed)
+  // silent by default: a change to the mix or the sounds gives a one-second preview of the odds, then silence.
+  // Compared by value, not by "first run": StrictMode runs effects twice on mount, and arrival must stay silent.
+  const previewed = useRef<string | null>(null);
   useEffect(() => {
     assignmentRef.current = assignment;
-    if (oddsHidden) mixer.silence(0.8);
-    else mixer.blend(assignment, ideal.probabilities);
+    // by value: a reset to the same mix, or a page change, is not a change you should hear
+    const key = JSON.stringify([assignment, ideal.probabilities, ideal.amplitudes]);
+    const prev = previewed.current;
+    previewed.current = key;
+    if (prev === null || prev === key) return;
+    if (oddsHidden) mixer.silence(0.4);
+    else mixer.preview(assignment, ideal.probabilities);
   }, [assignment, ideal, oddsHidden]);
 
   // leaving the scene: nothing keeps playing underneath the next one
@@ -160,8 +167,8 @@ export function useGarden(engine: QuantumEngine, nQubits: number, assignment: As
 
   const replay = useCallback(() => { if (seqRef.current.length) playRef.current(seqRef.current, lastStepRef.current); }, []);
   const skip = useCallback(() => { mixer.stopSequence(); setPlayback((p) => (p ? { ...p, outcome: null, index: p.total, finished: true } : null)); }, []);
-  const stopPlayback = useCallback(() => { mixer.stopSequence(); setPlayback((p) => (p ? { ...p, outcome: null, index: p.total, finished: true } : null)); if (!oddsHidden) mixer.blend(assignmentRef.current, ideal.probabilities); }, [ideal, oddsHidden]);
-  const hearOdds = useCallback(() => { setOddsHidden(false); mixer.blend(assignmentRef.current, ideal.probabilities, 0.5); }, [ideal]);
+  const stopPlayback = useCallback(() => { mixer.stopSequence(); setPlayback((p) => (p ? { ...p, outcome: null, index: p.total, finished: true } : null)); }, []);
+  const hearOdds = useCallback(() => { setOddsHidden(false); mixer.preview(assignmentRef.current, ideal.probabilities, 1.6); }, [ideal]);
   const code = useCallback((shots: number) => engine.qiskitCode(circuit, shots), [engine, circuit]);
 
   return { circuit, ideal, qiskitIdeal, idealAgrees, result, resultLabel, measured, measuredFidelity, playback, busy, error, oddsHidden, setOddsHidden, addOp, removeOp, setOps, reset, bloom, replay, skip, stopPlayback, hearOdds, code };

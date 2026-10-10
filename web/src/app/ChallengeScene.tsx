@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { QuantumEngine } from '../engine/types';
 import { ACTIONS, assignmentFor, type Challenge } from '../content/content';
 import { fidelity } from '../engine/outcomes';
@@ -54,9 +54,15 @@ export function ChallengeScene({ engine, challenge, reducedMotion, details, onNe
     setBaseline({ fidelity: garden.measuredFidelity, ops: garden.circuit.ops.length });
   }, [phase, challenge, garden.measuredFidelity, garden.circuit.ops.length, baseline]);
 
-  // the eyes-closed progress bar: the hum follows the current odds while you build
+  // the eyes-closed progress bar: after each move, a short chord says how close the mix is (silent otherwise)
   const closeness = useMemo(() => closenessOf(challenge, garden.ideal.probabilities, garden.circuit.ops.length), [challenge, garden.ideal, garden.circuit.ops.length]);
-  useEffect(() => { mixer.hum(phase === 'playing' ? null : closeness); }, [closeness, phase]);
+  const cued = useRef<{ circuit: unknown; closeness: number } | null>(null);
+  useEffect(() => {
+    const prev = cued.current;
+    cued.current = { circuit: garden.circuit, closeness };
+    if (!prev || (prev.circuit === garden.circuit && prev.closeness === closeness)) return; // arrival (and StrictMode's second run) stay silent
+    mixer.hum(closeness);
+  }, [closeness, garden.circuit]);
   useEffect(() => () => mixer.hum(null), []);
 
   const play = useCallback(async () => {

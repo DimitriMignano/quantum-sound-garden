@@ -9938,7 +9938,7 @@ var D, O, Ae, je, Me, Ne, Pe, Fe, Ie, Le, Re, ze, Be, Ve, He = n((() => {
 				"This is a beat studio. It has tracks. On every beat, each track plays one of its two sounds. On this page, Sky plays crickets or rain.",
 				"The twist: a track does not have to decide which sound until the beat is played. It can be truly undecided. And two tracks can be tied together so they decide the same way, every time.",
 				"You get four moves to shape a track: Swap, Shuffle, Turn, Sync. Then Play rolls the beats and you hear what the tracks decided. Each beat thumps low for the first sound and snaps bright for the hit, so you can follow it with your eyes closed.",
-				"First, learn the moves by ear, one page each. Then solve four puzzles: a hum tells you how close you are. Then build your own beat.",
+				"First, learn the moves by ear, one page each. Then solve four puzzles: after each move, a short chord tells you how close you are. Then build your own beat.",
 				"Everything you hear comes from a real quantum circuit being measured. That is the whole trick, and you do not need to know what that means yet."
 			]
 		},
@@ -10059,8 +10059,8 @@ var D, O, Ae, je, Me, Ne, Pe, Fe, Ie, Le, Re, ze, Be, Ve, He = n((() => {
 		},
 		{
 			id: "hum",
-			title: "The hum",
-			text: "While you build, the studio hums the odds: the likelier a sound, the louder it hums. In a puzzle a second hum tells you how close you are: rough when far, smooth when you are there. Eyes closed works.",
+			title: "The cue",
+			text: "The studio stays silent until you press Play. Each move gives you one second of the odds: the likelier a sound, the louder it is in that second. In a puzzle a short chord follows it: rough when far from the goal, smooth when you are there. Eyes closed works.",
 			show: [
 				"flip",
 				"split",
@@ -10072,7 +10072,7 @@ var D, O, Ae, je, Me, Ne, Pe, Fe, Ie, Le, Re, ze, Be, Ve, He = n((() => {
 				q: 0
 			}, ze],
 			beats: 8,
-			hear: "That was the pair again, new beats. Press Play any time to roll real beats from the hum. Now try a puzzle."
+			hear: "That was the pair again, new beats. Make a move and listen for the one-second cue. Then try a puzzle."
 		}
 	], Ve = {
 		"00": ["crickets"],
@@ -10536,13 +10536,13 @@ var it, at, ot, st, ct, lt, ut, dt, ft, pt, mt, ht, gt, _t, vt, yt, bt = n((() =
 		nodes = [];
 		constructor(e, t, n) {
 			super(e, t, n);
-			for (let [t, n] of [[4300, 13], [4900, 11.3]]) {
+			for (let [t, n] of [[3100, 9], [3500, 7.3]]) {
 				let r = e.createOscillator();
 				r.frequency.value = t;
 				let i = e.createGain();
 				i.gain.value = 0;
 				let a = e.createOscillator();
-				a.type = "square", a.frequency.value = n;
+				a.type = "sine", a.frequency.value = n;
 				let o = e.createGain();
 				o.gain.value = .5;
 				let s = e.createConstantSource();
@@ -10554,7 +10554,7 @@ var it, at, ot, st, ct, lt, ut, dt, ft, pt, mt, ht, gt, _t, vt, yt, bt = n((() =
 				let u = e.createGain();
 				u.gain.value = .5, l.connect(u).connect(c.gain);
 				let d = e.createBiquadFilter();
-				d.type = "bandpass", d.frequency.value = t, d.Q.value = 6, r.connect(i).connect(c).connect(d).connect(this.level), r.start(), a.start(), s.start(), l.start(), this.nodes.push(r, i, a, o, s, c, l, u, d);
+				d.type = "bandpass", d.frequency.value = t, d.Q.value = 3, r.connect(i).connect(c).connect(d).connect(this.level), r.start(), a.start(), s.start(), l.start(), this.nodes.push(r, i, a, o, s, c, l, u, d);
 			}
 		}
 		teardown() {
@@ -10746,7 +10746,7 @@ var it, at, ot, st, ct, lt, ut, dt, ft, pt, mt, ht, gt, _t, vt, yt, bt = n((() =
 		_t("footsteps", "Footsteps", "event", "footsteps on the path", .7, (e, t) => new pt(e, t, .7)),
 		_t("heartbeat", "Heartbeat", "event", "a heartbeat", .8, (e, t) => new ht(e, t, .8)),
 		_t("bells", "Bells", "event", "bells ringing", .45, (e, t) => new gt(e, t, .45)),
-		_t("crickets", "Crickets", "texture", "crickets in the grass", .3, (e, t) => new ut(e, t, .3)),
+		_t("crickets", "Crickets", "texture", "crickets in the grass", .14, (e, t) => new ut(e, t, .14)),
 		_t("city", "City at night", "texture", "a distant city", .5, (e, t) => new lt(e, t, .5)),
 		_t("glitch", "Glitch", "event", "a soft electronic glitch", .4, (e, t) => new dt(e, t, .4))
 	], yt = (e) => {
@@ -10785,9 +10785,9 @@ var wt, Tt, Et, Dt, Ot = n((() => {
 		constructor(e, t) {
 			this.ctx = e, this.out = e.createGain(), this.out.gain.value = 0, this.root = e.createOscillator(), this.root.type = "sine", this.root.frequency.value = 196, this.upper = e.createOscillator(), this.upper.type = "sine", this.upper.frequency.value = 277.1832, this.root.connect(this.out), this.upper.connect(this.out), this.out.connect(t), this.root.start(), this.upper.start();
 		}
-		set(e, t = .5) {
+		set(e, t = .9) {
 			let n = Math.max(0, Math.min(1, e)), r = this.ctx.currentTime, i = 1.4142 + (2 - 1.4142) * n;
-			this.upper.frequency.setTargetAtTime(196 * i, r, t), this.upper.detune.setTargetAtTime((1 - n) * 28, r, t), this.level = .035 + .02 * n, this.out.gain.setTargetAtTime(this.level, r, t);
+			this.upper.frequency.setTargetAtTime(196 * i, r, .05), this.upper.detune.setTargetAtTime((1 - n) * 28, r, .05), this.level = .08 + .04 * n, this.out.gain.cancelScheduledValues(r), this.out.gain.setTargetAtTime(this.level, r, .06), this.out.gain.setTargetAtTime(0, r + t, .25);
 		}
 		off(e = .6) {
 			this.out.gain.setTargetAtTime(0, this.ctx.currentTime, e);
@@ -10812,12 +10812,16 @@ var wt, Tt, Et, Dt, Ot = n((() => {
 		beat(e, t, n, r = this.ctx.currentTime) {
 			let i = this.pan(e, t), a = this.ctx.createGain();
 			if (a.connect(i), n) {
-				let e = Math.floor(this.ctx.sampleRate * .12), t = this.ctx.createBuffer(1, e, this.ctx.sampleRate), n = t.getChannelData(0);
-				for (let t = 0; t < e; t++) n[t] = (Math.random() * 2 - 1) * (1 - t / e) ** 2;
-				let i = this.ctx.createBufferSource();
-				i.buffer = t;
-				let o = this.ctx.createBiquadFilter();
-				o.type = "bandpass", o.frequency.value = 2400, o.Q.value = .9, i.connect(o).connect(a), a.gain.setValueAtTime(.7, r), a.gain.exponentialRampToValueAtTime(.001, r + .14), i.start(r), i.stop(r + .16);
+				let e = Math.floor(this.ctx.sampleRate * .2), t = this.ctx.createBuffer(1, e, this.ctx.sampleRate), n = t.getChannelData(0);
+				for (let t = 0; t < e; t++) n[t] = (Math.random() * 2 - 1) * (1 - t / e);
+				let o = this.ctx.createBufferSource();
+				o.buffer = t;
+				let s = this.ctx.createBiquadFilter();
+				s.type = "highpass", s.frequency.value = 1400, s.Q.value = .7, o.connect(s).connect(a);
+				let c = this.ctx.createOscillator();
+				c.type = "triangle", c.frequency.setValueAtTime(1100, r), c.frequency.exponentialRampToValueAtTime(420, r + .07);
+				let l = this.ctx.createGain();
+				l.gain.setValueAtTime(.8, r), l.gain.exponentialRampToValueAtTime(.001, r + .12), c.connect(l).connect(i), a.gain.setValueAtTime(1.4, r), a.gain.exponentialRampToValueAtTime(.001, r + .2), o.start(r), o.stop(r + .22), c.start(r), c.stop(r + .14);
 			} else {
 				let e = this.ctx.createOscillator();
 				e.type = "sine", e.frequency.setValueAtTime(150, r), e.frequency.exponentialRampToValueAtTime(48, r + .14), e.connect(a), a.gain.setValueAtTime(.9, r), a.gain.exponentialRampToValueAtTime(.001, r + .26), e.start(r), e.stop(r + .3);
@@ -10841,10 +10845,17 @@ var wt, Tt, Et, Dt, Ot = n((() => {
 			for (let [e, t] of Object.entries(r)) this.ensure(e)?.setLevel(t * this.blendScale, n);
 		}
 		hum(e, t) {
-			e === null ? this.goal?.off(t) : E.ctx && E.bus && (this.goal ||= new wt(E.ctx, E.bus), this.goal.set(e, t));
+			e === null ? this.goal?.off(.2) : E.ctx && E.bus && (this.goal ||= new wt(E.ctx, E.bus), this.goal.set(e, t));
+		}
+		previewTimer = null;
+		preview(e, t, n = 1) {
+			this.previewTimer !== null && (clearTimeout(this.previewTimer), this.previewTimer = null), this.blend(e, t, .12), this.previewTimer = window.setTimeout(() => {
+				this.previewTimer = null;
+				for (let e of this.layers.values()) e.setLevel(0, .9);
+			}, n * 1e3);
 		}
 		silence(e = .8) {
-			this.goal?.off(e), this.stopSequence();
+			this.goal?.off(e), this.previewTimer !== null && (clearTimeout(this.previewTimer), this.previewTimer = null), this.stopSequence();
 			for (let t of this.layers.values()) t.setLevel(0, e);
 		}
 		stopSequence() {
@@ -10925,8 +10936,16 @@ function kt(e, t, n, r = [], i = !1) {
 	let se = (0, k.useMemo)(() => l ? Object.keys(c.probabilities).every((e) => Math.abs((l.probabilities[e] ?? 0) - c.probabilities[e]) < 1e-6) : null, [c, l]);
 	(0, k.useEffect)(() => {
 		f(null), m(null), g(null), i && x(!0);
-	}, [c, i]), (0, k.useEffect)(() => {
-		S.current = n, re ? Dt.silence(.8) : Dt.blend(n, c.probabilities);
+	}, [c, i]);
+	let C = (0, k.useRef)(null);
+	(0, k.useEffect)(() => {
+		S.current = n;
+		let e = JSON.stringify([
+			n,
+			c.probabilities,
+			c.amplitudes
+		]), t = C.current;
+		C.current = e, t !== null && t !== e && (re ? Dt.silence(.4) : Dt.preview(n, c.probabilities));
 	}, [
 		n,
 		c,
@@ -10934,9 +10953,9 @@ function kt(e, t, n, r = [], i = !1) {
 	]), (0, k.useEffect)(() => () => {
 		Dt.silence(.5);
 	}, []);
-	let C = (0, k.useMemo)(() => d ? _(d.counts) : null, [d]), ce = (0, k.useMemo)(() => C ? v(C, c.probabilities) : null, [C, c]), le = (0, k.useCallback)((e) => {
+	let ce = (0, k.useMemo)(() => d ? _(d.counts) : null, [d]), le = (0, k.useMemo)(() => ce ? v(ce, c.probabilities) : null, [ce, c]), ue = (0, k.useCallback)((e) => {
 		o(e), ne(null);
-	}, []), ue = (0, k.useCallback)((e) => o((t) => [...t, e]), []), de = (0, k.useCallback)((e) => o((t) => t.filter((t, n) => n !== e)), []), fe = (0, k.useCallback)((e) => {
+	}, []), de = (0, k.useCallback)((e) => o((t) => [...t, e]), []), fe = (0, k.useCallback)((e) => o((t) => t.filter((t, n) => n !== e)), []), me = (0, k.useCallback)((e) => {
 		Dt.stopSequence(), o(e ?? r), f(null), m(null), g(null), ne(null);
 	}, [r]);
 	return oe.current = (e, t) => {
@@ -10969,17 +10988,17 @@ function kt(e, t, n, r = [], i = !1) {
 		idealAgrees: se,
 		result: d,
 		resultLabel: p,
-		measured: C,
-		measuredFidelity: ce,
+		measured: ce,
+		measuredFidelity: le,
 		playback: h,
 		busy: b,
 		error: te,
 		oddsHidden: re,
 		setOddsHidden: x,
-		addOp: ue,
-		removeOp: de,
-		setOps: le,
-		reset: fe,
+		addOp: de,
+		removeOp: fe,
+		setOps: ue,
+		reset: me,
 		bloom: (0, k.useCallback)(async (n, r = {}) => {
 			ee(!0), ne(null), Dt.stopSequence();
 			try {
@@ -11034,10 +11053,10 @@ function kt(e, t, n, r = [], i = !1) {
 				outcome: null,
 				index: e.total,
 				finished: !0
-			} : null), re || Dt.blend(S.current, c.probabilities);
-		}, [c, re]),
+			} : null);
+		}, []),
 		hearOdds: (0, k.useCallback)(() => {
-			x(!1), Dt.blend(S.current, c.probabilities, .5);
+			x(!1), Dt.preview(S.current, c.probabilities, 1.6);
 		}, [c]),
 		code: (0, k.useCallback)((t) => e.qiskitCode(s, t), [e, s])
 	};
@@ -12013,21 +12032,25 @@ function dn({ engine: e, challenge: t, reducedMotion: n, details: r, onNext: i, 
 		t,
 		l.ideal,
 		l.circuit.ops.length
-	]);
+	]), te = (0, fn.useRef)(null);
 	(0, fn.useEffect)(() => {
-		Dt.hum(f === "playing" ? null : ee);
-	}, [ee, f]), (0, fn.useEffect)(() => () => Dt.hum(null), []);
-	let te = (0, fn.useCallback)(async () => {
+		let e = te.current;
+		te.current = {
+			circuit: l.circuit,
+			closeness: ee
+		}, !(!e || e.circuit === l.circuit && e.closeness === ee) && Dt.hum(ee);
+	}, [ee, l.circuit]), (0, fn.useEffect)(() => () => Dt.hum(null), []);
+	let ne = (0, fn.useCallback)(async () => {
 		p("playing"), await l.bloom(t.beats, {
 			noise: t.noisy,
 			moments: t.moments,
 			step: t.step
 		}) || p("build");
-	}, [t, l]), ne = (0, fn.useCallback)(() => l.code(t.beats), [l, t.beats]), re = l.busy || f === "playing", x;
+	}, [t, l]), re = (0, fn.useCallback)(() => l.code(t.beats), [l, t.beats]), x = l.busy || f === "playing", ie;
 	if (f === "result" && l.measured) {
 		let e = It(l.measured, c);
-		x = b ? `Solved. You heard ${e}.` : `You heard ${e}. ${t.noisy ? "" : "Change the mix and Play again."}`, t.noisy && l.measuredFidelity !== null && (x += ` Match to the clean mix: ${Rt(l.measuredFidelity)}`, x += v && l.circuit.ops.length < v.ops ? ` (it was ${Rt(v.fidelity)} with ${v.ops} moves; yours has ${l.circuit.ops.length}).` : ".");
-	} else x = `${t.goal} The hum says: ${pn(ee)}.`;
+		ie = b ? `Solved. You heard ${e}.` : `You heard ${e}. ${t.noisy ? "" : "Change the mix and Play again."}`, t.noisy && l.measuredFidelity !== null && (ie += ` Match to the clean mix: ${Rt(l.measuredFidelity)}`, ie += v && l.circuit.ops.length < v.ops ? ` (it was ${Rt(v.fidelity)} with ${v.ops} moves; yours has ${l.circuit.ops.length}).` : ".");
+	} else ie = `${t.goal} The hum says: ${pn(ee)}.`;
 	return /* @__PURE__ */ (0, I.jsxs)("div", {
 		className: "scene scene--puzzle",
 		children: [
@@ -12055,7 +12078,7 @@ function dn({ engine: e, challenge: t, reducedMotion: n, details: r, onNext: i, 
 				assignment: c,
 				reducedMotion: n,
 				details: r,
-				caption: x
+				caption: ie
 			}),
 			f === "result" && l.result && /* @__PURE__ */ (0, I.jsxs)("div", {
 				className: `verdict${b ? " is-good" : ""}`,
@@ -12109,14 +12132,14 @@ function dn({ engine: e, challenge: t, reducedMotion: n, details: r, onNext: i, 
 				seedNames: s,
 				allowed: t.allowed,
 				ops: l.circuit.ops,
-				disabled: re,
+				disabled: x,
 				showGates: r,
 				onAdd: l.addOp,
 				onRemove: l.removeOp,
 				onReset: () => l.reset(),
 				bloom: {
 					label: f === "playing" ? "Playing…" : "Play",
-					onClick: te
+					onClick: ne
 				},
 				extra: f === "playing" && l.playback && !l.playback.finished ? /* @__PURE__ */ (0, I.jsx)("button", {
 					type: "button",
@@ -12166,7 +12189,7 @@ function dn({ engine: e, challenge: t, reducedMotion: n, details: r, onNext: i, 
 						disabled: !0,
 						onRemove: () => {}
 					}),
-					/* @__PURE__ */ (0, I.jsx)(Jt, { load: ne }),
+					/* @__PURE__ */ (0, I.jsx)(Jt, { load: re }),
 					t.deeper && /* @__PURE__ */ (0, I.jsx)(on, {
 						garden: l,
 						deeper: t.deeper,

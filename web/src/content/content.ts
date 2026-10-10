@@ -249,7 +249,7 @@ export const LESSONS: Lesson[] = [
     'This is a beat studio. It has tracks. On every beat, each track plays one of its two sounds. On this page, Sky plays crickets or rain.',
     'The twist: a track does not have to decide which sound until the beat is played. It can be truly undecided. And two tracks can be tied together so they decide the same way, every time.',
     'You get four moves to shape a track: Swap, Shuffle, Turn, Sync. Then Play rolls the beats and you hear what the tracks decided. Each beat thumps low for the first sound and snaps bright for the hit, so you can follow it with your eyes closed.',
-    'First, learn the moves by ear, one page each. Then solve four puzzles: a hum tells you how close you are. Then build your own beat.',
+    'First, learn the moves by ear, one page each. Then solve four puzzles: after each move, a short chord tells you how close you are. Then build your own beat.',
     'Everything you hear comes from a real quantum circuit being measured. That is the whole trick, and you do not need to know what that means yet.',
   ] },
   { id: 'tracks', title: 'Tracks', text: 'A track plays one of two sounds on every beat. Sky plays crickets with a low thump, or it hits with rain and a bright snap. Press Try it to hear six beats.', show: [], ops: [], beats: 6, hear: 'Six low thumps with crickets. Nothing was changed, so Sky stayed on its first sound every beat.' },
@@ -260,7 +260,7 @@ export const LESSONS: Lesson[] = [
   { id: 'turn2', title: 'Turn, then Shuffle', text: 'The next Shuffle hears the dial. Turn halfway, then Shuffle: every beat is rain.', show: ['split', 'twist'], ops: [{ op: 'split', q: 0 }, { op: 'twist', q: 0, turns: 0.5 }, { op: 'split', q: 0 }], beats: 6, hear: 'Rain on every beat. Without the Turn, two Shuffles would have given crickets on every beat.' },
   { id: 'sync', title: 'Sync', text: 'Sync makes Storm follow Sky: when Sky hits rain, Storm hits thunder.', show: ['flip', 'link'], ops: [{ op: 'flip', q: 0 }, SYNC], beats: 6, hear: 'Rain with thunder on every beat.' },
   { id: 'sync2', title: 'Sync a shuffled track', text: 'Shuffle Sky, then Sync it to Storm: two coin tosses that always agree.', show: ['flip', 'split', 'link'], ops: [{ op: 'split', q: 0 }, SYNC], beats: 8, hear: 'Sometimes crickets with wind, sometimes rain with thunder. Never one without the other.' },
-  { id: 'hum', title: 'The hum', text: 'While you build, the studio hums the odds: the likelier a sound, the louder it hums. In a puzzle a second hum tells you how close you are: rough when far, smooth when you are there. Eyes closed works.', show: ['flip', 'split', 'twist', 'link'], ops: [{ op: 'split', q: 0 }, SYNC], beats: 8, hear: 'That was the pair again, new beats. Press Play any time to roll real beats from the hum. Now try a puzzle.' },
+  { id: 'hum', title: 'The cue', text: 'The studio stays silent until you press Play. Each move gives you one second of the odds: the likelier a sound, the louder it is in that second. In a puzzle a short chord follows it: rough when far from the goal, smooth when you are there. Eyes closed works.', show: ['flip', 'split', 'twist', 'link'], ops: [{ op: 'split', q: 0 }, SYNC], beats: 8, hear: 'That was the pair again, new beats. Make a move and listen for the one-second cue. Then try a puzzle.' },
 ];
 
 export const DEFAULT_STUDIO_ASSIGNMENT: Record<string, string[]> = {

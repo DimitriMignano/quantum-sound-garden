@@ -61,15 +61,17 @@ class GoalHum {
     this.root.connect(this.out); this.upper.connect(this.out); this.out.connect(bus);
     this.root.start(); this.upper.start();
   }
-  /** closeness 0..1 */
-  set(closeness: number, ramp = 0.5): void {
+  /** closeness 0..1: sound the chord for `hold` seconds, then fade. A cue, not a drone. */
+  set(closeness: number, hold = 0.9): void {
     const c = Math.max(0, Math.min(1, closeness));
     const t = this.ctx.currentTime;
     const ratio = 1.4142 + (2 - 1.4142) * c;                // tritone → octave
-    this.upper.frequency.setTargetAtTime(196 * ratio, t, ramp);
-    this.upper.detune.setTargetAtTime((1 - c) * 28, t, ramp); // beating while far
-    this.level = 0.035 + 0.02 * c;
-    this.out.gain.setTargetAtTime(this.level, t, ramp);
+    this.upper.frequency.setTargetAtTime(196 * ratio, t, 0.05);
+    this.upper.detune.setTargetAtTime((1 - c) * 28, t, 0.05); // beating while far
+    this.level = 0.08 + 0.04 * c;
+    this.out.gain.cancelScheduledValues(t);
+    this.out.gain.setTargetAtTime(this.level, t, 0.06);
+    this.out.gain.setTargetAtTime(0, t + hold, 0.25);
   }
   off(ramp = 0.6): void { this.out.gain.setTargetAtTime(0, this.ctx.currentTime, ramp); }
   dispose(): void { try { this.root.stop(); this.upper.stop(); } catch { /* already stopped */ } this.out.disconnect(); }
@@ -92,14 +94,19 @@ class Pulse {
     const dest = this.pan(q, n);
     const g = this.ctx.createGain(); g.connect(dest);
     if (hit) {
-      const len = Math.floor(this.ctx.sampleRate * 0.12);
+      // a snap with a body: bright noise plus a short falling tone, so a hit lands as hard as a thump
+      const len = Math.floor(this.ctx.sampleRate * 0.2);
       const buf = this.ctx.createBuffer(1, len, this.ctx.sampleRate); const d = buf.getChannelData(0);
-      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len) ** 2;
+      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
       const src = this.ctx.createBufferSource(); src.buffer = buf;
-      const bp = this.ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 2400; bp.Q.value = 0.9;
-      src.connect(bp).connect(g);
-      g.gain.setValueAtTime(0.7, when); g.gain.exponentialRampToValueAtTime(0.001, when + 0.14);
-      src.start(when); src.stop(when + 0.16);
+      const hp = this.ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1400; hp.Q.value = 0.7;
+      src.connect(hp).connect(g);
+      const tone = this.ctx.createOscillator(); tone.type = 'triangle';
+      tone.frequency.setValueAtTime(1100, when); tone.frequency.exponentialRampToValueAtTime(420, when + 0.07);
+      const tg = this.ctx.createGain(); tg.gain.setValueAtTime(0.8, when); tg.gain.exponentialRampToValueAtTime(0.001, when + 0.12);
+      tone.connect(tg).connect(dest);
+      g.gain.setValueAtTime(1.4, when); g.gain.exponentialRampToValueAtTime(0.001, when + 0.2);
+      src.start(when); src.stop(when + 0.22); tone.start(when); tone.stop(when + 0.14);
     } else {
       const osc = this.ctx.createOscillator(); osc.type = 'sine';
       osc.frequency.setValueAtTime(150, when); osc.frequency.exponentialRampToValueAtTime(48, when + 0.14);
@@ -136,17 +143,30 @@ export class GardenMixer {
     for (const [id, m] of Object.entries(mass)) this.ensure(id)?.setLevel(m * this.blendScale, ramp);
   }
 
-  /** The closeness hum: a number 0..1 keeps it sounding, null fades it out. */
-  hum(closeness: number | null, ramp?: number): void {
-    if (closeness === null) { this.goal?.off(ramp); return; }
+  /** The closeness cue: a short chord for a number 0..1; null cuts it. */
+  hum(closeness: number | null, hold?: number): void {
+    if (closeness === null) { this.goal?.off(0.2); return; }
     if (!audio.ctx || !audio.bus) return;
     if (!this.goal) this.goal = new GoalHum(audio.ctx, audio.bus);
-    this.goal.set(closeness, ramp);
+    this.goal.set(closeness, hold);
+  }
+
+  private previewTimer: number | null = null;
+
+  /** A one-second taste of the odds after a change, then silence. */
+  preview(assignment: Assignment, probabilities: Record<string, number>, hold = 1.0): void {
+    if (this.previewTimer !== null) { clearTimeout(this.previewTimer); this.previewTimer = null; }
+    this.blend(assignment, probabilities, 0.12);
+    this.previewTimer = window.setTimeout(() => {
+      this.previewTimer = null;
+      for (const inst of this.layers.values()) inst.setLevel(0, 0.9);
+    }, hold * 1000);
   }
 
   /** Everything fades out. */
   silence(ramp = 0.8): void {
     this.goal?.off(ramp);
+    if (this.previewTimer !== null) { clearTimeout(this.previewTimer); this.previewTimer = null; }
     this.stopSequence();
     for (const inst of this.layers.values()) inst.setLevel(0, ramp);
   }
