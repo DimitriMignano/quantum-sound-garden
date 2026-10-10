@@ -4,7 +4,7 @@
 *Start* (sound starts). "Everything you hear is a real Qiskit circuit being measured."
 
 **0:12 – 0:45 · Learn.** Page 2 *A track*: Try it, a car drives by. Page 4 *Shuffle*: Try it three times, the car or rain.
-Page 5 *Shuffle, again*: "two Shuffles cancel; dice never do that." Page 7 *Turn, then Shuffle*: rain, every time.
+Page 5 *Shuffle, again*: "two Shuffles cancel; dice never do that." Page 7 *Shuffle, Turn, Shuffle*: rain, every time.
 "You just heard interference, and nobody said the word." Press *Skip to the puzzles*.
 
 **0:45 – 1:05 · Make It Rain (puzzle 1).** "The hum says: far." Press Swap: the hum locks smooth, "there". Press

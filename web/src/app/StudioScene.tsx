@@ -4,6 +4,7 @@ import { bitstrings, bitOf } from '../engine/outcomes';
 import { APP, DEFAULT_STUDIO_ASSIGNMENT, WHY_BEATS_VARY } from '../content/content';
 import { SOUND_LIBRARY } from '../audio/sounds';
 import { useGarden } from './useGarden';
+import { marginalOne } from '../engine/outcomes';
 import { GardenView } from './GardenView';
 import { Board } from './Board';
 import { CodePanel } from './CodePanel';
@@ -60,7 +61,7 @@ export function StudioScene({ engine, backends, defaultBackendId, details }: Pro
         ))}
       </div>
 
-      <Board seedNames={TRACKS} allowed={['flip', 'split', 'twist', 'link']} turns={[0.5, 0.25, 0.125, -0.25]} ops={garden.circuit.ops} disabled={garden.busy} showGates={details}
+      <Board steady={Array.from({ length: 2 }, (_, q) => { const p = marginalOne(garden.ideal.probabilities, q); return p < 1e-6 || p > 1 - 1e-6; })} seedNames={TRACKS} allowed={['flip', 'split', 'twist', 'link']} turns={[0.5, 0.25, 0.125, -0.25]} ops={garden.circuit.ops} disabled={garden.busy} showGates={details}
         onAdd={garden.addOp} onRemove={garden.removeOp} onReset={() => garden.reset([])}
         bloom={{ label: garden.busy || playing ? 'Playing…' : garden.result ? 'Play again' : 'Play', onClick: play, disabled: !!playing }}
         extra={<>

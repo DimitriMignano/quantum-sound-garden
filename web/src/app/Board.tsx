@@ -11,6 +11,8 @@ interface Props {
   showGates: boolean;
   /** twist amounts offered, in turns (default half and quarter) */
   turns?: number[];
+  /** per track: true when the track is steady (always one sound), so a Turn would do nothing */
+  steady?: boolean[];
   onAdd(op: Op): void;
   onRemove(index: number): void;
   onReset(): void;
@@ -24,7 +26,7 @@ const TURN: Record<string, { label: string; math: string }> = {
 };
 
 /** The board: which track, the four moves, Play, and the mix as beads underneath. Every mix is a circuit. */
-export function Board({ seedNames, allowed, ops, disabled, showGates, turns = [0.5, 0.25], onAdd, onRemove, onReset, bloom, extra }: Props) {
+export function Board({ seedNames, allowed, ops, disabled, showGates, turns = [0.5, 0.25], steady, onAdd, onRemove, onReset, bloom, extra }: Props) {
   const [seed, setSeed] = useState(0);
   const [turn, setTurn] = useState(turns[0]);
   const n = seedNames.length;
@@ -37,7 +39,7 @@ export function Board({ seedNames, allowed, ops, disabled, showGates, turns = [0
       <button key={kind} type="button" className={`move move--${kind}`} disabled={disabled} onClick={() => onAdd(op)} title={a.what} aria-label={`${a.verb}${showGates ? `, the ${a.gate} gate` : ''}: ${a.what}`}>
         <span className="move__verb">{a.verb}</span>
         {kind === 'link' && n > 1 && <span className="move__sub">to {seedNames[other]}</span>}
-        {kind === 'twist' && <span className="move__sub">{TURN[String(turn)]?.label ?? turn} turn</span>}
+        {kind === 'twist' && <span className={`move__sub${steady?.[seed] ? ' move__sub--warn' : ''}`}>{steady?.[seed] ? 'no effect: track is steady' : `${TURN[String(turn)]?.label ?? turn} turn`}</span>}
         {showGates && <span className="move__gate">{a.gate}</span>}
       </button>
     );

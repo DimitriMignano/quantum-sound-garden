@@ -93,3 +93,8 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
   actually played when the board no longer matches the page; the odds preview and the closeness chord are gone (closeness is a
   word on the page); a "Great job!" banner with a two-note ding, Next puzzle or Keep playing. Measured: arrival 0.000 everywhere,
   after a move 0.000, after a Play 0.000, buttons disabled during the sound, ding peak 0.21.
+- 10-10 23:10 founder's screenshot: the "Turn, then Shuffle" page said "Turn halfway, then Shuffle: every Play is rain", the learner
+  did exactly that on a fresh track and got 50/50. The sentence omitted the first Shuffle (a Turn on a steady track does nothing;
+  the dial only exists on a shuffled track). Fixed the copy on the Turn pages (all three moves named, the rule stated), renamed the
+  page "Shuffle, Turn, Shuffle", and the Turn button now reads "no effect: track is steady" whenever the selected track's odds are
+  0 or 1. Verified by hand in Chrome: Turn on a fresh track keeps "always Car"; Shuffle, Turn, Shuffle gives "always Rain".

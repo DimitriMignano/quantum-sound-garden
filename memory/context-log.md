@@ -302,3 +302,22 @@ corrections go in a new entry. Newest at the bottom. Fill every field (`n/a` if 
   the ding is feedback on a Play, so it is allowed; a caption must describe the board, never the page's expectation.
 - Deferred work: a human listening pass; keyboard; phone width.
 - Risks: a 3 s lock on every Play may feel slow to someone who wants to spam Play on a Shuffle page; the thunder cut is a rumble.
+
+### 2026-10-10 23:10 — The Turn page told a half-truth
+- Branch / worktree: `main`
+- Task: the founder followed the page literally ("Turn halfway, then Shuffle") on a fresh track and got a coin toss. The page
+  omitted the first Shuffle; a Turn on a steady track is P(θ)|0⟩ = |0⟩, nothing.
+- Files changed: `web/src/content/content.ts` (Turn and Shuffle-Turn-Shuffle lesson copy; the Turn move's description says
+  "on a steady track it does nothing"), `web/src/app/Board.tsx` (`steady` per track; the Turn button's subtitle becomes
+  "no effect: track is steady"), `web/src/app/{TutorialScene,ChallengeScene,StudioScene}.tsx` (steady computed from the
+  odds: hit chance 0 or 1), `web/src/styles.css`, `README.md`, `docs/DEMO_SCRIPT.md`, `qollab/`, `WORKLOG.md`
+- Verification run: tsc clean; `npm run check` green. Live in Chrome by building by hand on the page: fresh track → Turn hint
+  "no effect: track is steady", Turn keeps "always Car"; Shuffle → hint "½ turn", odds 50/50; Start over, Shuffle, Turn, Shuffle
+  → "always Rain" with beads Shuffle · Turn ½ · Shuffle.
+- Commit hash: this commit (parent 164dfc9)
+- Seams (§22): unchanged
+- Decisions: every instruction names the complete sequence; a move that cannot do anything in the current state says so on
+  the button, because the picture (odds unchanged) is too quiet a signal for a learner.
+- Deferred work: a human listening pass; keyboard; phone width.
+- Risks: "steady" is judged on the hit chance alone (0 or 1); it is exact for one track, and for a track in a Bell pair it reads
+  50/50 and the hint stays off, which is right (a Turn there does change the state).

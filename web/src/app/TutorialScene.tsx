@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { QuantumEngine } from '../engine/types';
 import { assignmentFor, LESSONS, LESSON_TRACKS, type Lesson } from '../content/content';
 import { useGarden } from './useGarden';
+import { marginalOne } from '../engine/outcomes';
 import { nameFor } from '../audio/mixer';
 import { GardenView } from './GardenView';
 import { Board } from './Board';
@@ -84,7 +85,7 @@ export function TutorialScene({ engine, details, onDone }: Props) {
         {!last && <button type="button" className="linklike learn__go" onClick={onDone} disabled={locked}>Skip to the puzzles</button>}
       </div>
 
-      <Board seedNames={trackNames} allowed={lesson.show} ops={garden.circuit.ops} disabled={locked} showGates={details}
+      <Board steady={Array.from({ length: count }, (_, q) => { const p = marginalOne(garden.ideal.probabilities, q); return p < 1e-6 || p > 1 - 1e-6; })} seedNames={trackNames} allowed={lesson.show} ops={garden.circuit.ops} disabled={locked} showGates={details}
         onAdd={(op) => { setPlayed(null); garden.addOp(op); }} onRemove={(i) => { setPlayed(null); garden.removeOp(i); }} onReset={() => { setPlayed(null); garden.reset([]); }}
         bloom={{ label: locked ? 'Playing…' : 'Play', onClick: play }}
         extra={garden.playback && !garden.playback.finished ? <button type="button" className="ghost" onClick={garden.stopPlayback}>Stop</button> : null} />

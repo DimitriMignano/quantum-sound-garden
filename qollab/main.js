@@ -41,9 +41,9 @@ var t = Object.defineProperty, n = (e, t, n) => () => {
 	function ee(e, t, n) {
 		this.props = e, this.context = t, this.refs = v, this.updater = n || g;
 	}
-	var x = ee.prototype = new b();
-	x.constructor = ee, _(x, y.prototype), x.isPureReactComponent = !0;
-	var te = Array.isArray;
+	var te = ee.prototype = new b();
+	te.constructor = ee, _(te, y.prototype), te.isPureReactComponent = !0;
+	var x = Array.isArray;
 	function ne() {}
 	var S = {
 		H: null,
@@ -114,12 +114,12 @@ var t = Object.defineProperty, n = (e, t, n) => () => {
 				case d: return c = e._init, le(c(e._payload), r, i, a, o);
 			}
 		}
-		if (c) return o = o(e), c = a === "" ? "." + se(e, 0) : a, te(o) ? (i = "", c != null && (i = c.replace(w, "$&/") + "/"), le(o, r, i, "", function(e) {
+		if (c) return o = o(e), c = a === "" ? "." + se(e, 0) : a, x(o) ? (i = "", c != null && (i = c.replace(w, "$&/") + "/"), le(o, r, i, "", function(e) {
 			return e;
 		})) : o != null && (ae(o) && (o = ie(o, i + (o.key == null || e && e.key === o.key ? "" : ("" + o.key).replace(w, "$&/") + "/") + c)), r.push(o)), 1;
 		c = 0;
 		var l = a === "" ? "." : a + ":";
-		if (te(e)) for (var u = 0; u < e.length; u++) a = e[u], s = l + se(a, u), c += le(a, r, i, s, o);
+		if (x(e)) for (var u = 0; u < e.length; u++) a = e[u], s = l + se(a, u), c += le(a, r, i, s, o);
 		else if (u = h(e), typeof u == "function") for (e = u.call(e), u = 0; !(a = e.next()).done;) a = a.value, s = l + se(a, u++), c += le(a, r, i, s, o);
 		else if (s === "object") {
 			if (typeof e.then == "function") return le(ce(e), r, i, a, o);
@@ -364,25 +364,25 @@ var t = Object.defineProperty, n = (e, t, n) => () => {
 	}
 	function ee(e) {
 		if (h = !1, b(e), !m) {
-			if (n(c) !== null) m = !0, x || (x = !0, ie());
+			if (n(c) !== null) m = !0, te || (te = !0, ie());
 			else {
 				var t = n(l);
 				t !== null && w(ee, t.startTime - e);
 			}
 		}
 	}
-	var x = !1, te = -1, ne = 5, S = -1;
+	var te = !1, x = -1, ne = 5, S = -1;
 	function re() {
 		return g ? !0 : !(e.unstable_now() - S < ne);
 	}
 	function C() {
-		if (g = !1, x) {
+		if (g = !1, te) {
 			var t = e.unstable_now();
 			S = t;
 			var i = !0;
 			try {
 				a: {
-					m = !1, h && (h = !1, v(te), te = -1), p = !0;
+					m = !1, h && (h = !1, v(x), x = -1), p = !0;
 					var a = f;
 					try {
 						b: {
@@ -412,7 +412,7 @@ var t = Object.defineProperty, n = (e, t, n) => () => {
 					i = void 0;
 				}
 			} finally {
-				i ? ie() : x = !1;
+				i ? ie() : te = !1;
 			}
 		}
 	}
@@ -429,7 +429,7 @@ var t = Object.defineProperty, n = (e, t, n) => () => {
 		_(C, 0);
 	};
 	function w(t, n) {
-		te = _(function() {
+		x = _(function() {
 			t(e.unstable_now());
 		}, n);
 	}
@@ -497,7 +497,7 @@ var t = Object.defineProperty, n = (e, t, n) => () => {
 			startTime: a,
 			expirationTime: s,
 			sortIndex: -1
-		}, a > o ? (r.sortIndex = a, t(l, r), n(c) === null && r === n(l) && (h ? (v(te), te = -1) : h = !0, w(ee, a - o))) : (r.sortIndex = s, t(c, r), m || p || (m = !0, x || (x = !0, ie()))), r;
+		}, a > o ? (r.sortIndex = a, t(l, r), n(c) === null && r === n(l) && (h ? (v(x), x = -1) : h = !0, w(ee, a - o))) : (r.sortIndex = s, t(c, r), m || p || (m = !0, te || (te = !0, ie()))), r;
 	}, e.unstable_shouldYield = re, e.unstable_wrapCallback = function(e) {
 		var t = f;
 		return function() {
@@ -794,12 +794,12 @@ var t = Object.defineProperty, n = (e, t, n) => () => {
 			default: throw Error(i(559));
 		}
 	}
-	var ee = null, x = null;
-	function te(e, t, n) {
+	var ee = null, te = null;
+	function x(e, t, n) {
 		return e === n || e === t && (ee = e, !0);
 	}
 	function ne(e, t, n) {
-		return e === n ? (x = e, !1) : e === t && (x !== null && (ee = e), !0);
+		return e === n ? (te = e, !1) : e === t && (te !== null && (ee = e), !0);
 	}
 	function S(e) {
 		if (e === null) return null;
@@ -7965,7 +7965,7 @@ var t = Object.defineProperty, n = (e, t, n) => () => {
 			}
 			return a;
 		}
-		return e & Node.DOCUMENT_POSITION_PRECEDING ? ((t = !!a) && !(t = a === n) && (t = re(n, a, S), t === null ? t = !1 : (h(t, !0, te, a, n), a = ee, ee = null, t = a !== null)), t) : e & Node.DOCUMENT_POSITION_FOLLOWING ? ((t = !!a) && !(t = a === r) && (t = re(r, a, S), t === null ? t = !1 : (h(t, !0, ne, a, r), a = ee, x = ee = null, t = a !== null)), t) : !1;
+		return e & Node.DOCUMENT_POSITION_PRECEDING ? ((t = !!a) && !(t = a === n) && (t = re(n, a, S), t === null ? t = !1 : (h(t, !0, x, a, n), a = ee, ee = null, t = a !== null)), t) : e & Node.DOCUMENT_POSITION_FOLLOWING ? ((t = !!a) && !(t = a === r) && (t = re(r, a, S), t === null ? t = !1 : (h(t, !0, ne, a, r), a = ee, te = ee = null, t = a !== null)), t) : !1;
 	}
 	function Zp(e, t) {
 		var n = e.ownerDocument.createRange();
@@ -9104,7 +9104,7 @@ function ee(e) {
 		im: r
 	};
 }
-function x(e, t, n, r, i, a) {
+function te(e, t, n, r, i, a) {
 	let { re: o, im: s } = e, c = o.length, l = 1 << t;
 	for (let e = 0; e < c; e++) {
 		if (e & l) continue;
@@ -9112,7 +9112,7 @@ function x(e, t, n, r, i, a) {
 		o[e] = n[0] * c - n[1] * u + r[0] * d - r[1] * f, s[e] = n[0] * u + n[1] * c + r[0] * f + r[1] * d, o[t] = i[0] * c - i[1] * u + a[0] * d - a[1] * f, s[t] = i[0] * u + i[1] * c + a[0] * f + a[1] * d;
 	}
 }
-function te(e, t) {
+function x(e, t) {
 	switch (t.op) {
 		case "flip":
 			w.x(e, t.q);
@@ -9128,7 +9128,7 @@ function te(e, t) {
 }
 function ne(e) {
 	let t = ee(e.nQubits);
-	for (let n of e.ops) te(t, n);
+	for (let n of e.ops) x(t, n);
 	if (e.basis === "x") for (let n = 0; n < e.nQubits; n++) w.h(t, n);
 	return t;
 }
@@ -9171,7 +9171,7 @@ function ae(e, t, n, r) {
 	};
 	for (let s = 0; s < t; s++) {
 		let t = ee(e.nQubits);
-		for (let i of e.ops) te(t, i), i.op === "link" ? (r() < n.p2 && o(t, i.control), r() < n.p2 && o(t, i.target)) : r() < n.p1 && o(t, i.q);
+		for (let i of e.ops) x(t, i), i.op === "link" ? (r() < n.p2 && o(t, i.control), r() < n.p2 && o(t, i.target)) : r() < n.p1 && o(t, i.q);
 		if (e.basis === "x") for (let i = 0; i < e.nQubits; i++) w.h(t, i), r() < n.p1 && o(t, i);
 		let s = S(t), c = r(), l = 0, u = 0;
 		for (let e = 0; e < i.length; e++) {
@@ -9190,19 +9190,19 @@ function ae(e, t, n, r) {
 var oe, w, se = n((() => {
 	b(), oe = Math.SQRT1_2, w = {
 		x(e, t) {
-			x(e, t, [0, 0], [1, 0], [1, 0], [0, 0]);
+			te(e, t, [0, 0], [1, 0], [1, 0], [0, 0]);
 		},
 		y(e, t) {
-			x(e, t, [0, 0], [0, -1], [0, 1], [0, 0]);
+			te(e, t, [0, 0], [0, -1], [0, 1], [0, 0]);
 		},
 		z(e, t) {
-			x(e, t, [1, 0], [0, 0], [0, 0], [-1, 0]);
+			te(e, t, [1, 0], [0, 0], [0, 0], [-1, 0]);
 		},
 		h(e, t) {
-			x(e, t, [oe, 0], [oe, 0], [oe, 0], [-oe, 0]);
+			te(e, t, [oe, 0], [oe, 0], [oe, 0], [-oe, 0]);
 		},
 		p(e, t, n) {
-			x(e, t, [1, 0], [0, 0], [0, 0], [Math.cos(n), Math.sin(n)]);
+			te(e, t, [1, 0], [0, 0], [0, 0], [Math.cos(n), Math.sin(n)]);
 		},
 		cx(e, t, n) {
 			let { re: r, im: i } = e, a = 1 << t, o = 1 << n;
@@ -9646,7 +9646,7 @@ var O, k, ke, Ae, je, Me, Ne, Pe, Fe, Ie, Le, Re, ze, Be = n((() => {
 		twist: {
 			verb: "Turn",
 			gate: "P(θ)",
-			what: "Turns a hidden dial on a shuffled track. You hear no change until the next Shuffle."
+			what: "Turns a hidden dial on a shuffled track (on a steady track it does nothing). You hear no change until the next Shuffle."
 		},
 		link: {
 			verb: "Sync",
@@ -9983,7 +9983,7 @@ var O, k, ke, Ae, je, Me, Ne, Pe, Fe, Ie, Le, Re, ze, Be = n((() => {
 			id: "turn",
 			title: "Turn",
 			tracks: 1,
-			text: "Turn moves a hidden dial on a shuffled track. On its own you hear no change at all: still a coin toss.",
+			text: "Turn moves a hidden dial, and the dial only exists on a shuffled track: on a steady track a Turn does nothing. Shuffle, then Turn halfway. You hear no change at all: still a coin toss.",
 			show: ["split", "twist"],
 			ops: [{
 				op: "split",
@@ -9998,9 +9998,9 @@ var O, k, ke, Ae, je, Me, Ne, Pe, Fe, Ie, Le, Re, ze, Be = n((() => {
 		},
 		{
 			id: "turn2",
-			title: "Turn, then Shuffle",
+			title: "Shuffle, Turn, Shuffle",
 			tracks: 1,
-			text: "The next Shuffle hears the dial. Turn halfway, then Shuffle: every Play is rain.",
+			text: "The next Shuffle hears the dial. All three moves, in this order: Shuffle, Turn halfway, Shuffle again. Every Play is rain. Skip the first Shuffle and the Turn has nothing to turn.",
 			show: ["split", "twist"],
 			ops: [
 				{
@@ -10018,7 +10018,7 @@ var O, k, ke, Ae, je, Me, Ne, Pe, Fe, Ie, Le, Re, ze, Be = n((() => {
 				}
 			],
 			beats: 6,
-			hear: "Rain, every time. Without the Turn, two Shuffles would have given the car every time."
+			hear: "Rain, every time. Without the Turn in the middle, two Shuffles would have given the car every time."
 		},
 		{
 			id: "sync",
@@ -11138,14 +11138,14 @@ function Vt(e, t, n, r = [], i = !1) {
 	let [a, o] = (0, N.useState)(r), s = (0, N.useMemo)(() => ({
 		nQubits: t,
 		ops: a
-	}), [t, a]), c = (0, N.useMemo)(() => fe(s), [s]), [l, u] = (0, N.useState)(null), [d, f] = (0, N.useState)(null), [p, m] = (0, N.useState)(null), [h, g] = (0, N.useState)(null), [b, ee] = (0, N.useState)(!1), [x, te] = (0, N.useState)(null), [ne, S] = (0, N.useState)(i), re = (0, N.useRef)([]), C = (0, N.useRef)(n), ie = (0, N.useRef)(.9), ae = (0, N.useRef)(() => {});
+	}), [t, a]), c = (0, N.useMemo)(() => fe(s), [s]), [l, u] = (0, N.useState)(null), [d, f] = (0, N.useState)(null), [p, m] = (0, N.useState)(null), [h, g] = (0, N.useState)(null), [b, ee] = (0, N.useState)(!1), [te, x] = (0, N.useState)(null), [ne, S] = (0, N.useState)(i), re = (0, N.useRef)([]), C = (0, N.useRef)(n), ie = (0, N.useRef)(.9), ae = (0, N.useRef)(() => {});
 	(0, N.useEffect)(() => {
 		let t = !0, n = setTimeout(async () => {
 			try {
 				let n = await e.ideal(s);
 				t && u(n.source === "qiskit" ? n : null);
 			} catch (e) {
-				t && (u(null), te(e instanceof Error ? e.message : String(e)));
+				t && (u(null), x(e instanceof Error ? e.message : String(e)));
 			}
 		}, 120);
 		return () => {
@@ -11161,9 +11161,9 @@ function Vt(e, t, n, r = [], i = !1) {
 		zt.silence(.5);
 	}, []);
 	let w = (0, N.useMemo)(() => d ? _(d.counts) : null, [d]), se = (0, N.useMemo)(() => w ? v(w, c.probabilities) : null, [w, c]), ce = (0, N.useCallback)((e) => {
-		o(e), te(null);
+		o(e), x(null);
 	}, []), le = (0, N.useCallback)((e) => o((t) => [...t, e]), []), ue = (0, N.useCallback)((e) => o((t) => t.filter((t, n) => n !== e)), []), de = (0, N.useCallback)((e) => {
-		zt.stopSequence(), o(e ?? r), f(null), m(null), g(null), te(null);
+		zt.stopSequence(), o(e ?? r), f(null), m(null), g(null), x(null);
 	}, [r]);
 	return ae.current = (e, t) => {
 		g({
@@ -11199,7 +11199,7 @@ function Vt(e, t, n, r = [], i = !1) {
 		measuredFidelity: se,
 		playback: h,
 		busy: b,
-		error: x,
+		error: te,
 		oddsHidden: ne,
 		setOddsHidden: S,
 		addOp: le,
@@ -11207,7 +11207,7 @@ function Vt(e, t, n, r = [], i = !1) {
 		setOps: ce,
 		reset: de,
 		bloom: (0, N.useCallback)(async (n, r = {}) => {
-			ee(!0), te(null), zt.stopSequence();
+			ee(!0), x(null), zt.stopSequence();
 			try {
 				let i = r.noise ? me : void 0, a = r.basis ?? "z", o;
 				if (r.mixture && r.mixture.length > 1) {
@@ -11234,7 +11234,7 @@ function Vt(e, t, n, r = [], i = !1) {
 				let c = o.memory && o.memory.length === o.shots ? o.memory : y(o.counts, o.shots * 7919 + o.elapsedMs), l = Rt.thin(c, r.moments ?? Math.min(24, o.shots));
 				return re.current = l, ie.current = r.step ?? .9, ae.current(l, ie.current), o;
 			} catch (e) {
-				return te(e instanceof Se || e instanceof Error ? e.message : String(e)), null;
+				return x(e instanceof Se || e instanceof Error ? e.message : String(e)), null;
 			} finally {
 				ee(!1);
 			}
@@ -11464,33 +11464,33 @@ var Xt, Zt, Qt = n((() => {
 }));
 //#endregion
 //#region src/app/Board.tsx
-function $t({ seedNames: e, allowed: t, ops: n, disabled: r, showGates: i, turns: a = [.5, .25], onAdd: o, onRemove: s, onReset: c, bloom: l, extra: u }) {
-	let [d, f] = (0, en.useState)(0), [p, m] = (0, en.useState)(a[0]), h = e.length, g = h > 1 ? (d + 1) % h : d, _ = (n, a) => {
+function $t({ seedNames: e, allowed: t, ops: n, disabled: r, showGates: i, turns: a = [.5, .25], steady: o, onAdd: s, onRemove: c, onReset: l, bloom: u, extra: d }) {
+	let [f, p] = (0, en.useState)(0), [m, h] = (0, en.useState)(a[0]), g = e.length, _ = g > 1 ? (f + 1) % g : f, v = (n, a) => {
 		if (!t.includes(n)) return null;
-		let s = k[n];
+		let c = k[n];
 		return /* @__PURE__ */ (0, tn.jsxs)("button", {
 			type: "button",
 			className: `move move--${n}`,
 			disabled: r,
-			onClick: () => o(a),
-			title: s.what,
-			"aria-label": `${s.verb}${i ? `, the ${s.gate} gate` : ""}: ${s.what}`,
+			onClick: () => s(a),
+			title: c.what,
+			"aria-label": `${c.verb}${i ? `, the ${c.gate} gate` : ""}: ${c.what}`,
 			children: [
 				/* @__PURE__ */ (0, tn.jsx)("span", {
 					className: "move__verb",
-					children: s.verb
+					children: c.verb
 				}),
-				n === "link" && h > 1 && /* @__PURE__ */ (0, tn.jsxs)("span", {
+				n === "link" && g > 1 && /* @__PURE__ */ (0, tn.jsxs)("span", {
 					className: "move__sub",
-					children: ["to ", e[g]]
+					children: ["to ", e[_]]
 				}),
-				n === "twist" && /* @__PURE__ */ (0, tn.jsxs)("span", {
-					className: "move__sub",
-					children: [nn[String(p)]?.label ?? p, " turn"]
+				n === "twist" && /* @__PURE__ */ (0, tn.jsx)("span", {
+					className: `move__sub${o?.[f] ? " move__sub--warn" : ""}`,
+					children: o?.[f] ? "no effect: track is steady" : `${nn[String(m)]?.label ?? m} turn`
 				}),
 				i && /* @__PURE__ */ (0, tn.jsx)("span", {
 					className: "move__gate",
-					children: s.gate
+					children: c.gate
 				})
 			]
 		}, n);
@@ -11498,7 +11498,7 @@ function $t({ seedNames: e, allowed: t, ops: n, disabled: r, showGates: i, turns
 	return /* @__PURE__ */ (0, tn.jsxs)("div", {
 		className: "board",
 		children: [
-			h > 1 && /* @__PURE__ */ (0, tn.jsxs)("div", {
+			g > 1 && /* @__PURE__ */ (0, tn.jsxs)("div", {
 				className: "board__seeds",
 				role: "group",
 				"aria-label": "Which track the next move applies to",
@@ -11507,69 +11507,69 @@ function $t({ seedNames: e, allowed: t, ops: n, disabled: r, showGates: i, turns
 					children: "Moves apply to"
 				}), e.map((e, t) => /* @__PURE__ */ (0, tn.jsx)("button", {
 					type: "button",
-					className: `chip${d === t ? " is-on" : ""}`,
-					"aria-pressed": d === t,
+					className: `chip${f === t ? " is-on" : ""}`,
+					"aria-pressed": f === t,
 					disabled: r,
-					onClick: () => f(t),
+					onClick: () => p(t),
 					children: e
 				}, t))]
 			}),
 			/* @__PURE__ */ (0, tn.jsxs)("div", {
 				className: "board__moves",
 				children: [
-					_("flip", {
+					v("flip", {
 						op: "flip",
-						q: d
+						q: f
 					}),
-					_("split", {
+					v("split", {
 						op: "split",
-						q: d
+						q: f
 					}),
 					t.includes("twist") && /* @__PURE__ */ (0, tn.jsxs)("div", {
 						className: "move-group",
-						children: [_("twist", {
+						children: [v("twist", {
 							op: "twist",
-							q: d,
-							turns: p
+							q: f,
+							turns: m
 						}), /* @__PURE__ */ (0, tn.jsx)("div", {
 							className: "move-group__amounts",
 							role: "group",
 							"aria-label": "Twist amount",
 							children: a.map((e) => /* @__PURE__ */ (0, tn.jsxs)("button", {
 								type: "button",
-								className: `chip chip--small${p === e ? " is-on" : ""}`,
-								"aria-pressed": p === e,
+								className: `chip chip--small${m === e ? " is-on" : ""}`,
+								"aria-pressed": m === e,
 								disabled: r,
-								onClick: () => m(e),
+								onClick: () => h(e),
 								title: `${nn[String(e)]?.label ?? e} turn${i ? ` (${nn[String(e)]?.math})` : ""}`,
 								children: [nn[String(e)]?.label ?? e, i && /* @__PURE__ */ (0, tn.jsxs)("small", { children: [" ", nn[String(e)]?.math] })]
 							}, e))
 						})]
 					}),
-					h > 1 && _("link", {
+					g > 1 && v("link", {
 						op: "link",
-						control: d,
-						target: g
+						control: f,
+						target: _
 					}),
 					/* @__PURE__ */ (0, tn.jsxs)("div", {
 						className: "board__bloom",
 						children: [/* @__PURE__ */ (0, tn.jsx)("button", {
 							type: "button",
 							className: "primary bloom",
-							onClick: l.onClick,
-							disabled: r || l.disabled,
-							children: l.label
-						}), u]
+							onClick: u.onClick,
+							disabled: r || u.disabled,
+							children: u.label
+						}), d]
 					})
 				]
 			}),
 			/* @__PURE__ */ (0, tn.jsx)(F, {
-				nQubits: h,
+				nQubits: g,
 				seedNames: e,
 				ops: n,
 				showGates: i,
 				disabled: r,
-				onRemove: s
+				onRemove: c
 			}),
 			n.length > 0 && /* @__PURE__ */ (0, tn.jsx)("div", {
 				className: "board__foot",
@@ -11577,7 +11577,7 @@ function $t({ seedNames: e, allowed: t, ops: n, disabled: r, showGates: i, turns
 					type: "button",
 					className: "linklike",
 					disabled: r,
-					onClick: c,
+					onClick: l,
 					children: "Start over"
 				})
 			})
@@ -11647,7 +11647,7 @@ function ln({ engine: e, details: t, onDone: n }) {
 	let r = {
 		moments: 1,
 		step: 3
-	}, [i, a] = (0, un.useState)(0), o = Re[i].tracks ?? 2, s = (0, un.useMemo)(() => Ie.slice(0, o), [o]), c = (0, un.useMemo)(() => s.map((e) => e.name), [s]), l = (0, un.useMemo)(() => Oe(s), [s]), u = Vt(e, o, l, []), [d, f] = (0, un.useState)(null), [p, m] = (0, un.useState)(null), h = Re[i], g = i === Re.length - 1;
+	}, [i, a] = (0, un.useState)(0), o = Re[i].tracks ?? 2, s = (0, un.useMemo)(() => Ie.slice(0, o), [o]), c = (0, un.useMemo)(() => s.map((e) => e.name), [s]), l = (0, un.useMemo)(() => Oe(s), [s]), u = Vt(e, o, l, []), [d, f] = (0, un.useState)(null), [p, m] = (0, un.useState)(null), g = Re[i], _ = i === Re.length - 1;
 	(0, un.useEffect)(() => {
 		if (!d || !dn(u.circuit.ops, d.ops)) return;
 		let e = d;
@@ -11658,19 +11658,19 @@ function ln({ engine: e, details: t, onDone: n }) {
 			t && m(e.id);
 		});
 	}, [d, u]);
-	let _ = () => {
-		m(null), u.reset(h.ops), f(h);
-	}, v = () => {
-		m(null), u.bloom(h.beats, {
+	let v = () => {
+		m(null), u.reset(g.ops), f(g);
+	}, y = () => {
+		m(null), u.bloom(g.beats, {
 			...r,
-			label: h.title
+			label: g.title
 		}).then((e) => {
-			e && m(h.id);
+			e && m(g.id);
 		});
-	}, y = (e) => {
+	}, b = (e) => {
 		a(e), m(null), u.reset([]);
 	};
-	if (h.intro) return /* @__PURE__ */ (0, I.jsxs)("div", {
+	if (g.intro) return /* @__PURE__ */ (0, I.jsxs)("div", {
 		className: "scene scene--learn",
 		children: [
 			/* @__PURE__ */ (0, I.jsxs)("header", {
@@ -11685,17 +11685,17 @@ function ln({ engine: e, details: t, onDone: n }) {
 							Re.length
 						]
 					}),
-					/* @__PURE__ */ (0, I.jsx)("h2", { children: h.title }),
+					/* @__PURE__ */ (0, I.jsx)("h2", { children: g.title }),
 					/* @__PURE__ */ (0, I.jsx)("p", {
 						className: "lesson__text",
-						children: h.text
+						children: g.text
 					})
 				]
 			}),
 			/* @__PURE__ */ (0, I.jsx)("section", {
 				className: "intro",
-				"aria-label": h.title,
-				children: h.intro.map((e, t) => /* @__PURE__ */ (0, I.jsxs)("p", {
+				"aria-label": g.title,
+				children: g.intro.map((e, t) => /* @__PURE__ */ (0, I.jsxs)("p", {
 					className: "intro__line",
 					children: [/* @__PURE__ */ (0, I.jsx)("span", {
 						className: "intro__num",
@@ -11709,7 +11709,7 @@ function ln({ engine: e, details: t, onDone: n }) {
 				children: [/* @__PURE__ */ (0, I.jsx)("button", {
 					type: "button",
 					className: "primary",
-					onClick: () => y(i + 1),
+					onClick: () => b(i + 1),
 					children: "Learn the moves"
 				}), /* @__PURE__ */ (0, I.jsx)("button", {
 					type: "button",
@@ -11720,7 +11720,7 @@ function ln({ engine: e, details: t, onDone: n }) {
 			})
 		]
 	});
-	let b = dn(u.circuit.ops, h.ops), ee = !!u.playback && !u.playback.finished, x = u.busy || ee, te = u.playback?.finished && u.result?.memory?.[0] ? Ft(l, u.result.memory[0]) : null, ne = u.playback?.finished && p === h.id && b ? h.hear : te ? `You heard: ${te}. This is your own mix, not the page’s: the tile shows its odds. Try it loads the page’s mix again.` : x ? void 0 : h.show.length === 0 ? "Press Try it." : `Press Try it, or build it yourself with ${h.show.length === 1 ? "the move" : "the moves"} below and press Play.`;
+	let ee = dn(u.circuit.ops, g.ops), te = !!u.playback && !u.playback.finished, x = u.busy || te, ne = u.playback?.finished && u.result?.memory?.[0] ? Ft(l, u.result.memory[0]) : null, S = u.playback?.finished && p === g.id && ee ? g.hear : ne ? `You heard: ${ne}. This is your own mix, not the page’s: the tile shows its odds. Try it loads the page’s mix again.` : x ? void 0 : g.show.length === 0 ? "Press Try it." : `Press Try it, or build it yourself with ${g.show.length === 1 ? "the move" : "the moves"} below and press Play.`;
 	return /* @__PURE__ */ (0, I.jsxs)("div", {
 		className: "scene scene--learn",
 		children: [
@@ -11736,10 +11736,10 @@ function ln({ engine: e, details: t, onDone: n }) {
 							Re.length
 						]
 					}),
-					/* @__PURE__ */ (0, I.jsx)("h2", { children: h.title }),
+					/* @__PURE__ */ (0, I.jsx)("h2", { children: g.title }),
 					/* @__PURE__ */ (0, I.jsx)("p", {
 						className: "lesson__text",
-						children: h.text
+						children: g.text
 					})
 				]
 			}),
@@ -11748,7 +11748,7 @@ function ln({ engine: e, details: t, onDone: n }) {
 				tracks: s,
 				assignment: l,
 				details: t,
-				caption: ne
+				caption: S
 			}),
 			/* @__PURE__ */ (0, I.jsxs)("div", {
 				className: "lesson__actions",
@@ -11756,32 +11756,32 @@ function ln({ engine: e, details: t, onDone: n }) {
 					/* @__PURE__ */ (0, I.jsx)("button", {
 						type: "button",
 						className: "primary",
-						onClick: _,
+						onClick: v,
 						disabled: x,
 						children: "Try it"
 					}),
 					i > 0 && /* @__PURE__ */ (0, I.jsx)("button", {
 						type: "button",
 						className: "ghost",
-						onClick: () => y(i - 1),
+						onClick: () => b(i - 1),
 						disabled: x,
 						children: "Back"
 					}),
-					!g && /* @__PURE__ */ (0, I.jsx)("button", {
+					!_ && /* @__PURE__ */ (0, I.jsx)("button", {
 						type: "button",
-						className: `ghost${p === h.id ? " is-next" : ""}`,
-						onClick: () => y(i + 1),
+						className: `ghost${p === g.id ? " is-next" : ""}`,
+						onClick: () => b(i + 1),
 						disabled: x,
 						children: "Next"
 					}),
-					g && /* @__PURE__ */ (0, I.jsx)("button", {
+					_ && /* @__PURE__ */ (0, I.jsx)("button", {
 						type: "button",
 						className: "primary learn__go",
 						onClick: n,
 						disabled: x,
 						children: "Start the puzzles"
 					}),
-					!g && /* @__PURE__ */ (0, I.jsx)("button", {
+					!_ && /* @__PURE__ */ (0, I.jsx)("button", {
 						type: "button",
 						className: "linklike learn__go",
 						onClick: n,
@@ -11791,8 +11791,12 @@ function ln({ engine: e, details: t, onDone: n }) {
 				]
 			}),
 			/* @__PURE__ */ (0, I.jsx)($t, {
+				steady: Array.from({ length: o }, (e, t) => {
+					let n = h(u.ideal.probabilities, t);
+					return n < 1e-6 || n > 1 - 1e-6;
+				}),
 				seedNames: c,
-				allowed: h.show,
+				allowed: g.show,
 				ops: u.circuit.ops,
 				disabled: x,
 				showGates: t,
@@ -11807,7 +11811,7 @@ function ln({ engine: e, details: t, onDone: n }) {
 				},
 				bloom: {
 					label: x ? "Playing…" : "Play",
-					onClick: v
+					onClick: y
 				},
 				extra: u.playback && !u.playback.finished ? /* @__PURE__ */ (0, I.jsx)("button", {
 					type: "button",
@@ -11816,12 +11820,12 @@ function ln({ engine: e, details: t, onDone: n }) {
 					children: "Stop"
 				}) : null
 			}),
-			t && /* @__PURE__ */ (0, I.jsx)(an, { load: () => u.code(h.beats) })
+			t && /* @__PURE__ */ (0, I.jsx)(an, { load: () => u.code(g.beats) })
 		]
 	});
 }
 var un, I, dn, fn = n((() => {
-	un = o(), Be(), Ht(), Bt(), Yt(), rn(), cn(), I = He(), dn = (e, t) => JSON.stringify(e) === JSON.stringify(t);
+	un = o(), Be(), Ht(), b(), Bt(), Yt(), rn(), cn(), I = He(), dn = (e, t) => JSON.stringify(e) === JSON.stringify(t);
 }));
 //#endregion
 //#region src/app/ResultNote.tsx
@@ -11935,26 +11939,26 @@ function xn(e, t, n) {
 	return r * Math.max(0, 1 - i / a);
 }
 function Sn({ engine: e, challenge: t, details: n, onNext: r, onSolved: i, isLast: a }) {
-	let o = (0, Cn.useMemo)(() => t.tracks.map((e) => e.name), [t]), s = (0, Cn.useMemo)(() => Oe(t.tracks), [t]), c = Vt(e, t.tracks.length, s, t.start), [l, u] = (0, Cn.useState)(0), [d, f] = (0, Cn.useState)("build"), [p, m] = (0, Cn.useState)(!1), [h, g] = (0, Cn.useState)(!1), [_, v] = (0, Cn.useState)(null);
+	let o = (0, Cn.useMemo)(() => t.tracks.map((e) => e.name), [t]), s = (0, Cn.useMemo)(() => Oe(t.tracks), [t]), c = Vt(e, t.tracks.length, s, t.start), [l, u] = (0, Cn.useState)(0), [d, f] = (0, Cn.useState)("build"), [p, m] = (0, Cn.useState)(!1), [g, _] = (0, Cn.useState)(!1), [v, y] = (0, Cn.useState)(null);
 	(0, Cn.useEffect)(() => {
 		f("build");
 	}, [c.circuit]), (0, Cn.useEffect)(() => {
 		c.playback?.finished && d === "playing" && f("result");
 	}, [c.playback, d]);
-	let y = (0, Cn.useMemo)(() => t.success(c.ideal, c.circuit, c.measuredFidelity ?? void 0), [
+	let b = (0, Cn.useMemo)(() => t.success(c.ideal, c.circuit, c.measuredFidelity ?? void 0), [
 		t,
 		c.ideal,
 		c.circuit,
 		c.measuredFidelity
 	]);
 	(0, Cn.useEffect)(() => {
-		d === "result" && y && (m(!0), i());
+		d === "result" && b && (m(!0), i());
 	}, [
 		d,
-		y,
+		b,
 		i
 	]), (0, Cn.useEffect)(() => {
-		d === "result" && t.noisy && c.measuredFidelity !== null && _ === null && c.circuit.ops.length === t.start.length && v({
+		d === "result" && t.noisy && c.measuredFidelity !== null && v === null && c.circuit.ops.length === t.start.length && y({
 			fidelity: c.measuredFidelity,
 			ops: c.circuit.ops.length
 		});
@@ -11963,27 +11967,27 @@ function Sn({ engine: e, challenge: t, details: n, onNext: r, onSolved: i, isLas
 		t,
 		c.measuredFidelity,
 		c.circuit.ops.length,
-		_
+		v
 	]);
-	let b = (0, Cn.useMemo)(() => xn(t, c.ideal.probabilities, c.circuit.ops.length), [
+	let ee = (0, Cn.useMemo)(() => xn(t, c.ideal.probabilities, c.circuit.ops.length), [
 		t,
 		c.ideal,
 		c.circuit.ops.length
-	]), [ee, x] = (0, Cn.useState)(!1), te = (0, Cn.useRef)(!1);
+	]), [te, x] = (0, Cn.useState)(!1), ne = (0, Cn.useRef)(!1);
 	(0, Cn.useEffect)(() => {
-		d === "result" && y && !te.current && (te.current = !0, x(!0), zt.ding());
-	}, [d, y]);
-	let ne = (0, Cn.useCallback)(async () => {
+		d === "result" && b && !ne.current && (ne.current = !0, x(!0), zt.ding());
+	}, [d, b]);
+	let S = (0, Cn.useCallback)(async () => {
 		f("playing"), await c.bloom(t.beats, {
 			noise: t.noisy,
 			moments: 1,
 			step: 3
 		}) || f("build");
-	}, [t, c]), S = (0, Cn.useCallback)(() => c.code(t.beats), [c, t.beats]), re = c.busy || d === "playing", C = n || t.exposure >= 1, ie = n || t.exposure >= 2, ae = n || t.exposure >= 3, oe;
+	}, [t, c]), re = (0, Cn.useCallback)(() => c.code(t.beats), [c, t.beats]), C = c.busy || d === "playing", ie = n || t.exposure >= 1, ae = n || t.exposure >= 2, oe = n || t.exposure >= 3, w;
 	if (d === "result" && c.measured) {
 		let e = Gt(c.measured, s, c.result?.memory?.[0] ?? null);
-		oe = y ? `Solved. You heard ${e}.` : `You heard ${e}. ${t.noisy ? "" : "Change the mix and Play again, or Play again to hear another landing."}`, t.noisy && c.measuredFidelity !== null && (oe += ` Match to the clean mix: ${qt(c.measuredFidelity)}`, oe += _ && c.circuit.ops.length < _.ops ? ` (it was ${qt(_.fidelity)} with ${_.ops} moves; yours has ${c.circuit.ops.length}).` : ".");
-	} else oe = `${t.goal} Closeness: ${wn(b)}.`;
+		w = b ? `Solved. You heard ${e}.` : `You heard ${e}. ${t.noisy ? "" : "Change the mix and Play again, or Play again to hear another landing."}`, t.noisy && c.measuredFidelity !== null && (w += ` Match to the clean mix: ${qt(c.measuredFidelity)}`, w += v && c.circuit.ops.length < v.ops ? ` (it was ${qt(v.fidelity)} with ${v.ops} moves; yours has ${c.circuit.ops.length}).` : ".");
+	} else w = `${t.goal} Closeness: ${wn(ee)}.`;
 	return /* @__PURE__ */ (0, L.jsxs)("div", {
 		className: "scene scene--puzzle",
 		children: [
@@ -12009,10 +12013,10 @@ function Sn({ engine: e, challenge: t, details: n, onNext: r, onSolved: i, isLas
 				garden: c,
 				tracks: t.tracks,
 				assignment: s,
-				details: ie,
-				caption: oe
+				details: ae,
+				caption: w
 			}),
-			ee && /* @__PURE__ */ (0, L.jsxs)("div", {
+			te && /* @__PURE__ */ (0, L.jsxs)("div", {
 				className: "success",
 				role: "status",
 				children: [/* @__PURE__ */ (0, L.jsxs)("div", {
@@ -12039,13 +12043,13 @@ function Sn({ engine: e, challenge: t, details: n, onNext: r, onSolved: i, isLas
 					})]
 				})]
 			}),
-			d === "result" && c.result && !ee && /* @__PURE__ */ (0, L.jsxs)("div", {
-				className: `verdict${y ? " is-good" : ""}`,
+			d === "result" && c.result && !te && /* @__PURE__ */ (0, L.jsxs)("div", {
+				className: `verdict${b ? " is-good" : ""}`,
 				"aria-live": "polite",
 				children: [/* @__PURE__ */ (0, L.jsxs)("div", {
 					className: "row",
 					children: [
-						y && /* @__PURE__ */ (0, L.jsx)("button", {
+						b && /* @__PURE__ */ (0, L.jsx)("button", {
 							type: "button",
 							className: "primary",
 							onClick: r,
@@ -12062,11 +12066,11 @@ function Sn({ engine: e, challenge: t, details: n, onNext: r, onSolved: i, isLas
 						p && /* @__PURE__ */ (0, L.jsx)("button", {
 							type: "button",
 							className: "ghost",
-							"aria-expanded": h,
-							onClick: () => g((e) => !e),
-							children: h ? "Hide why" : "Why?"
+							"aria-expanded": g,
+							onClick: () => _((e) => !e),
+							children: g ? "Hide why" : "Why?"
 						}),
-						!y && l < t.hints.length && /* @__PURE__ */ (0, L.jsx)("button", {
+						!b && l < t.hints.length && /* @__PURE__ */ (0, L.jsx)("button", {
 							type: "button",
 							className: "ghost",
 							onClick: () => u((e) => e + 1),
@@ -12088,17 +12092,21 @@ function Sn({ engine: e, challenge: t, details: n, onNext: r, onSolved: i, isLas
 				] }, t))
 			}),
 			/* @__PURE__ */ (0, L.jsx)($t, {
+				steady: Array.from({ length: t.tracks.length }, (e, t) => {
+					let n = h(c.ideal.probabilities, t);
+					return n < 1e-6 || n > 1 - 1e-6;
+				}),
 				seedNames: o,
 				allowed: t.allowed,
 				ops: c.circuit.ops,
-				disabled: re,
-				showGates: C,
+				disabled: C,
+				showGates: ie,
 				onAdd: c.addOp,
 				onRemove: c.removeOp,
 				onReset: () => c.reset(),
 				bloom: {
 					label: d === "playing" ? "Playing…" : "Play",
-					onClick: ne
+					onClick: S
 				},
 				extra: d === "playing" && c.playback && !c.playback.finished ? /* @__PURE__ */ (0, L.jsx)("button", {
 					type: "button",
@@ -12127,18 +12135,18 @@ function Sn({ engine: e, challenge: t, details: n, onNext: r, onSolved: i, isLas
 					}),
 					" ",
 					k[e].what,
-					C && /* @__PURE__ */ (0, L.jsxs)("code", { children: [" ", k[e].gate] })
+					ie && /* @__PURE__ */ (0, L.jsxs)("code", { children: [" ", k[e].gate] })
 				] }, e)) })]
 			}),
-			p && ae && !h && /* @__PURE__ */ (0, L.jsxs)("section", {
+			p && oe && !g && /* @__PURE__ */ (0, L.jsxs)("section", {
 				className: "reveal reveal--code",
 				"aria-label": "The circuit you built",
 				children: [/* @__PURE__ */ (0, L.jsx)("p", {
 					className: "eyebrow",
 					children: "The circuit you just built, in Qiskit"
-				}), /* @__PURE__ */ (0, L.jsx)(an, { load: S })]
+				}), /* @__PURE__ */ (0, L.jsx)(an, { load: re })]
 			}),
-			p && h && /* @__PURE__ */ (0, L.jsxs)("section", {
+			p && g && /* @__PURE__ */ (0, L.jsxs)("section", {
 				className: "reveal",
 				"aria-label": "Why it works",
 				children: [
@@ -12156,7 +12164,7 @@ function Sn({ engine: e, challenge: t, details: n, onNext: r, onSolved: i, isLas
 						disabled: !0,
 						onRemove: () => {}
 					}),
-					/* @__PURE__ */ (0, L.jsx)(an, { load: S }),
+					/* @__PURE__ */ (0, L.jsx)(an, { load: re }),
 					t.deeper && /* @__PURE__ */ (0, L.jsx)(_n, {
 						garden: c,
 						deeper: t.deeper,
@@ -12175,7 +12183,7 @@ var Cn, L, wn, Tn = n((() => {
 //#endregion
 //#region src/app/StudioScene.tsx
 function En({ engine: e, backends: t, defaultBackendId: n, details: r }) {
-	let [i, a] = (0, Dn.useState)(ze), [o, s] = (0, Dn.useState)(!1), [c, l] = (0, Dn.useState)(n), [u, d] = (0, Dn.useState)(!1), f = Vt(e, 2, i, []), h = (0, Dn.useCallback)(() => f.code(kn), [f]), g = (0, Dn.useMemo)(() => p(2), []), _ = (0, Dn.useMemo)(() => [{
+	let [i, a] = (0, Dn.useState)(ze), [o, s] = (0, Dn.useState)(!1), [c, l] = (0, Dn.useState)(n), [u, d] = (0, Dn.useState)(!1), f = Vt(e, 2, i, []), g = (0, Dn.useCallback)(() => f.code(kn), [f]), _ = (0, Dn.useMemo)(() => p(2), []), v = (0, Dn.useMemo)(() => [{
 		name: On[0],
 		base: i["00"][0],
 		hit: i["01"][0]
@@ -12183,13 +12191,13 @@ function En({ engine: e, backends: t, defaultBackendId: n, details: r }) {
 		name: On[1],
 		base: i["00"][0],
 		hit: i[10][0]
-	}], [i]), v = t.filter((e) => e.available || e.reason), y = f.playback && !f.playback.finished, b = () => f.bloom(kn, {
+	}], [i]), y = t.filter((e) => e.available || e.reason), b = f.playback && !f.playback.finished, ee = () => f.bloom(kn, {
 		noise: o,
 		backendId: c,
 		moments: 1,
 		step: 4,
 		label: "your sound"
-	}), ee = f.playback?.finished ? "Play again for another landing of the same mix, or change the mix." : f.circuit.ops.length === 0 ? "Pick a sound for each pad, then build the mix and press Play." : void 0;
+	}), te = f.playback?.finished ? "Play again for another landing of the same mix, or change the mix." : f.circuit.ops.length === 0 ? "Pick a sound for each pad, then build the mix and press Play." : void 0;
 	return /* @__PURE__ */ (0, R.jsxs)("div", {
 		className: "scene scene--studio",
 		children: [
@@ -12209,16 +12217,16 @@ function En({ engine: e, backends: t, defaultBackendId: n, details: r }) {
 			}),
 			/* @__PURE__ */ (0, R.jsx)(Ut, {
 				garden: f,
-				tracks: _,
+				tracks: v,
 				assignment: i,
 				details: r,
-				caption: ee
+				caption: te
 			}),
 			/* @__PURE__ */ (0, R.jsx)("div", {
 				className: "pads",
 				role: "group",
 				"aria-label": "A sound for each pad",
-				children: g.map((e) => /* @__PURE__ */ (0, R.jsxs)("label", {
+				children: _.map((e) => /* @__PURE__ */ (0, R.jsxs)("label", {
 					className: "pad",
 					children: [
 						/* @__PURE__ */ (0, R.jsx)("span", {
@@ -12254,6 +12262,10 @@ function En({ engine: e, backends: t, defaultBackendId: n, details: r }) {
 				}, e))
 			}),
 			/* @__PURE__ */ (0, R.jsx)($t, {
+				steady: Array.from({ length: 2 }, (e, t) => {
+					let n = h(f.ideal.probabilities, t);
+					return n < 1e-6 || n > 1 - 1e-6;
+				}),
 				seedNames: On,
 				allowed: [
 					"flip",
@@ -12274,17 +12286,17 @@ function En({ engine: e, backends: t, defaultBackendId: n, details: r }) {
 				onRemove: f.removeOp,
 				onReset: () => f.reset([]),
 				bloom: {
-					label: f.busy || y ? "Playing…" : f.result ? "Play again" : "Play",
-					onClick: b,
-					disabled: !!y
+					label: f.busy || b ? "Playing…" : f.result ? "Play again" : "Play",
+					onClick: ee,
+					disabled: !!b
 				},
-				extra: /* @__PURE__ */ (0, R.jsxs)(R.Fragment, { children: [f.result && !y && /* @__PURE__ */ (0, R.jsx)("button", {
+				extra: /* @__PURE__ */ (0, R.jsxs)(R.Fragment, { children: [f.result && !b && /* @__PURE__ */ (0, R.jsx)("button", {
 					type: "button",
 					className: "ghost",
 					onClick: f.replay,
 					disabled: f.busy,
 					children: "Hear it again"
-				}), y && /* @__PURE__ */ (0, R.jsx)("button", {
+				}), b && /* @__PURE__ */ (0, R.jsx)("button", {
 					type: "button",
 					className: "ghost",
 					onClick: f.stopPlayback,
@@ -12300,7 +12312,7 @@ function En({ engine: e, backends: t, defaultBackendId: n, details: r }) {
 						checked: o,
 						onChange: (e) => s(e.target.checked)
 					}), " Add noise"]
-				}), r && v.length > 1 && /* @__PURE__ */ (0, R.jsxs)("label", {
+				}), r && y.length > 1 && /* @__PURE__ */ (0, R.jsxs)("label", {
 					className: "row",
 					children: [/* @__PURE__ */ (0, R.jsx)("span", {
 						className: "label",
@@ -12308,7 +12320,7 @@ function En({ engine: e, backends: t, defaultBackendId: n, details: r }) {
 					}), /* @__PURE__ */ (0, R.jsx)("select", {
 						value: c,
 						onChange: (e) => l(e.target.value),
-						children: v.map((e) => /* @__PURE__ */ (0, R.jsxs)("option", {
+						children: y.map((e) => /* @__PURE__ */ (0, R.jsxs)("option", {
 							value: e.id,
 							disabled: !e.available,
 							children: [e.label, e.available ? "" : ` (${e.reason})`]
@@ -12333,7 +12345,7 @@ function En({ engine: e, backends: t, defaultBackendId: n, details: r }) {
 				className: "help",
 				children: "Each Play is one measurement: one definite answer, drawn with the odds the mix prepared. Playing the same mix again does not repeat the same answer; it repeats the same odds. The engine actually takes several readings per Play (the Circuit view shows all of them as measured bars next to the predicted ones); you hear the first."
 			}),
-			r && /* @__PURE__ */ (0, R.jsx)(an, { load: h })
+			r && /* @__PURE__ */ (0, R.jsx)(an, { load: g })
 		]
 	});
 }

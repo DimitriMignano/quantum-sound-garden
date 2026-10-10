@@ -40,7 +40,7 @@ statevector vs Qiskit parity, the taught behaviors, sampling, noise) and the Qol
 |---|---|---|
 | Hadamard creates alternative outcomes | Tutorial "Shuffle", puzzles 1 and 2: Shuffle makes a 50/50 mix | `server/tests/test_circuit.py::test_split_is_balanced`, `test_backends.py::test_hadamard_shots_are_approximately_balanced` |
 | Phase alone leaves probabilities unchanged | Tutorial "Turn", puzzle 3: Turn, Play, nothing changes | `test_twist_alone_leaves_probabilities_unchanged` |
-| Phase matters when branches recombine; constructive and destructive interference | Tutorial "Turn, then Shuffle", puzzle 3: Turn then Shuffle silences the footsteps (or makes them certain) | `test_phase_then_recombination_changes_the_outcome`, `test_phase_then_recombination_changes_sampled_distribution` |
+| Phase matters when branches recombine; constructive and destructive interference | Tutorial "Shuffle, Turn, Shuffle", puzzle 3: Turn then Shuffle silences the footsteps (or makes them certain) | `test_phase_then_recombination_changes_the_outcome`, `test_phase_then_recombination_changes_sampled_distribution` |
 | Controlled gates create measurable correlations | Tutorial "Sync a shuffled track", puzzle 2: thunder only with rain (Bell pair, 01 and 10 never appear) | `test_bell_state_correlations`, `test_bell_shots_are_correlated` |
 | Measurement draws classical outcomes from the prepared state | Every Play; predicted vs measured bars (Circuit view) | `test_deterministic_basis_state_preparation`, `test_deterministic_preparation_samples_one_outcome` |
 | Noise adds unintended outcomes; shorter circuits are more robust | Puzzle 4 | `test_teaching_noise_produces_unintended_outcomes_and_rewards_shorter_circuits` (Aer) and the vitest twin (in-app model) |
