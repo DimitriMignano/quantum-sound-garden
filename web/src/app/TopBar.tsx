@@ -9,13 +9,20 @@ interface Props {
   onScene(s: string): void;
   reducedMotion: boolean;
   onReducedMotion(v: boolean): void;
-  unlocked: number; // how many challenges are reachable
+  details: boolean;
+  onDetails(v: boolean): void;
+  unlocked: number; // how many puzzles are reachable
+  entered: boolean; // the gesture happened; the nav works
 }
 
-export function TopBar({ info, scene, onScene, reducedMotion, onReducedMotion, unlocked }: Props) {
+export function TopBar({ info, scene, onScene, reducedMotion, onReducedMotion, details, onDetails, unlocked, entered }: Props) {
   const [, force] = useState(0);
   useEffect(() => audio.onChange(() => force((n) => n + 1)), []);
   const b = info?.backends.find((x) => x.id === info.defaultBackendId) ?? info?.backends[0];
+  const nav = (id: string, label: string, locked = false, title?: string) => (
+    <button key={id} type="button" className={`navbtn${id === 'moves' || id === 'creator' ? ' navbtn--wide' : ''}${scene === id ? ' is-on' : ''}`} aria-current={scene === id ? 'page' : undefined}
+      disabled={!entered || locked} onClick={() => onScene(id)} title={title}>{label}</button>
+  );
   return (
     <header className="topbar">
       <div className="topbar__brand">
@@ -23,13 +30,13 @@ export function TopBar({ info, scene, onScene, reducedMotion, onReducedMotion, u
         <h1>{APP.title}</h1>
       </div>
       <nav className="topbar__nav" aria-label="Scenes">
-        {[1, 2, 3, 4].map((i) => (
-          <button key={i} type="button" className={`navbtn${scene === `c${i}` ? ' is-on' : ''}`} aria-current={scene === `c${i}` ? 'page' : undefined} disabled={i > unlocked} onClick={() => onScene(`c${i}`)} title={i > unlocked ? 'Finish the previous challenge first' : `Challenge ${i}`}>{i}</button>
-        ))}
-        <button type="button" className={`navbtn navbtn--wide${scene === 'creator' ? ' is-on' : ''}`} aria-current={scene === 'creator' ? 'page' : undefined} onClick={() => onScene('creator')}>Creator</button>
+        {nav('moves', 'Moves')}
+        {[1, 2, 3, 4].map((i) => nav(`c${i}`, String(i), i > unlocked, i > unlocked ? 'Solve the previous puzzle first' : `Puzzle ${i}`))}
+        {nav('creator', 'Creator')}
       </nav>
       <div className="topbar__tools">
         {b && <span className={`pill pill--${b.qiskit ? (b.remote ? 'ionq' : 'qiskit') : 'browser'}`} title={info?.note}>{b.label}</span>}
+        <button type="button" className="iconbtn" aria-pressed={details} onClick={() => onDetails(!details)} title="Show the circuit: gate names, bits, percentages and the Qiskit code">{details ? 'Circuit: on' : 'Circuit'}</button>
         <label className="vol" title="Volume">
           <span className="sr-only">Volume</span>
           <input type="range" min={0} max={1} step={0.01} value={audio.volume} onChange={(e) => audio.setVolume(parseFloat(e.target.value))} aria-label="Volume" />

@@ -19,6 +19,8 @@ export interface GardenState {
   reducedMotion: boolean;
   /** challenge mode before a prediction: blooms are drawn equal and dim, seeds still show their state */
   hideOdds?: boolean;
+  /** what each outcome sounds like, drawn under its bloom instead of the bitstring */
+  outcomeNames?: Record<string, string>;
 }
 
 interface Ripple { x: number; y: number; t0: number; hue: number }
@@ -283,12 +285,14 @@ export class GardenRenderer {
       const measured = this.state.measured ? this.state.measured[b] ?? 0 : null;
       const active = this.state.active === b;
       const pulse = active && motion ? 1 + 0.08 * Math.sin(t * 9) : 1;
+      const name = this.state.outcomeNames?.[b] ?? b;
+      const font = `600 ${labels.length > 2 ? 11 : 12}px ui-sans-serif, system-ui, -apple-system, sans-serif`;
       if (this.state.hideOdds && measured === null) {
-        // before a prediction: every bloom is a closed bud of the same size
+        // before a guess: every bloom is a closed bud of the same size
         this.flower(x, y, maxR * 0.35, 0.18, 0.35, t, motion, false);
-        ctx.fillStyle = rgba(COLORS.bloom, 0.5);
-        ctx.font = '600 11px ui-monospace, SFMono-Regular, Menlo, monospace'; ctx.textAlign = 'center';
-        ctx.fillText(`${b} ?`, x, y + maxR + 18);
+        ctx.fillStyle = rgba(COLORS.bloom, 0.6);
+        ctx.font = font; ctx.textAlign = 'center';
+        ctx.fillText(`${name}?`, x, y + maxR + 18);
         continue;
       }
       // predicted: petals, area ∝ probability
@@ -298,10 +302,10 @@ export class GardenRenderer {
         const rm = Math.max(5, Math.sqrt(measured) * maxR) * pulse;
         this.flower(x, y, rm, 0.85, 0, t, motion, active);
       }
-      // faint outcome glyph
-      ctx.fillStyle = rgba(COLORS.bloom, active ? 0.95 : 0.5);
-      ctx.font = '600 11px ui-monospace, SFMono-Regular, Menlo, monospace'; ctx.textAlign = 'center';
-      ctx.fillText(b, x, y + maxR + 18);
+      // the outcome's sound, named
+      ctx.fillStyle = rgba(COLORS.bloom, active ? 0.95 : 0.6);
+      ctx.font = font; ctx.textAlign = 'center';
+      ctx.fillText(name, x, y + maxR + 18);
     }
   }
 

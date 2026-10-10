@@ -1,21 +1,24 @@
 # Quantum Sound Garden
 
-**Hear quantum behavior → predict it → shape it on purpose → create with it → read the Qiskit circuit.**
+**Four moves. Every garden you grow is a real quantum circuit.** Learn the moves by ear → solve four puzzles →
+grow your own sounds → read the Qiskit code.
 
 A living night garden holds glowing sound seeds. Each seed is a qubit. You **Split** (Hadamard), **Twist** (phase),
 **Link** (CNOT) and **Bloom** (measure) them, and the garden plays rain, thunder, footsteps and birds drawn from the
-measured shots of a real Qiskit circuit. Four short challenges teach superposition, entanglement, interference and
-noise by ear; a two-qubit creator mode then makes a 20-second soundscape and shows the equivalent Qiskit code.
+measured shots of a real Qiskit circuit. A nine-line rulebook you can hear teaches the moves; four puzzles make you
+use them (superposition, entanglement, interference, noise); a two-qubit creator with four sound pads then makes a
+20-second soundscape. The **Circuit** button in the top bar shows gate names, bits, percentages and the Qiskit code
+behind any garden.
 
 _This effort is supported by Qollab & IonQ._
 
 ## How to run it here
 1. Press **Run Project**, then **Run**, and pick a backend in **Select QPU**. The built-in simulator gives unlimited
-   Blooms on the device itself. With an IonQ cloud simulator, Qollab allows **one job per Run**, so the challenges
-   bloom on Qiskit's Statevector (computed in your browser, shots sampled locally) and the creator offers the single
+   Blooms on the device itself. With an IonQ cloud simulator, Qollab allows **one job per Run**, so the rulebook and
+   the puzzles bloom on Qiskit's Statevector (computed in your browser, shots sampled locally) and the creator offers the single
    IonQ job (with IonQ's noise model of a real QPU) when you choose it; press Run again for another.
-2. Press **Enter the garden**. Sound starts only after that press (browser autoplay rules). Headphones help.
-3. Follow the four challenges, then open **Creator**.
+2. Press **Learn the moves**. Sound starts only after that press (browser autoplay rules). Headphones help.
+3. Hear the rules, press **Start the puzzles**, solve the four, then open **Creator**.
 
 Use Chrome, Edge, Brave, Opera or Firefox; Qollab does not run projects in Safari yet.
 
@@ -38,8 +41,8 @@ Use Chrome, Edge, Brave, Opera or Firefox; Qollab does not run projects in Safar
 ## Source, docs and tests
 Full source, architecture notes, the quantum-to-audio mapping, limitations and the test suite (pytest + vitest,
 including Qiskit-vs-browser parity fixtures): https://github.com/DimitriMignano/quantum-sound-garden
-(`README.md`, `docs/`). Which engine produced what: challenges 1–3 and the creator bloom on the chosen backend (or on
-Qiskit's Statevector with local sampling when the one-job-per-Run limit applies); challenge 4's noise is simulated
+(`README.md`, `docs/`). Which engine produced what: the rulebook, puzzles 1–3 and the creator bloom on the chosen backend (or on
+Qiskit's Statevector with local sampling when the one-job-per-Run limit applies); puzzle 4's noise is simulated
 in-app by a stochastic Pauli sampler (not a Qiskit job) unless you picked a noise-model backend, in which case the
 provider's noise applies. Each result names its engine.
 

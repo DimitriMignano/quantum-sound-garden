@@ -3,6 +3,7 @@ import type { EngineInfo, QuantumEngine } from '../engine/types';
 import { audio } from '../audio/engine';
 import { APP, CHALLENGES } from '../content/content';
 import { TopBar } from './TopBar';
+import { MovesScene } from './MovesScene';
 import { ChallengeScene } from './ChallengeScene';
 import { CreatorScene } from './CreatorScene';
 
@@ -12,6 +13,7 @@ export function App({ engine }: Props) {
   const [info, setInfo] = useState<EngineInfo | null>(null);
   const [scene, setScene] = useState<string>('welcome');
   const [unlocked, setUnlocked] = useState(1);
+  const [details, setDetails] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false);
   const [audioOk, setAudioOk] = useState<boolean | null>(null);
 
@@ -27,10 +29,10 @@ export function App({ engine }: Props) {
   const enter = async () => {
     const ok = await audio.start();
     setAudioOk(ok);
-    // #c3 or #creator in the URL opens that scene directly (for demos and testing); the gesture is still required.
+    // #moves, #c3 or #creator in the URL opens that scene directly (for demos and testing); the gesture is still required.
     const hash = window.location.hash.replace('#', '');
-    if (/^c[1-4]$/.test(hash) || hash === 'creator') { setUnlocked(CHALLENGES.length); setScene(hash); return; }
-    setScene('c1');
+    if (/^c[1-4]$/.test(hash) || hash === 'creator' || hash === 'moves') { setUnlocked(CHALLENGES.length); setScene(hash); return; }
+    setScene('moves');
   };
 
   const goNext = (index: number) => {
@@ -41,29 +43,36 @@ export function App({ engine }: Props) {
 
   return (
     <div className={`app${reducedMotion ? ' is-still' : ''}`} data-scene={scene}>
-      <TopBar info={info} scene={scene} onScene={setScene} reducedMotion={reducedMotion} onReducedMotion={setReducedMotion} unlocked={unlocked} />
+      <TopBar info={info} scene={scene} onScene={setScene} reducedMotion={reducedMotion} onReducedMotion={setReducedMotion} details={details} onDetails={setDetails} unlocked={unlocked} entered={scene !== 'welcome'} />
       {scene === 'welcome' && (
         <main className="welcome">
           <div className="welcome__card">
-            <p className="eyebrow">A learning and creation experience</p>
+            <p className="eyebrow">A sound garden grown from quantum circuits</p>
             <h2>{APP.tagline}</h2>
-            <p>Four short challenges teach superposition, entanglement, interference and noise by ear, through rain, thunder, footsteps and birds. Then a creator mode makes your own soundscape and shows the Qiskit code behind it.</p>
-            <p className="honesty">{APP.honesty}</p>
+            <p className="welcome__lead">{APP.lead}</p>
             <button type="button" className="primary primary--big" onClick={enter}>{APP.startButton}</button>
             <p className="help">{APP.startHint}</p>
-            {info && <p className="help">Quantum engine: <b>{info.name}</b>. {info.note}</p>}
             {audioOk === false && <p className="error" role="alert">Audio could not start in this browser. The garden still works visually.</p>}
+            <details className="howto">
+              <summary>What you are actually hearing</summary>
+              <p className="honesty">{APP.honesty}</p>
+              {info && <p className="help">Quantum engine: <b>{info.name}</b>. {info.note}</p>}
+              <p className="help">Press Circuit in the top bar at any time to see gate names, bits, percentages and the Qiskit code behind every garden.</p>
+            </details>
           </div>
         </main>
       )}
+      {scene === 'moves' && (
+        <main><MovesScene engine={engine} reducedMotion={reducedMotion} details={details} onDone={() => setScene('c1')} /></main>
+      )}
       {CHALLENGES.map((c) => scene === `c${c.index}` && (
         <main key={c.id}>
-          <ChallengeScene engine={engine} challenge={c} reducedMotion={reducedMotion} onNext={() => goNext(c.index)} isLast={c.index === CHALLENGES.length} />
+          <ChallengeScene engine={engine} challenge={c} reducedMotion={reducedMotion} details={details} onNext={() => goNext(c.index)} onSolved={() => setUnlocked((u) => Math.max(u, c.index + 1))} isLast={c.index === CHALLENGES.length} />
         </main>
       ))}
       {scene === 'creator' && info && (
         <main>
-          <CreatorScene engine={engine} backends={info.backends} defaultBackendId={info.defaultBackendId} reducedMotion={reducedMotion} />
+          <CreatorScene engine={engine} backends={info.backends} defaultBackendId={info.defaultBackendId} reducedMotion={reducedMotion} details={details} />
         </main>
       )}
       {scene === 'creator' && !info && <main><p className="help">Loading the quantum engine…</p></main>}

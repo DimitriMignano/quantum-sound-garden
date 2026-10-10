@@ -27,6 +27,14 @@ async function boot(backendName: string) {
   for (let i = 0; i < 50 && !document.querySelector('.welcome'); i++) await new Promise((r) => setTimeout(r, 50));
 }
 
+/** The gesture, then the rulebook, then puzzle 1 (the moves scene shows the board too, so wait for the puzzle's own heading). */
+async function openPuzzleOne() {
+  (document.querySelector('.primary--big') as HTMLButtonElement).click();
+  for (let i = 0; i < 50 && !document.querySelector('.moves__go'); i++) await new Promise((r) => setTimeout(r, 50));
+  (document.querySelector('.moves__go') as HTMLButtonElement).click();
+  for (let i = 0; i < 50 && !document.querySelector('.scene--puzzle .move--flip'); i++) await new Promise((r) => setTimeout(r, 50));
+}
+
 describe('the built Qollab bundle', () => {
   beforeAll(() => { expect(existsSync(bundle), 'run npm run build:qollab first').toBe(true); });
 
@@ -49,16 +57,15 @@ describe('the built Qollab bundle', () => {
 
   it('asks Python for ideals and runs a bloom through backend.run with JSON ops', async () => {
     await boot('basic_simulator');
-    (document.querySelector('.primary--big') as HTMLButtonElement).click();
-    for (let i = 0; i < 50 && !document.querySelector('.action--flip'); i++) await new Promise((r) => setTimeout(r, 50));
-    (document.querySelector('.action--flip') as HTMLButtonElement).click();
+    await openPuzzleOne();
+    (document.querySelector('.move--flip') as HTMLButtonElement).click();
     await new Promise((r) => setTimeout(r, 300));
     const idealCall = fake.calls.filter((c) => c.fn === 'ideal_json.callPromising').at(-1);
     expect(idealCall?.args[0]).toBe(1);
     expect(JSON.parse(idealCall?.args[1] as string)).toEqual([{ op: 'flip', q: 0 }]);
-    (document.querySelectorAll('.predictions input[type="radio"]')[1] as HTMLInputElement).click(); // "Always rain"
-    await new Promise((r) => setTimeout(r, 50));
-    (document.querySelector('.predictions ~ .row .primary') as HTMLButtonElement).click(); // Bloom
+    (document.querySelector('.bloom') as HTMLButtonElement).click(); // Bloom asks for a guess first
+    for (let i = 0; i < 50 && !document.querySelector('.choice'); i++) await new Promise((r) => setTimeout(r, 50));
+    (document.querySelectorAll('.choice')[1] as HTMLButtonElement).click(); // "Always rain"
     for (let i = 0; i < 50 && !fake.calls.some((c) => c.fn === 'run_json.callPromising'); i++) await new Promise((r) => setTimeout(r, 50));
     const run = fake.calls.find((c) => c.fn === 'run_json.callPromising');
     expect(run).toBeTruthy();
@@ -74,13 +81,12 @@ describe('the built Qollab bundle', () => {
     await boot('ionq_simulator');
     const pill = document.querySelector('.topbar .pill')?.textContent ?? '';
     expect(pill).toContain('Qiskit Statevector');
-    (document.querySelector('.primary--big') as HTMLButtonElement).click();
-    for (let i = 0; i < 50 && !document.querySelector('.action--flip'); i++) await new Promise((r) => setTimeout(r, 50));
-    (document.querySelector('.action--flip') as HTMLButtonElement).click();
+    await openPuzzleOne();
+    (document.querySelector('.move--flip') as HTMLButtonElement).click();
     await new Promise((r) => setTimeout(r, 300));
-    (document.querySelectorAll('.predictions input[type="radio"]')[1] as HTMLInputElement).click();
-    await new Promise((r) => setTimeout(r, 50));
-    (document.querySelector('.predictions ~ .row .primary') as HTMLButtonElement).click();
+    (document.querySelector('.bloom') as HTMLButtonElement).click();
+    for (let i = 0; i < 50 && !document.querySelector('.choice'); i++) await new Promise((r) => setTimeout(r, 50));
+    (document.querySelectorAll('.choice')[1] as HTMLButtonElement).click();
     await new Promise((r) => setTimeout(r, 500));
     expect(fake.calls.some((c) => c.fn === 'run_json.callPromising')).toBe(false);
     expect(((globalThis as { backend?: { jobs: number } }).backend as { jobs: number }).jobs).toBe(0);

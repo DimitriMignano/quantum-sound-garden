@@ -31,6 +31,13 @@ export function captionFor(assignment: Assignment, outcome: string): string {
   return parts.slice(0, -1).join(', ') + ' and ' + parts[parts.length - 1];
 }
 
+/** Short display name of an outcome's sounds ("Rain + Thunder"), for the garden buds and the creator pads. */
+export function nameFor(assignment: Assignment, outcome: string): string {
+  const ids = assignment[outcome] ?? [];
+  if (ids.length === 0) return 'silence';
+  return ids.map((id) => soundById(id).name).join(' + ');
+}
+
 /** Probability mass per sound id, across outcomes. */
 export function soundMass(assignment: Assignment, probabilities: Record<string, number>): Record<string, number> {
   const mass: Record<string, number> = {};

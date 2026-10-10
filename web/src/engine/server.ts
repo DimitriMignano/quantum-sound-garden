@@ -53,7 +53,7 @@ export class ServerEngine implements QuantumEngine {
       name: 'Local Qiskit server',
       backends,
       defaultBackendId: 'local-ideal',
-      note: 'Circuits are built and run by Qiskit on this computer (Aer). IonQ backends run on IonQ’s cloud when IONQ_API_KEY is set.',
+      note: 'Circuits are built and run by Qiskit on this computer (Aer). IonQ backends run on IonQ’s cloud when the server has an IonQ key.',
     };
   }
 

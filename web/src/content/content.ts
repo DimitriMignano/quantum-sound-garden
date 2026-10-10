@@ -7,22 +7,23 @@ import { agreement, marginalOne, bitstrings, bitOf } from '../engine/outcomes';
 
 export const APP = {
   title: 'Quantum Sound Garden',
-  tagline: 'Hear quantum behavior. Predict it. Shape it. Then read the circuit.',
+  tagline: 'Four moves. Every garden you grow is a real quantum circuit.',
+  lead: 'Learn the moves by ear. Solve four puzzles. Then grow your own sounds.',
   honesty:
     'You are not hearing a quantum state. The sound is ordinary audio driven by the probabilities and the measured shots of a circuit: a real Qiskit circuit whenever a Qiskit engine is available, and every result names the engine that produced it.',
-  startButton: 'Enter the garden',
-  startHint: 'Sound starts only after you press this. Headphones help.',
+  startButton: 'Learn the moves',
+  startHint: 'Sound starts when you press this. Headphones help.',
   creatorTitle: 'Creator',
-  creatorTagline: 'Two seeds, four outcomes, your sounds.',
+  creatorTagline: 'Two seeds, four sounds, your garden.',
 };
 
 export interface ActionCopy { verb: string; gate: string; what: string; key: string }
 export const ACTIONS: Record<Op['op'] | 'bloom', ActionCopy> = {
-  flip: { verb: 'Flip', gate: 'X', what: 'Turn the seed over: 0 becomes 1, 1 becomes 0.', key: 'F' },
-  split: { verb: 'Split', gate: 'H', what: 'From a definite seed, one path becomes two equal paths. Applied to an already split seed, the paths meet again.', key: 'S' },
-  twist: { verb: 'Twist', gate: 'P(θ)', what: 'Rotate the phase of the 1 path. Nothing you can hear changes, until paths meet again.', key: 'T' },
-  link: { verb: 'Link', gate: 'CX', what: 'The control seed decides whether the target seed flips. With the target at 0 and the control split, the pair becomes correlated.', key: 'L' },
-  bloom: { verb: 'Bloom', gate: 'measure', what: 'Measure every seed. Each shot gives one definite outcome; the garden plays them.', key: 'B' },
+  flip: { verb: 'Flip', gate: 'X', what: 'Turns the seed over: 0 becomes 1, 1 becomes 0.', key: 'F' },
+  split: { verb: 'Split', gate: 'H', what: 'Makes the seed half-and-half: a coin toss at Bloom. Split it again and it un-splits.', key: 'S' },
+  twist: { verb: 'Twist', gate: 'P(θ)', what: 'Turns the hidden half of a split seed. Silent by itself; the next Split hears it.', key: 'T' },
+  link: { verb: 'Link', gate: 'CX', what: 'The other seed follows this one: when this seed reads 1, the other flips.', key: 'L' },
+  bloom: { verb: 'Bloom', gate: 'measure', what: 'Reads every seed as 0 or 1 and plays what it finds. Same garden, same odds, new answers.', key: 'B' },
 };
 
 export const WHY_SHOTS_VARY =
@@ -104,7 +105,7 @@ export const CHALLENGES: Challenge[] = [
       title: 'What you did: an X gate',
       body: [
         'Flip is the Pauli X gate. It takes the seed from |0⟩ to |1⟩, so every measurement reads 1 and every bloom rains.',
-        'If you used Split, Twist, Split: H · P(π) · H equals X. The half-turn twist flipped the sign of the second path, and when the paths recombined they canceled on 0 and added on 1. That is interference, and you will use it on purpose in challenge 3.',
+        'If you used Split, Twist, Split: H · P(π) · H equals X. The half-turn twist flipped the sign of the second path, and when the paths recombined they canceled on 0 and added on 1. That is interference, and you will use it on purpose in puzzle 3.',
       ],
     },
     bloomShots: 12,
@@ -253,3 +254,20 @@ export function assignmentFor(seeds: Seed[], zeroSound: string): Record<string, 
 export const DEFAULT_CREATOR_ASSIGNMENT: Record<string, string[]> = {
   '00': ['hush'], '01': ['rain'], '10': ['birds'], '11': ['thunder'],
 };
+
+/** The rulebook: every move as a one-line rule the learner can hear, in a two-seed garden (Sky = rain, Storm = thunder). */
+export interface Rule { id: string; move: 'seed' | Op['op'] | 'bloom'; title: string; text: string; ops: Op[]; shots: number; hear: string }
+export const RULE_SEEDS: Seed[] = [{ name: 'Sky', sound: 'rain' }, { name: 'Storm', sound: 'thunder' }];
+export const RULE_ZERO_SOUND = 'hush';
+const LINK: Op = { op: 'link', control: 0, target: 1 };
+export const RULES: Rule[] = [
+  { id: 'seed', move: 'seed', title: 'Seeds', text: 'A seed is 0 or 1. Sky at 0 is a night hush. Sky at 1 is rain.', ops: [], shots: 4, hear: 'Hush, four times. Nothing changed the seed, so it read 0 every time.' },
+  { id: 'flip', move: 'flip', title: 'Flip', text: 'Flip turns a seed over. 0 becomes 1.', ops: [{ op: 'flip', q: 0 }], shots: 4, hear: 'Rain, four times.' },
+  { id: 'split', move: 'split', title: 'Split', text: 'Split makes a seed half-and-half. Bloom it and you get 0 or 1, a fresh coin toss every time.', ops: [{ op: 'split', q: 0 }], shots: 8, hear: 'Hush and rain, mixed, in no pattern. About half and half.' },
+  { id: 'split2', move: 'split', title: 'Split, again', text: 'Split a split seed and it un-splits. Two Splits in a row cancel.', ops: [{ op: 'split', q: 0 }, { op: 'split', q: 0 }], shots: 4, hear: 'Hush every time. The two halves met and became a plain 0 again.' },
+  { id: 'twist', move: 'twist', title: 'Twist', text: 'Twist turns the hidden half of a split seed. By itself you hear no change.', ops: [{ op: 'split', q: 0 }, { op: 'twist', q: 0, turns: 0.5 }], shots: 8, hear: 'Still a coin toss. The twist is in there; you just cannot hear it yet.' },
+  { id: 'twist2', move: 'twist', title: 'Twist, then Split', text: 'The next Split hears the twist. Half a turn, then Split: the coin toss becomes rain every time.', ops: [{ op: 'split', q: 0 }, { op: 'twist', q: 0, turns: 0.5 }, { op: 'split', q: 0 }], shots: 4, hear: 'Rain every time. Without the twist, two Splits would have given hush every time.' },
+  { id: 'link', move: 'link', title: 'Link', text: 'Link makes Storm follow Sky: when Sky reads 1, Storm flips.', ops: [{ op: 'flip', q: 0 }, LINK], shots: 4, hear: 'Rain and thunder together, four times.' },
+  { id: 'link2', move: 'link', title: 'Link a split seed', text: 'Link a split Sky to Storm and you get two coin tosses that always agree.', ops: [{ op: 'split', q: 0 }, LINK], shots: 8, hear: 'Sometimes hush, sometimes rain with thunder. Never one without the other.' },
+  { id: 'bloom', move: 'bloom', title: 'Bloom', text: 'Bloom reads every seed as 0 or 1 and plays it. The same garden blooms differently each time, with the same odds.', ops: [{ op: 'split', q: 0 }, LINK], shots: 8, hear: 'The same pair, a new set of readings. While you grow a garden you hear its odds; Bloom plays what was actually read.' },
+];

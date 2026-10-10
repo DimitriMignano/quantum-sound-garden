@@ -79,3 +79,26 @@ corrections go in a new entry. Newest at the bottom. Fill every field (`n/a` if 
   per-shot order from IonQ; CHSH game; custom sounds/export.
 - Risks: the Qollab adapter is only smoke-tested against a fake module and backend — the first upload is the real test;
   IonQ detection keys on the backend name containing "ionq"; the repo is private while the rules require public.
+
+### 2026-10-10 16:45 — Sound board redesign: rulebook first, then puzzles, then freedom
+- Branch / worktree: `main`
+- Task: the founder's first look ("a kid should know exactly what to do and why"; "rules first, then freedom"; "a sound
+  board, fewer buttons, less reading"). Rebuild the app layer around one board: the garden, four big moves, Bloom, the path.
+- Files changed: `web/src/app/{App,TopBar,Board,MovesScene,ChallengeScene,CreatorScene,GardenView}.tsx` (ActionBar.tsx
+  removed), `web/src/content/content.ts` (kid-level ACTIONS, RULES), `web/src/audio/mixer.ts` (nameFor),
+  `web/src/garden/renderer.ts` (buds show sound names), `web/src/engine/server.ts` (no env-var name in UI copy),
+  `web/src/styles.css`, `web/src/test/qollab-bundle.test.ts` (new flow), `qollab/` (rebuilt), `docs/{DEMO_SCRIPT,JUDGES,QOLLAB_PAGE}.md`, `README.md`, `WORKLOG.md`
+- Verification run: `npm run check` green before the unlock-on-solve patch (pytest 27 passed + 1 skipped, tsc clean,
+  vitest 69 passed incl. the bundle smoke test on the new flow, bundle built); rerun in the commit chain. Live in Chrome
+  (local server): welcome → Moves → "Hear it" on Twist-then-Split (plays, caption shows the rule's explanation, ✓) →
+  Start the puzzles → Flip → Bloom → choices → "Always rain" → "Solved. You heard Rain every time. Your guess was right."
+  → Why? (X gate, code) → Creator pads and board. Not live-tested: phone width after the redesign (Chrome resize did not
+  apply), keyboard-only, puzzles 2–4 in the new layout (logic unchanged; smoke-tested), the real Qollab runtime, IonQ.
+- Commit hash: this commit (parent 6097462)
+- Seams (§22): surface LIVE (redesigned) · hosted/delivery PARTIAL as before (Qollab upload is a human's act)
+- Decisions: rules are stated as rules including the non-classical ones ("two Splits cancel", "a Twist is silent until the
+  next Split", "a linked split pair always agrees") so freedom does not lose the quantum core; the path of beads is the
+  always-visible circuit and the Circuit toggle is the quantum representation for judges; Bloom asks for the guess (no
+  separate prediction panel); twist amounts ½ and ¼ in puzzles, all four in the creator; puzzle N+1 unlocks on solve.
+- Deferred work: a phone-width pass; keyboard pass; three-seed gardens for more creator freedom (after the deadline).
+- Risks: the redesign is live-tested only on puzzle 1 and the rulebook; puzzles 2–4 share the same scene code.

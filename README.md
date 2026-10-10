@@ -1,12 +1,14 @@
 # Quantum Sound Garden
 
-**Hear quantum behavior → predict it → shape it on purpose → create with it → read the Qiskit circuit.**
+**Four moves. Every garden you grow is a real quantum circuit.** Learn the moves by ear → solve four puzzles →
+grow your own sounds → read the Qiskit code.
 
 An audiovisual learning and creation experience for people who have never played an instrument or touched a qubit.
 A living night garden holds glowing sound seeds (qubits). You **Split** (Hadamard), **Twist** (phase), **Link**
 (CNOT) and **Bloom** (measure) them, and the garden plays rain, thunder, footsteps and birds drawn from the
-measured shots of a real Qiskit circuit. Four short challenges teach superposition, entanglement, interference and
-noise by ear; a two-qubit creator mode then makes a 20-second soundscape and shows the equivalent Qiskit code.
+measured shots of a real Qiskit circuit. A nine-line rulebook you can hear teaches the moves; four puzzles make you
+use them (superposition, entanglement, interference, noise); a two-qubit creator with four sound pads then makes a
+20-second soundscape. The **Circuit** button shows gate names, bits, percentages and the Qiskit code behind any garden.
 
 Entry for the Qollab + IonQ Quantum Hackathon (theme: Quantum Playground). _This effort is supported by Qollab & IonQ._
 
@@ -36,12 +38,12 @@ statevector vs Qiskit parity, the taught behaviors, sampling, noise) and the Qol
 ## What is quantum about it
 | Behavior | Where you hear it | Where it is verified |
 |---|---|---|
-| Hadamard creates alternative outcomes | Challenge 1 and 2: Split makes a 50/50 garden | `server/tests/test_circuit.py::test_split_is_balanced`, `test_backends.py::test_hadamard_shots_are_approximately_balanced` |
-| Phase alone leaves probabilities unchanged | Challenge 3: Twist, Bloom, nothing changes | `test_twist_alone_leaves_probabilities_unchanged` |
-| Phase matters when branches recombine; constructive and destructive interference | Challenge 3: Twist then Split silences the footsteps (or makes them certain) | `test_phase_then_recombination_changes_the_outcome`, `test_phase_then_recombination_changes_sampled_distribution` |
-| Controlled gates create measurable correlations | Challenge 2: thunder only with rain (Bell pair, 01 and 10 never appear) | `test_bell_state_correlations`, `test_bell_shots_are_correlated` |
+| Hadamard creates alternative outcomes | Rulebook "Split", puzzles 1 and 2: Split makes a 50/50 garden | `server/tests/test_circuit.py::test_split_is_balanced`, `test_backends.py::test_hadamard_shots_are_approximately_balanced` |
+| Phase alone leaves probabilities unchanged | Rulebook "Twist", puzzle 3: Twist, Bloom, nothing changes | `test_twist_alone_leaves_probabilities_unchanged` |
+| Phase matters when branches recombine; constructive and destructive interference | Rulebook "Twist, then Split", puzzle 3: Twist then Split silences the footsteps (or makes them certain) | `test_phase_then_recombination_changes_the_outcome`, `test_phase_then_recombination_changes_sampled_distribution` |
+| Controlled gates create measurable correlations | Rulebook "Link a split seed", puzzle 2: thunder only with rain (Bell pair, 01 and 10 never appear) | `test_bell_state_correlations`, `test_bell_shots_are_correlated` |
 | Measurement draws classical outcomes from the prepared state | Every Bloom; predicted vs measured bars | `test_deterministic_basis_state_preparation`, `test_deterministic_preparation_samples_one_outcome` |
-| Noise adds unintended outcomes; shorter circuits are more robust | Challenge 4 | `test_teaching_noise_produces_unintended_outcomes_and_rewards_shorter_circuits` (Aer) and the vitest twin (in-app model) |
+| Noise adds unintended outcomes; shorter circuits are more robust | Puzzle 4 | `test_teaching_noise_produces_unintended_outcomes_and_rewards_shorter_circuits` (Aer) and the vitest twin (in-app model) |
 | The audio system interprets normalized results consistently | everywhere | `test_normalize_counts_shapes`, `statevector.test.ts` ("sampling and result interpretation") |
 
 ## Layout

@@ -18,7 +18,9 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
 - [x] Docs: README, ARCHITECTURE, QUANTUM_TO_AUDIO, IONQ_SETUP, LIMITATIONS, DEMO_SCRIPT, JUDGES, ATTRIBUTIONS, QOLLAB_PAGE, LICENSE
 - [x] Second-opinion review 1 (architecture + slice): 30 findings triaged, the substantive ones fixed (see context log)
 - [ ] Second-opinion review 2 (final) and fixes
-- [ ] Live test of challenges 3–4 and the creator in Chrome; responsive pass at phone width; keyboard pass
+- [x] Redesign after the founder's first look (10-10 16:00): a sound board instead of a dashboard — rulebook of nine
+      playable rules → puzzles where Bloom asks for the guess → creator with four sound pads; jargon behind a Circuit toggle
+- [ ] Live test at phone width after the redesign (the Chrome resize did not take; earlier 390px check predates it); keyboard pass
 
 ## Needs a human
 - IonQ API key in `server/.env` (`IONQ_API_KEY=...`) to prove the standalone IonQ path (the live test skips without it).
@@ -33,3 +35,9 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
 - 10-10 11:50 scaffolded repo; 12:05 architecture locked after reading Qollab runtime docs.
 - 10-10 12:40 vertical slice live in Chrome; 12:50 review 1 back; 13:30 review-1 fixes: odds hidden until prediction, no-audio completion, Qollab one-job redesign, exclusive predictions, one Pauli noise model, X-basis blooms + classical twins + dephased twin, legend, remove affordance, docs.
 - 10-10 14:30 review 2 back: all 8 round-1 fixes verified; fixed the IonQ-path noise routing bug, prediction lock + Reconsider, native radios, feedback copy by result kind, entanglement-witness wording, dephased twin built from the learner's garden, explicit noise rates, #scene deep links for demos.
+- 10-10 16:00 founder opened it: "I kinda have no idea what's going on"; asked for rules-first, then freedom, and a sound board with
+  fewer buttons and less reading. 16:45 rebuilt the app layer: welcome = one line + one button; Moves scene (nine one-line rules,
+  each with Hear it in a live garden, plus free play); puzzles = garden + caption + board, Bloom asks "what will you hear?" as big
+  choices, result in one sentence, Why? opens the physics/code/deeper; creator = four pads with seed lamps + board; buds carry
+  sound names; bits, percentages, outcome cards, code and backend select live behind the Circuit toggle. Live in Chrome: rulebook
+  Hear it, puzzle 1 end to end, Why?, creator pads. Gate green.

@@ -4,12 +4,19 @@
 music and no quantum background, through natural sounds rendered from real Qiskit circuits. Theme: Quantum
 Playground. _This effort is supported by Qollab & IonQ._
 
+## How it plays
+A sound board, not a dashboard: the garden, four big moves (Flip, Split, Twist, Link), Bloom, and the path of beads
+that is the circuit. First a rulebook of nine one-line rules you can hear (including the two that are not classical:
+two Splits cancel, and a Twist is silent until the next Split), then four puzzles solved with any garden that meets
+the goal, then an open creator. Pressing Bloom in a puzzle asks for a guess first. The **Circuit** toggle shows gate
+names, bits, percentages and the Qiskit code for whatever garden is on screen.
+
 ## Why quantum is essential, not decorative
 - The sounds are shaped by state preparation, not by a random number: a Twist changes nothing you hear until a
-  second Split makes the paths interfere (challenge 3), and a dephased twin of the same circuit cannot cancel the
+  second Split makes the paths interfere (puzzle 3), and a dephased twin of the same circuit cannot cancel the
   footsteps.
 - Entanglement is made audible as agreement that survives a complementary question: a Bell pair blooms
-  together-or-neither in both the Z and the X basis; classical twins fall apart sideways (challenge 2, Go deeper).
+  together-or-neither in both the Z and the X basis; classical twins fall apart sideways (puzzle 2, Why → Go deeper).
 - Measurement is the bloom: definite outcomes drawn from the prepared state, predicted bars beside measured bars,
   and an explanation of why repeated blooms differ.
 
