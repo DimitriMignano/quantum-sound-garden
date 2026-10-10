@@ -9369,10 +9369,10 @@ var ve, ye, be = n((() => {
 		}
 		async info() {
 			return {
-				name: "Local Qiskit server",
+				name: "Qiskit server",
 				backends: (await (await fetch(`${this.base}/api/backends`)).json()).map(_e),
 				defaultBackendId: "local-ideal",
-				note: "Circuits are built and run by Qiskit on this computer (Aer). IonQ backends run on IonQ’s cloud when the server has an IonQ key."
+				note: "Circuits are built and run by Qiskit on the server (Aer). IonQ backends run on IonQ’s cloud when the server has an IonQ key."
 			};
 		}
 		async ideal(e) {

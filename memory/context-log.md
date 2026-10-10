@@ -340,3 +340,25 @@ corrections go in a new entry. Newest at the bottom. Fill every field (`n/a` if 
 - Deferred work: a human listening pass; keyboard; phone width; a public static deploy on quantumnuggets.com if the founder
   wants it (static build, browser-math fallback labeled, Qollab stays the judged artifact).
 - Risks: none new.
+
+### 2026-10-10 23:55 — A real deployment, ready for quantumnuggets.com
+- Branch / worktree: `main`
+- Task: the founder bought quantumnuggets.com and wants the full app there: every result a real Qiskit run, easy for judges
+  and teammates, and a home after the hackathon. (The Qollab upload stays the judged artifact.)
+- Files changed: `Dockerfile` (node build stage → python:3.12-slim with server/requirements.txt, the built app at
+  web/dist served by qsg.api at /, `$PORT` default 8080, non-root user), `.dockerignore`, `docs/DEPLOY.md` (Railway with
+  the CLI already on the founder's machine; DNS for the apex and www; variables; Fly, Cloud Run, Render notes; smoke test),
+  `server/qsg/backends.py` + `web/src/engine/server.ts` (labels no longer say "Local" or "this computer"), `qollab/` (rebuilt
+  with the label), `WORKLOG.md`
+- Verification run: `npm run check` green. `docker build` succeeded (image 651 MB). Ran the container on :8090: /api/health
+  {"ok":true}, / served the app (title and #qsg-root), POST /api/run Swap → {'1': 12}, Shuffle·Turn ½·Shuffle → {'1': 12},
+  78 MB RSS at rest. Not done: the deploy itself (needs `railway login` by a human, a public URL and a few dollars a month),
+  the DNS records, a live smoke test on the domain.
+- Commit hash: this commit (parent c1c51c2)
+- Seams (§22): hosted PARTIAL (container proven locally; not deployed) · delivery for the site = `railway up` once logged in
+- Decisions: one container for API and app (no CORS, no second host); Railway because its CLI is already installed here;
+  no IONQ_API_KEY on the public site by default (every IonQ run would spend credits); the static browser-math deploy was
+  rejected because the founder wants the math done by Qiskit, not mirrored.
+- Deferred work: the deploy and DNS (human); after it is live, the URL goes on the Qollab page and in JUDGES.md.
+- Risks: Railway pricing not verified here ("a few dollars a month" is from memory); the apex domain needs ALIAS/ANAME or A
+  records depending on the registrar; the image is 651 MB, so the first deploy takes a few minutes.

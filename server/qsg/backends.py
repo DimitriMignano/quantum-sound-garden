@@ -107,10 +107,10 @@ def list_backends() -> list[BackendInfo]:
     key = ionq_key_present()
     reason = None if key else "IONQ_API_KEY is not set (see server/.env.example)"
     return [
-        BackendInfo("local-ideal", "Local Qiskit simulator (Aer, ideal)", "local-ideal", "qiskit-aer", False, False, True),
+        BackendInfo("local-ideal", "Qiskit simulator (Aer, ideal)", "local-ideal", "qiskit-aer", False, False, True),
         BackendInfo(
             "local-noisy-teaching",
-            "Local Qiskit simulator with teaching noise (exaggerated)",
+            "Qiskit simulator with teaching noise (exaggerated)",
             "local-noisy",
             "qiskit-aer",
             True,
@@ -120,7 +120,7 @@ def list_backends() -> list[BackendInfo]:
         ),
         BackendInfo(
             "local-noisy-ionq-inspired",
-            "Local Qiskit simulator with IonQ-inspired noise",
+            "Qiskit simulator with IonQ-inspired noise",
             "local-noisy",
             "qiskit-aer",
             True,

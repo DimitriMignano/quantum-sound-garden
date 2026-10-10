@@ -50,10 +50,10 @@ export class ServerEngine implements QuantumEngine {
     const list = (await r.json()) as ServerBackend[];
     const backends = list.map(toDescriptor);
     return {
-      name: 'Local Qiskit server',
+      name: 'Qiskit server',
       backends,
       defaultBackendId: 'local-ideal',
-      note: 'Circuits are built and run by Qiskit on this computer (Aer). IonQ backends run on IonQ’s cloud when the server has an IonQ key.',
+      note: 'Circuits are built and run by Qiskit on the server (Aer). IonQ backends run on IonQ’s cloud when the server has an IonQ key.',
     };
   }
 

@@ -102,3 +102,9 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
   "The dial sets the odds": Shuffle, Turn, Shuffle on the board and the Turn amount chips now turn the existing Turn live (½ → always
   rain, ¼ → coin toss, ⅛ → rain about one in seven), with the odds bar moving as you tap. The chips act as a live dial everywhere a
   Turn already exists on the selected track. The Turn page foreshadows it ("silent now, decisive on the next two pages").
+- 10-10 23:55 founder bought quantumnuggets.com and wants the full app there (real Qiskit, correct math, easy for judges and
+  teammates, and a home after the hackathon). Prepared: a two-stage Dockerfile (Vite build → python:3.12-slim with Qiskit, Aer,
+  qiskit-ionq, FastAPI serving /api and the built app at /, $PORT, non-root), .dockerignore, docs/DEPLOY.md (Railway steps, DNS,
+  variables, other hosts), host-neutral labels ("Qiskit simulator (Aer, ideal)", "Qiskit server… on the server"). Built the image
+  locally (651 MB) and ran it: /api/health ok, the site served, two real Aer runs returned the right counts. Needs a human:
+  `railway login`, then `railway init` + `railway up`, the custom domain, and the DNS records at the registrar.
