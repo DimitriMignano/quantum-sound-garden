@@ -48,3 +48,7 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
   page's moves on the board, Try it + Play); puzzles with a closeness hum (tritone far → octave there) as the eyes-closed progress bar
   and no guess step; studio pads. The first lesson used a near-silent "hush", which is why Hear it felt like nothing: tracks now use
   audible base sounds (crickets, wind). Audio output measured with an analyser on the master bus: RMS 0.05 idle hum, 0.10 during Play.
+- 10-10 18:30 founder: "the try it buttons dont play anything or at least i cant hear anything… explain whats going on first".
+  Every beat now carries a drum per track (low thump for the first sound, bright snap for the hit, panned left/right by track), the
+  textures hit instead of crossfading, default volume 0.85, limiter −6 dB, ceiling 0.9: Play peaks RMS 0.31 at the master (was 0.17).
+  Learn opens on a "What's going on" page: five numbered lines of context, then "Learn the moves".

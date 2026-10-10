@@ -260,3 +260,8 @@
 .lesson__actions { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
 .lesson__actions .learn__go.linklike { margin-left: auto; }
 .ghost.is-next { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 0 1px rgba(255,176,64,0.35); }
+
+/* learn: the intro page */
+.intro { display: grid; gap: 0.7rem; padding: 1rem 1.1rem; border-radius: var(--radius); background: var(--panel); border: 1px solid var(--line); max-width: 70ch; }
+.intro__line { display: grid; grid-template-columns: 1.8rem 1fr; gap: 0.6rem; align-items: start; font-size: 1.08rem; line-height: 1.5; color: var(--ink); margin: 0; }
+.intro__num { width: 1.6rem; height: 1.6rem; border-radius: 50%; display: grid; place-items: center; font-size: 0.8rem; font-weight: 600; color: var(--accent-ink); background: var(--accent); margin-top: 0.15rem; }

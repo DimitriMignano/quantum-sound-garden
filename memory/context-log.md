@@ -132,3 +132,21 @@ corrections go in a new entry. Newest at the bottom. Fill every field (`n/a` if 
   moves the page is about.
 - Deferred work: phone-width pass; keyboard pass; a louder/clearer hum option; three-track studio.
 - Risks: the hum is a design guess until a human listens (tritone→octave mapping, levels); puzzles 2–4 not replayed live.
+
+### 2026-10-10 18:30 — Beats you can feel, and context first
+- Branch / worktree: `main`
+- Task: the founder could not hear "Try it" and asked for context before the first page.
+- Files changed: `web/src/audio/mixer.ts` (Pulse: one drum per track per beat, thump vs snap, stereo by track; hit
+  envelope on textures; blend 0.7), `web/src/audio/engine.ts` (volume 0.85, limiter −6 dB, ceiling 0.9),
+  `web/src/content/content.ts` (intro lesson; lesson 1–2 copy names the thump and the snap), `web/src/app/TutorialScene.tsx`
+  (intro page), `web/src/styles.css`, `qollab/` (rebuilt), `WORKLOG.md`
+- Verification run: tsc clean; full gate in the commit chain. Live in Chrome with the master-bus meter: idle hum RMS ≤ 0.12;
+  "Try it" on lesson 1 peaks RMS 0.311 (mean 0.10 over 1.8 s) versus 0.166 before the drums and the louder chain. The intro
+  page renders with five numbered lines and "Learn the moves" leads to "Tracks".
+- Commit hash: this commit (parent 7884b08)
+- Seams (§22): unchanged (surface LIVE; hosted/delivery PARTIAL until a human publishes on Qollab)
+- Decisions: the beat is a drum, not a crossfade: textures alone cannot carry a beat on laptop speakers; the drum encodes
+  the reading (thump = first sound, snap = hit) so the eyes-closed promise holds for any sound choice; the limiter stays
+  as the safety net, just later (−6 dB).
+- Deferred work: a human listening pass on levels and the hum; phone width; keyboard.
+- Risks: loudness judged by a meter, not by an ear; the drum timbres are a first guess.

@@ -239,12 +239,21 @@ export interface Lesson {
   ops: Op[];                     // the mix "Try it" loads
   beats: number;
   hear: string;                  // what they just heard, shown when the Play ends
+  /** an intro page: these lines instead of a board, and a single "Learn the moves" button */
+  intro?: string[];
 }
 export const LESSON_TRACKS: Track[] = [SKY, STORM];
 const SYNC: Op = { op: 'link', control: 0, target: 1 };
 export const LESSONS: Lesson[] = [
-  { id: 'tracks', title: 'Tracks', text: 'A track plays one of two sounds. Sky plays crickets, or it hits with rain. Play rolls a few beats.', show: [], ops: [], beats: 6, hear: 'Crickets on every beat. Nothing was changed, so Sky stayed on its first sound.' },
-  { id: 'swap', title: 'Swap', text: 'Swap switches a track to its other sound.', show: ['flip'], ops: [{ op: 'flip', q: 0 }], beats: 6, hear: 'Rain on every beat.' },
+  { id: 'intro', title: 'What’s going on', text: 'Thirty seconds of context before the first sound.', show: [], ops: [], beats: 0, hear: '', intro: [
+    'This is a beat studio. It has tracks. On every beat, each track plays one of its two sounds. On this page, Sky plays crickets or rain.',
+    'The twist: a track does not have to decide which sound until the beat is played. It can be truly undecided. And two tracks can be tied together so they decide the same way, every time.',
+    'You get four moves to shape a track: Swap, Shuffle, Turn, Sync. Then Play rolls the beats and you hear what the tracks decided. Each beat thumps low for the first sound and snaps bright for the hit, so you can follow it with your eyes closed.',
+    'First, learn the moves by ear, one page each. Then solve four puzzles: a hum tells you how close you are. Then build your own beat.',
+    'Everything you hear comes from a real quantum circuit being measured. That is the whole trick, and you do not need to know what that means yet.',
+  ] },
+  { id: 'tracks', title: 'Tracks', text: 'A track plays one of two sounds on every beat. Sky plays crickets with a low thump, or it hits with rain and a bright snap. Press Try it to hear six beats.', show: [], ops: [], beats: 6, hear: 'Six low thumps with crickets. Nothing was changed, so Sky stayed on its first sound every beat.' },
+  { id: 'swap', title: 'Swap', text: 'Swap switches a track to its other sound.', show: ['flip'], ops: [{ op: 'flip', q: 0 }], beats: 6, hear: 'Six bright snaps with rain. Swap moved Sky to its other sound.' },
   { id: 'shuffle', title: 'Shuffle', text: 'Shuffle makes every beat a coin toss: crickets or rain, and you never know which is next.', show: ['flip', 'split'], ops: [{ op: 'split', q: 0 }], beats: 8, hear: 'Crickets and rain in no pattern, about half and half.' },
   { id: 'shuffle2', title: 'Shuffle, again', text: 'Shuffle a shuffled track and it goes steady again. Two Shuffles cancel. Dice never do that.', show: ['flip', 'split'], ops: [{ op: 'split', q: 0 }, { op: 'split', q: 0 }], beats: 6, hear: 'Crickets on every beat. The two Shuffles undid each other.' },
   { id: 'turn', title: 'Turn', text: 'Turn moves a hidden dial on a shuffled track. On its own you hear no change at all.', show: ['split', 'twist'], ops: [{ op: 'split', q: 0 }, { op: 'twist', q: 0, turns: 0.5 }], beats: 8, hear: 'Still a coin toss. The dial moved, and a dial makes no sound.' },

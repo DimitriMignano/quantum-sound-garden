@@ -75,11 +75,47 @@ class GoalHum {
   dispose(): void { try { this.root.stop(); this.upper.stop(); } catch { /* already stopped */ } this.out.disconnect(); }
 }
 
+/**
+ * The pulse: one short drum per track per beat, so a beat is felt even when a track's sounds are soft textures.
+ * A track on its first sound thumps low; a track that hits snaps bright. Track 0 sits a little left, track 1 a
+ * little right, so two tracks can be told apart with eyes closed.
+ */
+class Pulse {
+  private out: GainNode;
+  constructor(private ctx: AudioContext, bus: AudioNode) { this.out = ctx.createGain(); this.out.gain.value = 0.9; this.out.connect(bus); }
+  private pan(q: number, n: number): AudioNode {
+    if (typeof this.ctx.createStereoPanner !== 'function' || n < 2) return this.out;
+    const p = this.ctx.createStereoPanner(); p.pan.value = (q / (n - 1)) * 1.2 - 0.6; p.connect(this.out); return p;
+  }
+  /** hit: a bright snap (noise burst through a band-pass); base: a low thump (a sine dropping in pitch). */
+  beat(q: number, n: number, hit: boolean, when = this.ctx.currentTime): void {
+    const dest = this.pan(q, n);
+    const g = this.ctx.createGain(); g.connect(dest);
+    if (hit) {
+      const len = Math.floor(this.ctx.sampleRate * 0.12);
+      const buf = this.ctx.createBuffer(1, len, this.ctx.sampleRate); const d = buf.getChannelData(0);
+      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len) ** 2;
+      const src = this.ctx.createBufferSource(); src.buffer = buf;
+      const bp = this.ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 2400; bp.Q.value = 0.9;
+      src.connect(bp).connect(g);
+      g.gain.setValueAtTime(0.7, when); g.gain.exponentialRampToValueAtTime(0.001, when + 0.14);
+      src.start(when); src.stop(when + 0.16);
+    } else {
+      const osc = this.ctx.createOscillator(); osc.type = 'sine';
+      osc.frequency.setValueAtTime(150, when); osc.frequency.exponentialRampToValueAtTime(48, when + 0.14);
+      osc.connect(g);
+      g.gain.setValueAtTime(0.9, when); g.gain.exponentialRampToValueAtTime(0.001, when + 0.26);
+      osc.start(when); osc.stop(when + 0.3);
+    }
+  }
+}
+
 export class GardenMixer {
   private layers = new Map<string, SoundInstance>();
   private goal: GoalHum | null = null;
+  private pulse: Pulse | null = null;
   private current: PlaybackHandle | null = null;
-  private blendScale = 0.55; // "hearing the odds" sits under a full bloom
+  private blendScale = 0.7; // "hearing the odds" sits under a full Play
 
   private ensure(id: string): SoundInstance | null {
     if (!audio.ctx || !audio.bus) return null;
@@ -134,18 +170,24 @@ export class GardenMixer {
     for (const ids of Object.values(assignment)) for (const id of ids) allIds.add(id);
     for (const id of allIds) this.ensure(id);
 
+    if (audio.ctx && audio.bus && !this.pulse) this.pulse = new Pulse(audio.ctx, audio.bus);
+    const n = sequence[0]?.length ?? 1;
     const moment = (i: number) => {
       if (stopped) return;
       const outcome = sequence[i];
       const active = new Set(assignment[outcome] ?? []);
+      // the drum: one per track, thump or snap by what that track read (qubit 0 is the rightmost bit)
+      for (let q = 0; q < n; q++) this.pulse?.beat(q, n, outcome[outcome.length - 1 - q] === '1');
       for (const id of allIds) {
         const inst = this.layers.get(id);
         if (!inst) continue;
         if (active.has(id)) {
-          inst.setLevel(1, 0.25);
+          // a hit, not a crossfade: up fast, then settle toward the bed before the next beat
+          inst.setLevel(1, 0.03);
+          timers.push(window.setTimeout(() => { if (!stopped) inst.setLevel(Math.max(bed * (mass[id] ?? 0), 0.35), 0.3); }, step * 450));
           if (soundById(id).kind === 'event') inst.trigger();
         } else {
-          inst.setLevel(bed * (mass[id] ?? 0), 0.5);
+          inst.setLevel(bed * (mass[id] ?? 0), 0.2);
         }
       }
       opts.onMoment?.(i, outcome, captionFor(assignment, outcome));

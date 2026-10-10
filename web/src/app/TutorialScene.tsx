@@ -32,6 +32,25 @@ export function TutorialScene({ engine, reducedMotion, details, onDone }: Props)
   const play = () => { setPlayed(null); garden.bloom(lesson.beats, { moments: lesson.beats, step: 0.6, label: lesson.title }).then((r) => { if (r) setPlayed(lesson.id); }); };
   const go = (i: number) => { setStep(i); setPlayed(null); garden.reset([]); };
 
+  if (lesson.intro) {
+    return (
+      <div className="scene scene--learn">
+        <header className="puzzle__head">
+          <p className="eyebrow">Learn · {step + 1} of {LESSONS.length}</p>
+          <h2>{lesson.title}</h2>
+          <p className="lesson__text">{lesson.text}</p>
+        </header>
+        <section className="intro" aria-label={lesson.title}>
+          {lesson.intro.map((line, i) => <p key={i} className="intro__line"><span className="intro__num" aria-hidden="true">{i + 1}</span>{line}</p>)}
+        </section>
+        <div className="lesson__actions">
+          <button type="button" className="primary" onClick={() => go(step + 1)}>Learn the moves</button>
+          <button type="button" className="linklike learn__go" onClick={onDone}>Skip to the puzzles</button>
+        </div>
+      </div>
+    );
+  }
+
   const caption = garden.playback?.finished && played === lesson.id ? lesson.hear
     : garden.busy ? undefined
     : lesson.show.length === 0 ? 'Press Try it.'

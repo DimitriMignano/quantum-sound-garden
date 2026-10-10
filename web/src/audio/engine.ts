@@ -9,7 +9,7 @@ export class AudioEngine {
   private limiter: DynamicsCompressorNode | null = null;
   private analyser: AnalyserNode | null = null;
   private scratch: Float32Array<ArrayBuffer> | null = null;
-  private _volume = 0.7;
+  private _volume = 0.85;
   private _muted = false;
   private listeners = new Set<() => void>();
 
@@ -21,7 +21,7 @@ export class AudioEngine {
       this.ctx = new AC();
       this.master = this.ctx.createGain();
       this.limiter = this.ctx.createDynamicsCompressor();
-      this.limiter.threshold.value = -12;
+      this.limiter.threshold.value = -6;
       this.limiter.knee.value = 6;
       this.limiter.ratio.value = 12;
       this.limiter.attack.value = 0.003;
@@ -59,10 +59,10 @@ export class AudioEngine {
   setVolume(v: number): void { this._volume = Math.max(0, Math.min(1, v)); this.applyMaster(0.05); this.emit(); }
   setMuted(m: boolean): void { this._muted = m; this.applyMaster(0.05); this.emit(); }
 
-  /** Master ceiling 0.8: the loudest the garden can get, before the limiter. */
+  /** Master ceiling 0.9: the loudest the studio can get, after the limiter. */
   private applyMaster(ramp: number): void {
     if (!this.master || !this.ctx) return;
-    const target = this._muted ? 0 : 0.8 * this._volume * this._volume; // perceptual curve
+    const target = this._muted ? 0 : 0.9 * this._volume * this._volume; // perceptual curve
     this.master.gain.cancelScheduledValues(this.ctx.currentTime);
     this.master.gain.setTargetAtTime(target, this.ctx.currentTime, ramp);
   }
