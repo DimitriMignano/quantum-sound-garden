@@ -4,7 +4,7 @@ import type { Op } from '../engine/types';
 import type { GardenApi } from './useGarden';
 import { ResultNote } from './ResultNote';
 
-/** The learner's garden and a copy with a half-turn twist inserted before its last Split (the recombination). */
+/** The learner's mix and a copy with a half Turn inserted before its last Shuffle (the recombination). */
 export function dephasedTwins(ops: Op[]): Op[][] {
   let last = -1;
   ops.forEach((o, i) => { if (o.op === 'split') last = i; });

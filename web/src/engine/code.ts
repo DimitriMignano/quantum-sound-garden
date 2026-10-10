@@ -2,10 +2,10 @@
 import type { Circuit, Op } from './types';
 
 const EXPLAIN: Record<Op['op'], string> = {
-  flip: 'Flip (X gate): turns the seed over, |0> becomes |1>',
-  split: 'Split (Hadamard): one path becomes two equal paths',
-  twist: 'Twist (phase gate): rotates the |1> path; invisible until paths recombine',
-  link: 'Link (CNOT): the control seed decides whether the target flips',
+  flip: 'Swap (X gate): switches the track to its other sound, |0> becomes |1>',
+  split: 'Shuffle (Hadamard): one path becomes two equal paths, a coin toss at Play',
+  twist: 'Turn (phase gate): rotates the |1> path; silent until paths recombine',
+  link: 'Sync (CNOT): the control track decides whether the target flips',
 };
 
 export function turnsExpr(turns: number): string {
@@ -31,7 +31,7 @@ export function qiskitCode(circuit: Circuit, shots = 256): string {
     'from qiskit.quantum_info import Statevector',
     'import math',
     '',
-    `qc = QuantumCircuit(${n}, ${n})   # ${n} seed${n !== 1 ? 's' : ''}, one classical bit each`,
+    `qc = QuantumCircuit(${n}, ${n})   # ${n} track${n !== 1 ? 's' : ''}, one classical bit each`,
   ];
   for (const op of circuit.ops) {
     if (op.op === 'flip') lines.push(`qc.x(${op.q})        # ${EXPLAIN.flip}`);
@@ -40,9 +40,9 @@ export function qiskitCode(circuit: Circuit, shots = 256): string {
     else if (op.op === 'link') lines.push(`qc.cx(${op.control}, ${op.target})    # ${EXPLAIN.link}`);
   }
   const regs = Array.from({ length: n }, (_, i) => String(i)).join(', ');
-  if (circuit.basis === 'x') for (let q = 0; q < n; q++) lines.push(`qc.h(${q})        # Bloom sideways: rotate seed ${q} into the X basis before measuring`);
+  if (circuit.basis === 'x') for (let q = 0; q < n; q++) lines.push(`qc.h(${q})        # Play sideways: rotate track ${q} into the X basis before measuring`);
   lines.push(
-    `qc.measure([${regs}], [${regs}])   # Bloom: measure every seed`,
+    `qc.measure([${regs}], [${regs}])   # Play: measure every track`,
     '',
     '# Ideal probabilities, before any shots:',
     'state = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))',

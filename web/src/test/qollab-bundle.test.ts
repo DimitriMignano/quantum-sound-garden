@@ -27,11 +27,11 @@ async function boot(backendName: string) {
   for (let i = 0; i < 50 && !document.querySelector('.welcome'); i++) await new Promise((r) => setTimeout(r, 50));
 }
 
-/** The gesture, then the rulebook, then puzzle 1 (the moves scene shows the board too, so wait for the puzzle's own heading). */
+/** The gesture, then the tutorial, then puzzle 1 (the tutorial shows a board too, so wait for the puzzle's own scene). */
 async function openPuzzleOne() {
   (document.querySelector('.primary--big') as HTMLButtonElement).click();
-  for (let i = 0; i < 50 && !document.querySelector('.moves__go'); i++) await new Promise((r) => setTimeout(r, 50));
-  (document.querySelector('.moves__go') as HTMLButtonElement).click();
+  for (let i = 0; i < 50 && !document.querySelector('.learn__go'); i++) await new Promise((r) => setTimeout(r, 50));
+  (document.querySelector('.learn__go') as HTMLButtonElement).click();
   for (let i = 0; i < 50 && !document.querySelector('.scene--puzzle .move--flip'); i++) await new Promise((r) => setTimeout(r, 50));
 }
 
@@ -55,7 +55,7 @@ describe('the built Qollab bundle', () => {
     expect(pill).toContain('Qollab simulator (basic_simulator)');
   });
 
-  it('asks Python for ideals and runs a bloom through backend.run with JSON ops', async () => {
+  it('asks Python for ideals and runs a Play through backend.run with JSON ops', async () => {
     await boot('basic_simulator');
     await openPuzzleOne();
     (document.querySelector('.move--flip') as HTMLButtonElement).click();
@@ -63,9 +63,7 @@ describe('the built Qollab bundle', () => {
     const idealCall = fake.calls.filter((c) => c.fn === 'ideal_json.callPromising').at(-1);
     expect(idealCall?.args[0]).toBe(1);
     expect(JSON.parse(idealCall?.args[1] as string)).toEqual([{ op: 'flip', q: 0 }]);
-    (document.querySelector('.bloom') as HTMLButtonElement).click(); // Bloom asks for a guess first
-    for (let i = 0; i < 50 && !document.querySelector('.choice'); i++) await new Promise((r) => setTimeout(r, 50));
-    (document.querySelectorAll('.choice')[1] as HTMLButtonElement).click(); // "Always rain"
+    (document.querySelector('.bloom') as HTMLButtonElement).click(); // Play
     for (let i = 0; i < 50 && !fake.calls.some((c) => c.fn === 'run_json.callPromising'); i++) await new Promise((r) => setTimeout(r, 50));
     const run = fake.calls.find((c) => c.fn === 'run_json.callPromising');
     expect(run).toBeTruthy();
@@ -76,7 +74,7 @@ describe('the built Qollab bundle', () => {
     expect(((globalThis as { backend?: { jobs: number } }).backend as { jobs: number }).jobs).toBe(1);
   });
 
-  it('on an IonQ backend the challenges bloom on the statevector and never spend the one job', async () => {
+  it('on an IonQ backend the puzzles play on the statevector and never spend the one job', async () => {
     fake.calls.length = 0;
     await boot('ionq_simulator');
     const pill = document.querySelector('.topbar .pill')?.textContent ?? '';
@@ -85,8 +83,6 @@ describe('the built Qollab bundle', () => {
     (document.querySelector('.move--flip') as HTMLButtonElement).click();
     await new Promise((r) => setTimeout(r, 300));
     (document.querySelector('.bloom') as HTMLButtonElement).click();
-    for (let i = 0; i < 50 && !document.querySelector('.choice'); i++) await new Promise((r) => setTimeout(r, 50));
-    (document.querySelectorAll('.choice')[1] as HTMLButtonElement).click();
     await new Promise((r) => setTimeout(r, 500));
     expect(fake.calls.some((c) => c.fn === 'run_json.callPromising')).toBe(false);
     expect(((globalThis as { backend?: { jobs: number } }).backend as { jobs: number }).jobs).toBe(0);

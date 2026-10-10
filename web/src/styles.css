@@ -246,3 +246,17 @@
   .move { flex-basis: 40%; }
   .board__bloom { flex-basis: 100%; }
 }
+
+/* the front door: a beat you can see */
+.welcome { position: relative; overflow: hidden; }
+.welcome__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
+.welcome__card { position: relative; z-index: 1; }
+.welcome__title { font-size: clamp(2.4rem, 7vw, 4.6rem); line-height: 1.02; letter-spacing: -0.02em; background: linear-gradient(100deg, var(--ink) 20%, var(--accent) 60%, var(--phase)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.welcome__pitch { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--ink); margin: 0.2rem 0 0; }
+.welcome__lead { font-size: 1rem; }
+
+/* learn: one page per idea */
+.lesson__text { font-size: 1.1rem; color: var(--ink); margin: 0.3rem 0 0; max-width: 60ch; }
+.lesson__actions { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
+.lesson__actions .learn__go.linklike { margin-left: auto; }
+.ghost.is-next { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 0 1px rgba(255,176,64,0.35); }

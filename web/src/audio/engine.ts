@@ -7,6 +7,8 @@ export class AudioEngine {
   private master: GainNode | null = null;
   bus: GainNode | null = null;
   private limiter: DynamicsCompressorNode | null = null;
+  private analyser: AnalyserNode | null = null;
+  private scratch: Float32Array<ArrayBuffer> | null = null;
   private _volume = 0.7;
   private _muted = false;
   private listeners = new Set<() => void>();
@@ -27,6 +29,11 @@ export class AudioEngine {
       this.bus = this.ctx.createGain();
       this.bus.gain.value = 1;
       this.bus.connect(this.limiter).connect(this.master).connect(this.ctx.destination);
+      // a meter on the master output, so "is anything actually sounding?" is a number, not a guess
+      this.analyser = this.ctx.createAnalyser();
+      this.analyser.fftSize = 1024;
+      this.scratch = new Float32Array(this.analyser.fftSize);
+      this.master.connect(this.analyser);
       this.applyMaster(0.01);
     }
     if (this.ctx.state !== 'running') {
@@ -37,6 +44,14 @@ export class AudioEngine {
   }
 
   get started(): boolean { return !!this.ctx && this.ctx.state === 'running'; }
+  /** RMS level at the master output right now (0 = silence). */
+  level(): number {
+    if (!this.analyser || !this.scratch) return 0;
+    this.analyser.getFloatTimeDomainData(this.scratch);
+    let sum = 0;
+    for (let i = 0; i < this.scratch.length; i++) sum += this.scratch[i] * this.scratch[i];
+    return Math.sqrt(sum / this.scratch.length);
+  }
   get now(): number { return this.ctx?.currentTime ?? 0; }
   get volume(): number { return this._volume; }
   get muted(): boolean { return this._muted; }

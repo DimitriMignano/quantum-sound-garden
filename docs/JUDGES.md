@@ -1,24 +1,25 @@
 # For judges
 
-**Quantum Sound Garden** teaches superposition, entanglement, interference and noise by ear, to people with no
+**Quantum Beats Studio** (repository: quantum-sound-garden) teaches superposition, entanglement, interference and noise by ear, to people with no
 music and no quantum background, through natural sounds rendered from real Qiskit circuits. Theme: Quantum
 Playground. _This effort is supported by Qollab & IonQ._
 
 ## How it plays
-A sound board, not a dashboard: the garden, four big moves (Flip, Split, Twist, Link), Bloom, and the path of beads
-that is the circuit. First a rulebook of nine one-line rules you can hear (including the two that are not classical:
-two Splits cancel, and a Twist is silent until the next Split), then four puzzles solved with any garden that meets
-the goal, then an open creator. Pressing Bloom in a puzzle asks for a guess first. The **Circuit** toggle shows gate
-names, bits, percentages and the Qiskit code for whatever garden is on screen.
+A sound board, not a dashboard: the picture, four big moves (Swap, Shuffle, Turn, Sync), Play, and the mix as beads,
+which is the circuit. No quantum words on the first-run path. First a nine-page tutorial you can hear (including the
+two rules dice can never follow: two Shuffles cancel, and a Turn is silent until the next Shuffle), then four puzzles
+solved with any mix that meets the goal, with a closeness hum (tritone when far, octave when there) so they can be
+solved with eyes closed, then an open studio. The **Circuit** toggle shows gate names, bits, percentages and the
+Qiskit code for whatever mix is on screen; the **Why?** reveal names the gate and the physics after each puzzle.
 
 ## Why quantum is essential, not decorative
-- The sounds are shaped by state preparation, not by a random number: a Twist changes nothing you hear until a
-  second Split makes the paths interfere (puzzle 3), and a dephased twin of the same circuit cannot cancel the
+- The sounds are shaped by state preparation, not by a random number: a Turn changes nothing you hear until a
+  second Shuffle makes the paths interfere (puzzle 3), and a dephased twin of the same circuit cannot cancel the
   footsteps.
-- Entanglement is made audible as agreement that survives a complementary question: a Bell pair blooms
+- Entanglement is made audible as agreement that survives a complementary question: a Bell pair plays
   together-or-neither in both the Z and the X basis; classical twins fall apart sideways (puzzle 2, Why → Go deeper).
-- Measurement is the bloom: definite outcomes drawn from the prepared state, predicted bars beside measured bars,
-  and an explanation of why repeated blooms differ.
+- Measurement is the Play: definite outcomes drawn from the prepared state, predicted bars beside measured bars
+  (Circuit view), and an explanation of why repeated Plays differ.
 
 ## Technical execution
 - One React + TypeScript codebase, three engines: Qollab (Qiskit on Pyodide + the chosen backend), a local

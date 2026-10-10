@@ -15,23 +15,23 @@ const turnsLabel = (t: number) => (t === 0.5 ? '½' : t === 0.25 ? '¼' : t === 
 /** The circuit as a garden path: one lane per seed, one bead per action, in order. Tap a bead to remove it. */
 export function PathView({ nQubits, seedNames, ops, showGates, disabled, onRemove }: Props) {
   return (
-    <div className="path" role="group" aria-label="The path: actions in order. Activate an action to remove it.">
-      {!disabled && ops.length > 0 && <p className="path__hint">The path, in order. Tap an action to remove it.</p>}
+    <div className="path" role="group" aria-label="The mix: moves in order. Activate a move to remove it.">
+      {!disabled && ops.length > 0 && <p className="path__hint">The mix, in order. Tap a move to remove it.</p>}
       {Array.from({ length: nQubits }, (_, q) => (
         <div key={q} className="path__lane">
           <span className="path__seed">{seedNames[q]}{showGates && <small> q[{q}]</small>}</span>
           <div className="path__beads">
-            {ops.length === 0 && q === 0 && <span className="path__empty">No actions yet. The seeds are 0.</span>}
+            {ops.length === 0 && q === 0 && <span className="path__empty">No moves yet. Every track is on its first sound.</span>}
             {ops.map((op, i) => {
               const onLane = op.op === 'link' ? op.control === q || op.target === q : op.q === q;
               if (!onLane) return <span key={i} className="path__gap" aria-hidden="true" />;
               const a = ACTIONS[op.op];
               const role = op.op === 'link' ? (op.control === q ? 'control' : 'target') : '';
-              const text = op.op === 'twist' ? `${a.verb} ${turnsLabel(op.turns)}` : op.op === 'link' ? (role === 'control' ? 'Link ●' : 'Link ⊕') : a.verb;
+              const text = op.op === 'twist' ? `${a.verb} ${turnsLabel(op.turns)}` : op.op === 'link' ? (role === 'control' ? 'Sync ●' : 'Sync ⊕') : a.verb;
               const gate = op.op === 'link' ? (role === 'control' ? 'CX control' : 'CX target') : a.gate;
               return (
                 <button key={i} type="button" className={`bead bead--${op.op}`} disabled={disabled} onClick={() => onRemove(i)}
-                  aria-label={`Step ${i + 1}: ${text}${showGates ? ` (${gate})` : ''} on ${seedNames[q]}. Remove.`} title="Remove this action">
+                  aria-label={`Step ${i + 1}: ${text}${showGates ? ` (${gate})` : ''} on ${seedNames[q]}. Remove.`} title="Remove this move">
                   <span>{text}</span>{showGates && <small>{gate}</small>}
                   {!disabled && <i className="bead__x" aria-hidden="true">×</i>}
                 </button>

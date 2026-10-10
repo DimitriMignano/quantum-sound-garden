@@ -23,7 +23,7 @@ const TURN: Record<string, { label: string; math: string }> = {
   '0.5': { label: '½', math: 'π' }, '0.25': { label: '¼', math: 'π/2' }, '0.125': { label: '⅛', math: 'π/4' }, '-0.25': { label: '−¼', math: '−π/2' },
 };
 
-/** The sound board: which seed, the four moves, Bloom, and the path of beads underneath. Every garden is a circuit. */
+/** The board: which track, the four moves, Play, and the mix as beads underneath. Every mix is a circuit. */
 export function Board({ seedNames, allowed, ops, disabled, showGates, turns = [0.5, 0.25], onAdd, onRemove, onReset, bloom, extra }: Props) {
   const [seed, setSeed] = useState(0);
   const [turn, setTurn] = useState(turns[0]);
@@ -46,8 +46,8 @@ export function Board({ seedNames, allowed, ops, disabled, showGates, turns = [0
   return (
     <div className="board">
       {n > 1 && (
-        <div className="board__seeds" role="group" aria-label="Which seed">
-          <span className="label">Seed</span>
+        <div className="board__seeds" role="group" aria-label="Which track">
+          <span className="label">Track</span>
           {seedNames.map((name, i) => (
             <button key={i} type="button" className={`chip${seed === i ? ' is-on' : ''}`} aria-pressed={seed === i} disabled={disabled} onClick={() => setSeed(i)}>{name}</button>
           ))}

@@ -20,7 +20,7 @@ export function TopBar({ info, scene, onScene, reducedMotion, onReducedMotion, d
   useEffect(() => audio.onChange(() => force((n) => n + 1)), []);
   const b = info?.backends.find((x) => x.id === info.defaultBackendId) ?? info?.backends[0];
   const nav = (id: string, label: string, locked = false, title?: string) => (
-    <button key={id} type="button" className={`navbtn${id === 'moves' || id === 'creator' ? ' navbtn--wide' : ''}${scene === id ? ' is-on' : ''}`} aria-current={scene === id ? 'page' : undefined}
+    <button key={id} type="button" className={`navbtn${id === 'learn' || id === 'studio' ? ' navbtn--wide' : ''}${scene === id ? ' is-on' : ''}`} aria-current={scene === id ? 'page' : undefined}
       disabled={!entered || locked} onClick={() => onScene(id)} title={title}>{label}</button>
   );
   return (
@@ -30,9 +30,9 @@ export function TopBar({ info, scene, onScene, reducedMotion, onReducedMotion, d
         <h1>{APP.title}</h1>
       </div>
       <nav className="topbar__nav" aria-label="Scenes">
-        {nav('moves', 'Moves')}
+        {nav('learn', 'Learn')}
         {[1, 2, 3, 4].map((i) => nav(`c${i}`, String(i), i > unlocked, i > unlocked ? 'Solve the previous puzzle first' : `Puzzle ${i}`))}
-        {nav('creator', 'Creator')}
+        {nav('studio', 'Studio')}
       </nav>
       <div className="topbar__tools">
         {b && <span className={`pill pill--${b.qiskit ? (b.remote ? 'ionq' : 'qiskit') : 'browser'}`} title={info?.note}>{b.label}</span>}

@@ -4,12 +4,15 @@
 > Hackathon (theme: Quantum Playground). Submissions close **2026-10-11 19:00 ET**.
 
 ## 1. Thesis
-Quantum Sound Garden is for people who have never touched an instrument or a qubit. A living night garden holds
-glowing sound seeds; the person Splits, Twists, Links and Blooms them and hears recognizable natural sounds (rain,
-thunder, footsteps, birds) rendered from the measurement results of a real Qiskit circuit. Four short challenges
-teach superposition, entanglement, interference and noise by ear, then a two-qubit creator mode makes a 20-second
-soundscape and shows the Qiskit code. It deliberately is not a synthesizer, a DAW or a step sequencer, and it never
-claims the person is "hearing a quantum state": the sound is classical audio driven by probabilities and shots.
+Quantum Beats Studio (repository: quantum-sound-garden; the in-app title is one constant, `APP.title`) is for
+people who have never touched an instrument or a qubit, and it is audio-first: you can play it with your eyes
+closed. Each track is a qubit that plays one of two sounds; the person Swaps (X), Shuffles (H), Turns (phase) and
+Syncs (CX) the tracks and Plays (measures) them, and hears crickets, rain, wind, thunder, footsteps or birds for what
+a real Qiskit circuit read on each beat. A nine-page tutorial teaches each move by ear with no quantum words; four
+puzzles make the moves necessary, with a closeness hum as the progress bar; a two-track studio makes a 20-second
+beat; the Circuit toggle and the Why? reveals carry the gates, the bits and the Qiskit code. It deliberately is not
+a synthesizer, a DAW or a step sequencer, and it never claims the person is "hearing a quantum state": the sound is
+classical audio driven by probabilities and shots.
 
 ## 2. Non-negotiables
 - Scientific honesty: every result names the engine that produced it (Qollab backend name · local Qiskit Aer ·

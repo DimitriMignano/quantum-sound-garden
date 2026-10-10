@@ -1,14 +1,15 @@
 # Quantum Sound Garden
 
-**Four moves. Every garden you grow is a real quantum circuit.** Learn the moves by ear → solve four puzzles →
-grow your own sounds → read the Qiskit code.
+**Quantum Beats Studio — make beats with the rules of quantum physics.** Learn four moves by ear → solve four
+puzzles → build your own beat → read the Qiskit code. Eyes closed works.
 
-An audiovisual learning and creation experience for people who have never played an instrument or touched a qubit.
-A living night garden holds glowing sound seeds (qubits). You **Split** (Hadamard), **Twist** (phase), **Link**
-(CNOT) and **Bloom** (measure) them, and the garden plays rain, thunder, footsteps and birds drawn from the
-measured shots of a real Qiskit circuit. A nine-line rulebook you can hear teaches the moves; four puzzles make you
-use them (superposition, entanglement, interference, noise); a two-qubit creator with four sound pads then makes a
-20-second soundscape. The **Circuit** button shows gate names, bits, percentages and the Qiskit code behind any garden.
+An audio-first learning and creation experience for people who have never played an instrument or touched a qubit.
+Each track is a qubit that plays one of two sounds. You **Swap** (X), **Shuffle** (Hadamard), **Turn** (phase) and
+**Sync** (CNOT) the tracks, then **Play** (measure): every beat is one measurement of a real Qiskit circuit, and the
+studio plays crickets, rain, wind, thunder, footsteps or birds for what was read. A nine-page tutorial teaches each move by ear (Swap = X, Shuffle = H, Turn =
+phase, Sync = CX, Play = measure); four puzzles make you use them (superposition, entanglement, interference, noise)
+with a closeness hum as the eyes-closed progress bar; a two-track studio with four sound pads then makes a 20-second
+beat. The **Circuit** button shows gate names, bits, percentages and the Qiskit code behind any mix.
 
 Entry for the Qollab + IonQ Quantum Hackathon (theme: Quantum Playground). _This effort is supported by Qollab & IonQ._
 
@@ -18,8 +19,7 @@ Entry for the Qollab + IonQ Quantum Hackathon (theme: Quantum Playground). _This
 ## Run it
 
 **On Qollab (the judged path).** Upload `dist/quantum-sound-garden-qollab.zip` (or the `qollab/` folder) as a new
-project ("Upload your own files"), press Run Project → Run, pick a backend in Select QPU, then press *Enter the
-garden*. See `docs/QOLLAB_PAGE.md` for the project page text.
+project ("Upload your own files"), press Run Project → Run, pick a backend in Select QPU, then press *Start*. See `docs/QOLLAB_PAGE.md` for the project page text.
 
 **Locally (one command).**
 ```bash
@@ -38,11 +38,11 @@ statevector vs Qiskit parity, the taught behaviors, sampling, noise) and the Qol
 ## What is quantum about it
 | Behavior | Where you hear it | Where it is verified |
 |---|---|---|
-| Hadamard creates alternative outcomes | Rulebook "Split", puzzles 1 and 2: Split makes a 50/50 garden | `server/tests/test_circuit.py::test_split_is_balanced`, `test_backends.py::test_hadamard_shots_are_approximately_balanced` |
-| Phase alone leaves probabilities unchanged | Rulebook "Twist", puzzle 3: Twist, Bloom, nothing changes | `test_twist_alone_leaves_probabilities_unchanged` |
-| Phase matters when branches recombine; constructive and destructive interference | Rulebook "Twist, then Split", puzzle 3: Twist then Split silences the footsteps (or makes them certain) | `test_phase_then_recombination_changes_the_outcome`, `test_phase_then_recombination_changes_sampled_distribution` |
-| Controlled gates create measurable correlations | Rulebook "Link a split seed", puzzle 2: thunder only with rain (Bell pair, 01 and 10 never appear) | `test_bell_state_correlations`, `test_bell_shots_are_correlated` |
-| Measurement draws classical outcomes from the prepared state | Every Bloom; predicted vs measured bars | `test_deterministic_basis_state_preparation`, `test_deterministic_preparation_samples_one_outcome` |
+| Hadamard creates alternative outcomes | Tutorial "Shuffle", puzzles 1 and 2: Shuffle makes a 50/50 mix | `server/tests/test_circuit.py::test_split_is_balanced`, `test_backends.py::test_hadamard_shots_are_approximately_balanced` |
+| Phase alone leaves probabilities unchanged | Tutorial "Turn", puzzle 3: Turn, Play, nothing changes | `test_twist_alone_leaves_probabilities_unchanged` |
+| Phase matters when branches recombine; constructive and destructive interference | Tutorial "Turn, then Shuffle", puzzle 3: Turn then Shuffle silences the footsteps (or makes them certain) | `test_phase_then_recombination_changes_the_outcome`, `test_phase_then_recombination_changes_sampled_distribution` |
+| Controlled gates create measurable correlations | Tutorial "Sync a shuffled track", puzzle 2: thunder only with rain (Bell pair, 01 and 10 never appear) | `test_bell_state_correlations`, `test_bell_shots_are_correlated` |
+| Measurement draws classical outcomes from the prepared state | Every Play; predicted vs measured bars (Circuit view) | `test_deterministic_basis_state_preparation`, `test_deterministic_preparation_samples_one_outcome` |
 | Noise adds unintended outcomes; shorter circuits are more robust | Puzzle 4 | `test_teaching_noise_produces_unintended_outcomes_and_rewards_shorter_circuits` (Aer) and the vitest twin (in-app model) |
 | The audio system interprets normalized results consistently | everywhere | `test_normalize_counts_shapes`, `statevector.test.ts` ("sampling and result interpretation") |
 

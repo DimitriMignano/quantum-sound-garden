@@ -37,7 +37,7 @@
    "10": 0.0,
    "11": 0.5
   },
-  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(2, 2)   # 2 seeds, one classical bit each\nqc.h(0)        # Split (Hadamard): one path becomes two equal paths\nqc.cx(0, 1)    # Link (CNOT): the control seed decides whether the target flips\nqc.measure([0, 1], [0, 1])   # Bloom: measure every seed\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
+  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(2, 2)   # 2 tracks, one classical bit each\nqc.h(0)        # Shuffle (Hadamard): one path becomes two equal paths, a coin toss at Play\nqc.cx(0, 1)    # Sync (CNOT): the control track decides whether the target flips\nqc.measure([0, 1], [0, 1])   # Play: measure every track\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
  },
  "bell-reversed-2": {
   "amplitudes": {
@@ -77,7 +77,7 @@
    "10": 0.0,
    "11": 0.5
   },
-  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(2, 2)   # 2 seeds, one classical bit each\nqc.h(1)        # Split (Hadamard): one path becomes two equal paths\nqc.cx(1, 0)    # Link (CNOT): the control seed decides whether the target flips\nqc.measure([0, 1], [0, 1])   # Bloom: measure every seed\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
+  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(2, 2)   # 2 tracks, one classical bit each\nqc.h(1)        # Shuffle (Hadamard): one path becomes two equal paths, a coin toss at Play\nqc.cx(1, 0)    # Sync (CNOT): the control track decides whether the target flips\nqc.measure([0, 1], [0, 1])   # Play: measure every track\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
  },
  "bell-sideways-2": {
   "amplitudes": {
@@ -117,7 +117,7 @@
    "10": 0.0,
    "11": 0.5
   },
-  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(2, 2)   # 2 seeds, one classical bit each\nqc.h(0)        # Split (Hadamard): one path becomes two equal paths\nqc.cx(0, 1)    # Link (CNOT): the control seed decides whether the target flips\nqc.h(0)        # Bloom sideways: rotate seed 0 into the X basis before measuring\nqc.h(1)        # Bloom sideways: rotate seed 1 into the X basis before measuring\nqc.measure([0, 1], [0, 1])   # Bloom: measure every seed\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
+  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(2, 2)   # 2 tracks, one classical bit each\nqc.h(0)        # Shuffle (Hadamard): one path becomes two equal paths, a coin toss at Play\nqc.cx(0, 1)    # Sync (CNOT): the control track decides whether the target flips\nqc.h(0)        # Play sideways: rotate track 0 into the X basis before measuring\nqc.h(1)        # Play sideways: rotate track 1 into the X basis before measuring\nqc.measure([0, 1], [0, 1])   # Play: measure every track\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
  },
  "both-split-2": {
   "amplitudes": {
@@ -156,7 +156,7 @@
    "10": 0.25,
    "11": 0.25
   },
-  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(2, 2)   # 2 seeds, one classical bit each\nqc.h(0)        # Split (Hadamard): one path becomes two equal paths\nqc.h(1)        # Split (Hadamard): one path becomes two equal paths\nqc.measure([0, 1], [0, 1])   # Bloom: measure every seed\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
+  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(2, 2)   # 2 tracks, one classical bit each\nqc.h(0)        # Shuffle (Hadamard): one path becomes two equal paths, a coin toss at Play\nqc.h(1)        # Shuffle (Hadamard): one path becomes two equal paths, a coin toss at Play\nqc.measure([0, 1], [0, 1])   # Play: measure every track\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
  },
  "empty-1": {
   "amplitudes": {
@@ -176,7 +176,7 @@
    "0": 1.0,
    "1": 0.0
   },
-  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(1, 1)   # 1 seed, one classical bit each\nqc.measure([0], [0])   # Bloom: measure every seed\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
+  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(1, 1)   # 1 track, one classical bit each\nqc.measure([0], [0])   # Play: measure every track\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
  },
  "flip-1": {
   "amplitudes": {
@@ -201,7 +201,7 @@
    "0": 0.0,
    "1": 1.0
   },
-  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(1, 1)   # 1 seed, one classical bit each\nqc.x(0)        # Flip (X gate): turns the seed over, |0> becomes |1>\nqc.measure([0], [0])   # Bloom: measure every seed\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
+  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(1, 1)   # 1 track, one classical bit each\nqc.x(0)        # Swap (X gate): switches the track to its other sound, |0> becomes |1>\nqc.measure([0], [0])   # Play: measure every track\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
  },
  "flip-both-sideways-2": {
   "amplitudes": {
@@ -240,7 +240,7 @@
    "10": 0.25,
    "11": 0.25
   },
-  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(2, 2)   # 2 seeds, one classical bit each\nqc.x(0)        # Flip (X gate): turns the seed over, |0> becomes |1>\nqc.x(1)        # Flip (X gate): turns the seed over, |0> becomes |1>\nqc.h(0)        # Bloom sideways: rotate seed 0 into the X basis before measuring\nqc.h(1)        # Bloom sideways: rotate seed 1 into the X basis before measuring\nqc.measure([0, 1], [0, 1])   # Bloom: measure every seed\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
+  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(2, 2)   # 2 tracks, one classical bit each\nqc.x(0)        # Swap (X gate): switches the track to its other sound, |0> becomes |1>\nqc.x(1)        # Swap (X gate): switches the track to its other sound, |0> becomes |1>\nqc.h(0)        # Play sideways: rotate track 0 into the X basis before measuring\nqc.h(1)        # Play sideways: rotate track 1 into the X basis before measuring\nqc.measure([0, 1], [0, 1])   # Play: measure every track\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
  },
  "flip-q1-2": {
   "amplitudes": {
@@ -275,7 +275,7 @@
    "10": 1.0,
    "11": 0.0
   },
-  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(2, 2)   # 2 seeds, one classical bit each\nqc.x(1)        # Flip (X gate): turns the seed over, |0> becomes |1>\nqc.measure([0, 1], [0, 1])   # Bloom: measure every seed\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
+  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(2, 2)   # 2 tracks, one classical bit each\nqc.x(1)        # Swap (X gate): switches the track to its other sound, |0> becomes |1>\nqc.measure([0, 1], [0, 1])   # Play: measure every track\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
  },
  "interference-cancel-1": {
   "amplitudes": {
@@ -304,7 +304,7 @@
    "0": 1.0,
    "1": 0.0
   },
-  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(1, 1)   # 1 seed, one classical bit each\nqc.h(0)        # Split (Hadamard): one path becomes two equal paths\nqc.h(0)        # Split (Hadamard): one path becomes two equal paths\nqc.measure([0], [0])   # Bloom: measure every seed\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
+  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(1, 1)   # 1 track, one classical bit each\nqc.h(0)        # Shuffle (Hadamard): one path becomes two equal paths, a coin toss at Play\nqc.h(0)        # Shuffle (Hadamard): one path becomes two equal paths, a coin toss at Play\nqc.measure([0], [0])   # Play: measure every track\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
  },
  "interference-flip-1": {
   "amplitudes": {
@@ -338,7 +338,7 @@
    "0": 0.0,
    "1": 1.0
   },
-  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(1, 1)   # 1 seed, one classical bit each\nqc.h(0)        # Split (Hadamard): one path becomes two equal paths\nqc.p(math.pi, 0)   # Twist (phase gate): rotates the |1> path; invisible until paths recombine\nqc.h(0)        # Split (Hadamard): one path becomes two equal paths\nqc.measure([0], [0])   # Bloom: measure every seed\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
+  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(1, 1)   # 1 track, one classical bit each\nqc.h(0)        # Shuffle (Hadamard): one path becomes two equal paths, a coin toss at Play\nqc.p(math.pi, 0)   # Turn (phase gate): rotates the |1> path; silent until paths recombine\nqc.h(0)        # Shuffle (Hadamard): one path becomes two equal paths, a coin toss at Play\nqc.measure([0], [0])   # Play: measure every track\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
  },
  "interference-odd-1": {
   "amplitudes": {
@@ -372,7 +372,7 @@
    "0": 0.842273552964,
    "1": 0.157726447036
   },
-  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(1, 1)   # 1 seed, one classical bit each\nqc.h(0)        # Split (Hadamard): one path becomes two equal paths\nqc.p(0.816814, 0)   # Twist (phase gate): rotates the |1> path; invisible until paths recombine\nqc.h(0)        # Split (Hadamard): one path becomes two equal paths\nqc.measure([0], [0])   # Bloom: measure every seed\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
+  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(1, 1)   # 1 track, one classical bit each\nqc.h(0)        # Shuffle (Hadamard): one path becomes two equal paths, a coin toss at Play\nqc.p(0.816814, 0)   # Turn (phase gate): rotates the |1> path; silent until paths recombine\nqc.h(0)        # Shuffle (Hadamard): one path becomes two equal paths, a coin toss at Play\nqc.measure([0], [0])   # Play: measure every track\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
  },
  "interference-quarter-1": {
   "amplitudes": {
@@ -406,7 +406,7 @@
    "0": 0.5,
    "1": 0.5
   },
-  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(1, 1)   # 1 seed, one classical bit each\nqc.h(0)        # Split (Hadamard): one path becomes two equal paths\nqc.p(math.pi / 2, 0)   # Twist (phase gate): rotates the |1> path; invisible until paths recombine\nqc.h(0)        # Split (Hadamard): one path becomes two equal paths\nqc.measure([0], [0])   # Bloom: measure every seed\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
+  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(1, 1)   # 1 track, one classical bit each\nqc.h(0)        # Shuffle (Hadamard): one path becomes two equal paths, a coin toss at Play\nqc.p(math.pi / 2, 0)   # Turn (phase gate): rotates the |1> path; silent until paths recombine\nqc.h(0)        # Shuffle (Hadamard): one path becomes two equal paths, a coin toss at Play\nqc.measure([0], [0])   # Play: measure every track\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
  },
  "noisy-garden-padded-2": {
   "amplitudes": {
@@ -464,7 +464,7 @@
    "10": 0.0,
    "11": 0.5
   },
-  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(2, 2)   # 2 seeds, one classical bit each\nqc.h(0)        # Split (Hadamard): one path becomes two equal paths\nqc.h(1)        # Split (Hadamard): one path becomes two equal paths\nqc.h(1)        # Split (Hadamard): one path becomes two equal paths\nqc.cx(0, 1)    # Link (CNOT): the control seed decides whether the target flips\nqc.cx(0, 1)    # Link (CNOT): the control seed decides whether the target flips\nqc.cx(0, 1)    # Link (CNOT): the control seed decides whether the target flips\nqc.measure([0, 1], [0, 1])   # Bloom: measure every seed\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
+  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(2, 2)   # 2 tracks, one classical bit each\nqc.h(0)        # Shuffle (Hadamard): one path becomes two equal paths, a coin toss at Play\nqc.h(1)        # Shuffle (Hadamard): one path becomes two equal paths, a coin toss at Play\nqc.h(1)        # Shuffle (Hadamard): one path becomes two equal paths, a coin toss at Play\nqc.cx(0, 1)    # Sync (CNOT): the control track decides whether the target flips\nqc.cx(0, 1)    # Sync (CNOT): the control track decides whether the target flips\nqc.cx(0, 1)    # Sync (CNOT): the control track decides whether the target flips\nqc.measure([0, 1], [0, 1])   # Play: measure every track\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
  },
  "phase-bell-2": {
   "amplitudes": {
@@ -513,7 +513,7 @@
    "10": 0.25,
    "11": 0.25
   },
-  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(2, 2)   # 2 seeds, one classical bit each\nqc.h(0)        # Split (Hadamard): one path becomes two equal paths\nqc.p(math.pi / 2, 0)   # Twist (phase gate): rotates the |1> path; invisible until paths recombine\nqc.cx(0, 1)    # Link (CNOT): the control seed decides whether the target flips\nqc.h(1)        # Split (Hadamard): one path becomes two equal paths\nqc.measure([0, 1], [0, 1])   # Bloom: measure every seed\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
+  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(2, 2)   # 2 tracks, one classical bit each\nqc.h(0)        # Shuffle (Hadamard): one path becomes two equal paths, a coin toss at Play\nqc.p(math.pi / 2, 0)   # Turn (phase gate): rotates the |1> path; silent until paths recombine\nqc.cx(0, 1)    # Sync (CNOT): the control track decides whether the target flips\nqc.h(1)        # Shuffle (Hadamard): one path becomes two equal paths, a coin toss at Play\nqc.measure([0, 1], [0, 1])   # Play: measure every track\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
  },
  "split-1": {
   "amplitudes": {
@@ -538,7 +538,7 @@
    "0": 0.5,
    "1": 0.5
   },
-  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(1, 1)   # 1 seed, one classical bit each\nqc.h(0)        # Split (Hadamard): one path becomes two equal paths\nqc.measure([0], [0])   # Bloom: measure every seed\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
+  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(1, 1)   # 1 track, one classical bit each\nqc.h(0)        # Shuffle (Hadamard): one path becomes two equal paths, a coin toss at Play\nqc.measure([0], [0])   # Play: measure every track\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
  },
  "split-twist-half-1": {
   "amplitudes": {
@@ -568,7 +568,7 @@
    "0": 0.5,
    "1": 0.5
   },
-  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(1, 1)   # 1 seed, one classical bit each\nqc.h(0)        # Split (Hadamard): one path becomes two equal paths\nqc.p(math.pi, 0)   # Twist (phase gate): rotates the |1> path; invisible until paths recombine\nqc.measure([0], [0])   # Bloom: measure every seed\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
+  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(1, 1)   # 1 track, one classical bit each\nqc.h(0)        # Shuffle (Hadamard): one path becomes two equal paths, a coin toss at Play\nqc.p(math.pi, 0)   # Turn (phase gate): rotates the |1> path; silent until paths recombine\nqc.measure([0], [0])   # Play: measure every track\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
  },
  "three-ghz-3": {
   "amplitudes": {
@@ -633,7 +633,7 @@
    "110": 0.0,
    "111": 0.5
   },
-  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(3, 3)   # 3 seeds, one classical bit each\nqc.h(0)        # Split (Hadamard): one path becomes two equal paths\nqc.cx(0, 1)    # Link (CNOT): the control seed decides whether the target flips\nqc.cx(1, 2)    # Link (CNOT): the control seed decides whether the target flips\nqc.measure([0, 1, 2], [0, 1, 2])   # Bloom: measure every seed\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
+  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(3, 3)   # 3 tracks, one classical bit each\nqc.h(0)        # Shuffle (Hadamard): one path becomes two equal paths, a coin toss at Play\nqc.cx(0, 1)    # Sync (CNOT): the control track decides whether the target flips\nqc.cx(1, 2)    # Sync (CNOT): the control track decides whether the target flips\nqc.measure([0, 1, 2], [0, 1, 2])   # Play: measure every track\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
  },
  "twist-chain-3": {
   "amplitudes": {
@@ -706,7 +706,7 @@
    "110": 0.25,
    "111": 0.25
   },
-  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(3, 3)   # 3 seeds, one classical bit each\nqc.h(0)        # Split (Hadamard): one path becomes two equal paths\nqc.p(-math.pi / 2, 0)   # Twist (phase gate): rotates the |1> path; invisible until paths recombine\nqc.cx(0, 1)    # Link (CNOT): the control seed decides whether the target flips\nqc.x(2)        # Flip (X gate): turns the seed over, |0> becomes |1>\nqc.h(0)        # Split (Hadamard): one path becomes two equal paths\nqc.measure([0, 1, 2], [0, 1, 2])   # Bloom: measure every seed\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
+  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(3, 3)   # 3 tracks, one classical bit each\nqc.h(0)        # Shuffle (Hadamard): one path becomes two equal paths, a coin toss at Play\nqc.p(-math.pi / 2, 0)   # Turn (phase gate): rotates the |1> path; silent until paths recombine\nqc.cx(0, 1)    # Sync (CNOT): the control track decides whether the target flips\nqc.x(2)        # Swap (X gate): switches the track to its other sound, |0> becomes |1>\nqc.h(0)        # Shuffle (Hadamard): one path becomes two equal paths, a coin toss at Play\nqc.measure([0, 1, 2], [0, 1, 2])   # Play: measure every track\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
  },
  "twist-sideways-1": {
   "amplitudes": {
@@ -736,6 +736,6 @@
    "0": 0.5,
    "1": 0.5
   },
-  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(1, 1)   # 1 seed, one classical bit each\nqc.h(0)        # Split (Hadamard): one path becomes two equal paths\nqc.p(math.pi / 2, 0)   # Twist (phase gate): rotates the |1> path; invisible until paths recombine\nqc.h(0)        # Bloom sideways: rotate seed 0 into the X basis before measuring\nqc.measure([0], [0])   # Bloom: measure every seed\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
+  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(1, 1)   # 1 track, one classical bit each\nqc.h(0)        # Shuffle (Hadamard): one path becomes two equal paths, a coin toss at Play\nqc.p(math.pi / 2, 0)   # Turn (phase gate): rotates the |1> path; silent until paths recombine\nqc.h(0)        # Play sideways: rotate track 0 into the X basis before measuring\nqc.measure([0], [0])   # Play: measure every track\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
  }
 }

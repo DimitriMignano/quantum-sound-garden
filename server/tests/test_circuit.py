@@ -166,7 +166,7 @@ def test_bloom_sideways_distinguishes_a_bell_pair_from_correlated_coins():
     mixture = {k: 0.5 * both_off[k] + 0.5 * both_on[k] for k in both_off}
     assert mixture == pytest.approx({"00": 0.25, "01": 0.25, "10": 0.25, "11": 0.25})
     code = C.qiskit_code(2, bell, basis="x")
-    assert code.count("Bloom sideways") == 2 and "qc.measure([0, 1], [0, 1])" in code
+    assert code.count("Play sideways") == 2 and "qc.measure([0, 1], [0, 1])" in code
 
 
 def test_dephased_twin_loses_interference():

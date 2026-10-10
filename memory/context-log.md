@@ -102,3 +102,33 @@ corrections go in a new entry. Newest at the bottom. Fill every field (`n/a` if 
   separate prediction panel); twist amounts ½ and ¼ in puzzles, all four in the creator; puzzle N+1 unlocks on solve.
 - Deferred work: a phone-width pass; keyboard pass; three-seed gardens for more creator freedom (after the deadline).
 - Risks: the redesign is live-tested only on puzzle 1 and the rulebook; puzzles 2–4 share the same scene code.
+
+### 2026-10-10 17:45 — Quantum Beats Studio: audio-first reframe after the founder's second look
+- Branch / worktree: `main`
+- Task: the founder opened the app and still did not know what was going on. Asked for: a front door that says what it
+  is and excites; then a real tutorial, one page per move; no quantum language (no 0s and 1s) at first; moves that make
+  sense in a musical context; "Hear it" must audibly do something; and the edge, "you could play ours with your eyes
+  closed… hear that you're getting closer".
+- Files changed: `web/src/content/content.ts` (studio vocabulary, Track base/hit model, LESSONS, puzzle targets),
+  `web/src/app/{Welcome,TutorialScene,StudioScene}.tsx` (new; MovesScene and CreatorScene removed),
+  `web/src/app/{App,TopBar,ChallengeScene,GardenView,Board,PathView,DeeperPanel}.tsx`, `web/src/audio/mixer.ts`
+  (GoalHum: closeness 0..1 → tritone/beating to octave), `web/src/audio/engine.ts` (analyser + level()),
+  `web/src/main.tsx` (dev-only `window.__QSG_AUDIO__`), `web/src/engine/code.ts` + `server/qsg/circuit.py` +
+  `server/tests/test_circuit.py` (gate comments in studio words, parity kept), `web/src/styles.css`,
+  `web/src/test/qollab-bundle.test.ts`, `qollab/` (rebuilt), `docs/{DEMO_SCRIPT,JUDGES,QOLLAB_PAGE}.md`, `README.md`,
+  `CLAUDE.md` (thesis), `WORKLOG.md`
+- Verification run: pytest 27 passed + 1 skipped (fixture regenerated with the new comments); tsc clean; full gate in
+  the commit chain. Live in Chrome (local server) with the audio meter: AudioContext running after Start; idle odds
+  hum RMS ≈ 0.05; during "Try it" on lesson 1 RMS rose to ≈ 0.10 and the caption walked "3 of 6: crickets… and wind…"
+  → "Crickets on every beat…"; lesson 2 shows only Swap; puzzle 1 caption "The hum says: far" → after Swap "there" →
+  Play → "Solved. You heard Rain every time." Not live-tested: puzzles 2–4 and the studio in this build (same scene
+  code as before; smoke-tested), phone width, keyboard-only, the real Qollab runtime, IonQ.
+- Commit hash: this commit (parent 3be7309)
+- Seams (§22): surface LIVE (reframed) · hosted/delivery PARTIAL as before (Qollab upload is a human's act)
+- Decisions: in-app title "Quantum Beats Studio" (the founder's phrase; one constant, `APP.title`), repository name
+  unchanged; moves renamed Swap/Shuffle/Turn/Sync/Play with gate names only in Circuit view and Why?; every track
+  always plays one of two sounds (base/hit) so nothing is ever silent by accident; the guess step is gone, the closeness
+  hum replaces it as the feedback loop; puzzle 4's closeness also counts extra moves; the tutorial board shows only the
+  moves the page is about.
+- Deferred work: phone-width pass; keyboard pass; a louder/clearer hum option; three-track studio.
+- Risks: the hum is a design guess until a human listens (tritone→octave mapping, levels); puzzles 2–4 not replayed live.

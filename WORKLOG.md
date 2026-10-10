@@ -41,3 +41,10 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
   choices, result in one sentence, Why? opens the physics/code/deeper; creator = four pads with seed lamps + board; buds carry
   sound names; bits, percentages, outcome cards, code and backend select live behind the Circuit toggle. Live in Chrome: rulebook
   Hear it, puzzle 1 end to end, Why?, creator pads. Gate green.
+- 10-10 17:40 founder's second look ("how did we get the idea of a garden… way too much text… I still don't know what flip twist
+  split and link do in a musical context… 'hear it' nothing happens… the edge is you could play ours with your eyes closed"). Reframed
+  as **Quantum Beats Studio**: tracks that play one of two sounds, moves Swap/Shuffle/Turn/Sync, Play; no quantum words on the first-run
+  path; a front door with a visible beat (rings + drifting notes) and one button; a nine-page tutorial (one idea per page, only that
+  page's moves on the board, Try it + Play); puzzles with a closeness hum (tritone far → octave there) as the eyes-closed progress bar
+  and no guess step; studio pads. The first lesson used a near-silent "hush", which is why Hear it felt like nothing: tracks now use
+  audible base sounds (crickets, wind). Audio output measured with an analyser on the master bus: RMS 0.05 idle hum, 0.10 during Play.

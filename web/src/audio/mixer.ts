@@ -48,8 +48,36 @@ export function soundMass(assignment: Assignment, probabilities: Record<string, 
   return mass;
 }
 
+/**
+ * The closeness hum: two soft sine tones. Far from the goal they sit a tritone apart and beat against each other
+ * (rough); at the goal they lock into an octave (smooth). It is the eyes-closed progress bar.
+ */
+class GoalHum {
+  private root: OscillatorNode; private upper: OscillatorNode; private out: GainNode; private level = 0;
+  constructor(private ctx: AudioContext, bus: AudioNode) {
+    this.out = ctx.createGain(); this.out.gain.value = 0;
+    this.root = ctx.createOscillator(); this.root.type = 'sine'; this.root.frequency.value = 196;
+    this.upper = ctx.createOscillator(); this.upper.type = 'sine'; this.upper.frequency.value = 196 * 1.4142;
+    this.root.connect(this.out); this.upper.connect(this.out); this.out.connect(bus);
+    this.root.start(); this.upper.start();
+  }
+  /** closeness 0..1 */
+  set(closeness: number, ramp = 0.5): void {
+    const c = Math.max(0, Math.min(1, closeness));
+    const t = this.ctx.currentTime;
+    const ratio = 1.4142 + (2 - 1.4142) * c;                // tritone → octave
+    this.upper.frequency.setTargetAtTime(196 * ratio, t, ramp);
+    this.upper.detune.setTargetAtTime((1 - c) * 28, t, ramp); // beating while far
+    this.level = 0.035 + 0.02 * c;
+    this.out.gain.setTargetAtTime(this.level, t, ramp);
+  }
+  off(ramp = 0.6): void { this.out.gain.setTargetAtTime(0, this.ctx.currentTime, ramp); }
+  dispose(): void { try { this.root.stop(); this.upper.stop(); } catch { /* already stopped */ } this.out.disconnect(); }
+}
+
 export class GardenMixer {
   private layers = new Map<string, SoundInstance>();
+  private goal: GoalHum | null = null;
   private current: PlaybackHandle | null = null;
   private blendScale = 0.55; // "hearing the odds" sits under a full bloom
 
@@ -72,8 +100,17 @@ export class GardenMixer {
     for (const [id, m] of Object.entries(mass)) this.ensure(id)?.setLevel(m * this.blendScale, ramp);
   }
 
+  /** The closeness hum: a number 0..1 keeps it sounding, null fades it out. */
+  hum(closeness: number | null, ramp?: number): void {
+    if (closeness === null) { this.goal?.off(ramp); return; }
+    if (!audio.ctx || !audio.bus) return;
+    if (!this.goal) this.goal = new GoalHum(audio.ctx, audio.bus);
+    this.goal.set(closeness, ramp);
+  }
+
   /** Everything fades out. */
   silence(ramp = 0.8): void {
+    this.goal?.off(ramp);
     this.stopSequence();
     for (const inst of this.layers.values()) inst.setLevel(0, ramp);
   }
@@ -148,6 +185,7 @@ export class GardenMixer {
 
   dispose(): void {
     this.stopSequence();
+    this.goal?.dispose(); this.goal = null;
     for (const inst of this.layers.values()) inst.stop(0.3);
     this.layers.clear();
   }

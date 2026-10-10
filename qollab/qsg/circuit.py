@@ -27,10 +27,10 @@ GATE_FOR = {"flip": "x", "split": "h", "twist": "p", "link": "cx"}
 
 # Qiskit code comments shown to learners (the metaphor becomes the bridge, not the hiding place).
 EXPLAIN = {
-    "flip": "Flip (X gate): turns the seed over, |0> becomes |1>",
-    "split": "Split (Hadamard): one path becomes two equal paths",
-    "twist": "Twist (phase gate): rotates the |1> path; invisible until paths recombine",
-    "link": "Link (CNOT): the control seed decides whether the target flips",
+    "flip": "Swap (X gate): switches the track to its other sound, |0> becomes |1>",
+    "split": "Shuffle (Hadamard): one path becomes two equal paths, a coin toss at Play",
+    "twist": "Turn (phase gate): rotates the |1> path; silent until paths recombine",
+    "link": "Sync (CNOT): the control track decides whether the target flips",
 }
 
 
@@ -158,7 +158,7 @@ def qiskit_code(n_qubits: int, ops: Any, shots: int = 256, basis: str = "z") -> 
         "from qiskit.quantum_info import Statevector",
         "import math",
         "",
-        f"qc = QuantumCircuit({n_qubits}, {n_qubits})   # {n_qubits} seed{'s' if n_qubits != 1 else ''}, one classical bit each",
+        f"qc = QuantumCircuit({n_qubits}, {n_qubits})   # {n_qubits} track{'s' if n_qubits != 1 else ''}, one classical bit each",
     ]
     for op in ops:
         kind = op["op"]
@@ -173,9 +173,9 @@ def qiskit_code(n_qubits: int, ops: Any, shots: int = 256, basis: str = "z") -> 
     regs = ", ".join(str(i) for i in range(n_qubits))
     if basis == "x":
         for q in range(n_qubits):
-            lines.append(f"qc.h({q})        # Bloom sideways: rotate seed {q} into the X basis before measuring")
+            lines.append(f"qc.h({q})        # Play sideways: rotate track {q} into the X basis before measuring")
     lines += [
-        f"qc.measure([{regs}], [{regs}])   # Bloom: measure every seed",
+        f"qc.measure([{regs}], [{regs}])   # Play: measure every track",
         "",
         "# Ideal probabilities, before any shots:",
         "state = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))",

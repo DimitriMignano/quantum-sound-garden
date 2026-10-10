@@ -56,7 +56,7 @@ export function GardenView({ garden, seedNames, assignment, reducedMotion, detai
   const playing = garden.playback && !garden.playback.finished && garden.playback.outcome;
   const live = playing ? `${garden.playback!.index + 1} of ${garden.playback!.total}: ${garden.playback!.caption}` : null;
   const hidden = garden.oddsHidden;
-  const fallback = hidden ? 'Press Bloom to find out.' : `Hearing the odds: ${describeOdds(garden.ideal.probabilities, assignment)}`;
+  const fallback = hidden ? 'Press Play to find out.' : `Hearing the odds: ${describeOdds(garden.ideal.probabilities, assignment)}`;
 
   return (
     <div className="garden">
@@ -81,7 +81,7 @@ export function GardenView({ garden, seedNames, assignment, reducedMotion, detai
                 </div>
                 {seedNames.length > 1 && <div className="outcome__seeds">{seedNames.map((n, q) => <span key={q}>{n} {bitOf(b, q)}</span>)}</div>}
                 <div className="outcome__bars">
-                  <div className="bar bar--predicted" title={hidden ? 'predicted: hidden until you guess' : `predicted ${pct(p)}`}><span style={{ width: hidden ? '0%' : `${p * 100}%` }} /></div>
+                  <div className="bar bar--predicted" title={hidden ? 'predicted: hidden' : `predicted ${pct(p)}`}><span style={{ width: hidden ? '0%' : `${p * 100}%` }} /></div>
                   {m !== undefined && <div className="bar bar--measured" title={`measured ${pct(m)}`}><span style={{ width: `${m * 100}%` }} /></div>}
                 </div>
                 <div className="outcome__nums">
@@ -95,7 +95,7 @@ export function GardenView({ garden, seedNames, assignment, reducedMotion, detai
       )}
       {details && (
         <details className="legend">
-          <summary>How to read the garden</summary>
+          <summary>How to read the picture</summary>
           <ul>
             {LEGEND.map((l) => <li key={l.mark}><span className={`legend__mark legend__mark--${l.mark}`} aria-hidden="true" />{l.text}</li>)}
           </ul>
