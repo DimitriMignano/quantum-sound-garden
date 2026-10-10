@@ -208,3 +208,14 @@
 .row > select { flex: 1 1 160px; width: auto; }
 .action { min-width: 0; }
 .panel__head h2 { overflow-wrap: anywhere; }
+
+/* phones: the top bar wraps instead of pushing the page wider, and stops being sticky so the garden gets the height */
+.topbar__tools { flex-wrap: wrap; min-width: 0; }
+.topbar .pill { white-space: normal; max-width: 100%; }
+@container (max-width: 600px) {
+  .topbar { position: static; }
+  .topbar__brand h1 { font-size: 1.05rem; }
+  .topbar__nav { margin-left: 0; }
+  .vol input { width: 70px; }
+  .scene { padding: 0.75rem; }
+}
