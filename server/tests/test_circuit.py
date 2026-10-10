@@ -151,3 +151,32 @@ def test_run_json_with_a_fake_backend_returns_normalized_counts():
     assert out["counts"] == {"00": 4, "01": 0, "10": 0, "11": 4}
     assert out["backend_name"] == "basic_simulator" and out["counts_kind"] == "counts"
     assert json.loads(C.describe_backend_json(LocalBackend()))["kind"] == "local-ideal"
+
+
+def test_bloom_sideways_distinguishes_a_bell_pair_from_correlated_coins():
+    bell = [{"op": "split", "q": 0}, {"op": "link", "control": 0, "target": 1}]
+    # In the usual basis the Bell pair shows only 00 and 11 ...
+    assert C.ideal(2, bell)["probabilities"] == pytest.approx({"00": 0.5, "01": 0, "10": 0, "11": 0.5})
+    # ... and sideways (X basis) it is STILL perfectly correlated: only 00 and 11.
+    assert C.ideal(2, bell, basis="x")["probabilities"] == pytest.approx({"00": 0.5, "01": 0, "10": 0, "11": 0.5})
+    # Two classically correlated seeds (|00> half the time, |11> half the time) agree in the usual basis, but
+    # sideways each definite state spreads over all four outcomes: the correlation is gone.
+    both_off = C.ideal(2, [], basis="x")["probabilities"]
+    both_on = C.ideal(2, [{"op": "flip", "q": 0}, {"op": "flip", "q": 1}], basis="x")["probabilities"]
+    mixture = {k: 0.5 * both_off[k] + 0.5 * both_on[k] for k in both_off}
+    assert mixture == pytest.approx({"00": 0.25, "01": 0.25, "10": 0.25, "11": 0.25})
+    code = C.qiskit_code(2, bell, basis="x")
+    assert code.count("Bloom sideways") == 2 and "qc.measure([0, 1], [0, 1])" in code
+
+
+def test_dephased_twin_loses_interference():
+    split = {"op": "split", "q": 0}
+    twist = {"op": "twist", "q": 0, "turns": 0.5}
+    # coherent: Split, Twist half, Split -> footsteps certain
+    assert C.ideal(1, [split, twist, split])["probabilities"]["1"] == pytest.approx(1.0)
+    # dephased twin: a random half-turn after the first split half of the time (phase scrambled) -> 50/50 whatever
+    # the twist: the paths no longer interfere.
+    a = C.ideal(1, [split, twist, split])["probabilities"]
+    b = C.ideal(1, [split, {"op": "twist", "q": 0, "turns": 0.5}, twist, split])["probabilities"]
+    mixture = {k: 0.5 * a[k] + 0.5 * b[k] for k in a}
+    assert mixture == pytest.approx({"0": 0.5, "1": 0.5})

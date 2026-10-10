@@ -17,6 +17,8 @@ export interface GardenState {
   /** outcome currently sounding during a bloom playback */
   active?: string | null;
   reducedMotion: boolean;
+  /** challenge mode before a prediction: blooms are drawn equal and dim, seeds still show their state */
+  hideOdds?: boolean;
 }
 
 interface Ripple { x: number; y: number; t0: number; hue: number }
@@ -37,7 +39,7 @@ const COLORS = {
 const rgba = (c: readonly [number, number, number], a: number) => `rgba(${c[0]}, ${c[1]}, ${c[2]}, ${a})`;
 
 export class GardenRenderer {
-  private ctx: CanvasRenderingContext2D;
+  private ctx: CanvasRenderingContext2D | null;
   private w = 0; private h = 0; private dpr = 1;
   private state: GardenState;
   private shown: { marg: number[]; probs: Record<string, number>; phase: number[] }; // eased display values
@@ -45,37 +47,37 @@ export class GardenRenderer {
   private stars: Array<{ x: number; y: number; r: number; tw: number }> = [];
   private raf = 0;
   private last = 0;
-  private ro: ResizeObserver;
+  private ro: ResizeObserver | null;
   private running = false;
 
   constructor(private canvas: HTMLCanvasElement, initial: GardenState) {
-    const ctx = canvas.getContext('2d');
-    if (!ctx) throw new Error('canvas 2d unavailable');
-    this.ctx = ctx;
+    // No 2D context (a restricted browser, a test runner): the DOM beside the canvas carries every number, so
+    // the renderer simply draws nothing rather than taking the app down.
+    this.ctx = canvas.getContext('2d');
     this.state = initial;
     this.shown = { marg: this.marginals(initial), probs: { ...initial.probabilities }, phase: this.phases(initial) };
     for (let i = 0; i < 90; i++) this.stars.push({ x: Math.random(), y: Math.random() * 0.55, r: 0.4 + Math.random() * 1.1, tw: Math.random() * 6.28 });
-    this.ro = new ResizeObserver(() => this.resize());
-    this.ro.observe(canvas);
+    this.ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => this.resize()) : null;
+    this.ro?.observe(canvas);
     this.resize();
-    this.start();
+    if (this.ctx) this.start();
   }
 
   setState(next: GardenState): void {
     const changedQubits = next.nQubits !== this.state.nQubits;
     this.state = next;
     if (changedQubits) this.shown = { marg: this.marginals(next), probs: { ...next.probabilities }, phase: this.phases(next) };
-    if (!this.running) this.start();
+    if (!this.running && this.ctx) this.start();
   }
 
   /** A ripple at a seed (q) or at an outcome bloom (outcome). */
   ripple(where: { q?: number; outcome?: string }): void {
     if (where.q !== undefined) { const p = this.seedPos(where.q); this.ripples.push({ x: p.x, y: p.y + 10, t0: performance.now(), hue: 1 }); }
     if (where.outcome !== undefined) { const p = this.bloomPos(where.outcome); this.ripples.push({ x: p.x, y: p.y, t0: performance.now(), hue: 0 }); }
-    if (!this.running) this.start();
+    if (!this.running && this.ctx) this.start();
   }
 
-  dispose(): void { this.ro.disconnect(); cancelAnimationFrame(this.raf); this.running = false; }
+  dispose(): void { this.ro?.disconnect(); cancelAnimationFrame(this.raf); this.running = false; }
 
   // ---- geometry -------------------------------------------------------------------------------------------------
   private seedPos(q: number) { const n = this.state.nQubits; return { x: (this.w * (q + 1)) / (n + 1), y: this.h * 0.64 }; }
@@ -86,19 +88,36 @@ export class GardenRenderer {
     return { x: (this.w * (i + 1)) / (n + 1), y: this.h * 0.2 };
   }
   private marginals(s: GardenState): number[] { return Array.from({ length: s.nQubits }, (_, q) => marginalOne(s.probabilities, q)); }
-  /** Relative phase of the branch where only qubit q is 1, against the all-zero branch (0 when undefined). */
+  /**
+   * Phase of qubit q from its reduced state: the argument of rho_01 (the coherence between its 0 and 1 branches),
+   * which is the relative phase of a separable qubit. NaN when the qubit is entangled (reduced state mixed) or
+   * definite, so the ring is not drawn. Computed from the full amplitudes by tracing out the other qubits.
+   */
   private phases(s: GardenState): number[] {
     const n = s.nQubits;
-    const zero = s.amplitudes['0'.repeat(n)] ?? [0, 0];
     return Array.from({ length: n }, (_, q) => {
-      const key = bitstrings(n).find((b) => bitOf(b, q) === 1 && b.split('').filter((c) => c === '1').length === 1)!;
-      const a = s.amplitudes[key] ?? [0, 0];
-      if (Math.hypot(a[0], a[1]) < 1e-6 || Math.hypot(zero[0], zero[1]) < 1e-6) return 0;
-      return Math.atan2(a[1], a[0]) - Math.atan2(zero[1], zero[0]);
+      let r00 = 0, r11 = 0, re01 = 0, im01 = 0;
+      for (const b of bitstrings(n)) {
+        if (bitOf(b, q) === 1) continue;
+        const a0 = s.amplitudes[b] ?? [0, 0];
+        const bit = 1 << q;
+        const b1 = (parseInt(b, 2) | bit).toString(2).padStart(n, '0');
+        const a1 = s.amplitudes[b1] ?? [0, 0];
+        r00 += a0[0] * a0[0] + a0[1] * a0[1];
+        r11 += a1[0] * a1[0] + a1[1] * a1[1];
+        // rho_01 = sum over others of a0 * conj(a1)
+        re01 += a0[0] * a1[0] + a0[1] * a1[1];
+        im01 += a0[1] * a1[0] - a0[0] * a1[1];
+      }
+      const coherence = Math.hypot(re01, im01);
+      const purity = r00 * r00 + r11 * r11 + 2 * coherence * coherence;
+      if (purity < 0.999 || coherence < 1e-6) return NaN; // entangled (mixed reduced state) or definite
+      return -Math.atan2(im01, re01); // phase of the 1 branch relative to the 0 branch
     });
   }
 
   private resize(): void {
+    if (!this.ctx) return;
     const rect = this.canvas.getBoundingClientRect();
     this.dpr = Math.min(2, window.devicePixelRatio || 1);
     this.w = Math.max(1, rect.width); this.h = Math.max(1, rect.height);
@@ -124,9 +143,14 @@ export class GardenRenderer {
     let settled = true;
     for (let q = 0; q < this.state.nQubits; q++) {
       this.shown.marg[q] += (targetM[q] - this.shown.marg[q]) * k;
-      let d = targetP[q] - this.shown.phase[q]; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
-      this.shown.phase[q] += d * k;
-      if (Math.abs(targetM[q] - this.shown.marg[q]) > 1e-3 || Math.abs(d) > 1e-3) settled = false;
+      if (Number.isNaN(targetP[q])) { this.shown.phase[q] = Number.isNaN(this.shown.phase[q]) ? NaN : this.shown.phase[q]; }
+      else {
+        if (Number.isNaN(this.shown.phase[q])) this.shown.phase[q] = targetP[q];
+        let d = targetP[q] - this.shown.phase[q]; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
+        this.shown.phase[q] += d * k;
+        if (Math.abs(d) > 1e-3) settled = false;
+      }
+      if (Math.abs(targetM[q] - this.shown.marg[q]) > 1e-3) settled = false;
     }
     for (const b of bitstrings(this.state.nQubits)) {
       const t = this.state.probabilities[b] ?? 0;
@@ -139,7 +163,9 @@ export class GardenRenderer {
 
   // ---- drawing --------------------------------------------------------------------------------------------------
   private draw(now: number): void {
-    const { ctx, w, h } = this;
+    if (!this.ctx) return;
+    const ctx = this.ctx;
+    const { w, h } = this;
     const t = now / 1000;
     const motion = !this.state.reducedMotion;
     ctx.clearRect(0, 0, w, h);
@@ -171,7 +197,7 @@ export class GardenRenderer {
   }
 
   private drawSeeds(t: number, motion: boolean): void {
-    const { ctx } = this;
+    const ctx = this.ctx!;
     const groundY = this.h * 0.72;
     for (let q = 0; q < this.state.nQubits; q++) {
       const { x, y } = this.seedPos(q);
@@ -205,7 +231,8 @@ export class GardenRenderer {
       // phase ring: visible only when split; a marker shows the relative phase angle
       const targetM = marginalOne(this.state.probabilities, q);
       const targetSplit = Math.min(targetM, 1 - targetM) * 2;
-      if (split > 0.05 && targetSplit > 0.02) {
+      const targetPhase = this.phases(this.state)[q];
+      if (split > 0.05 && targetSplit > 0.02 && !Number.isNaN(targetPhase) && !Number.isNaN(this.shown.phase[q])) {
         const ph = this.shown.phase[q];
         ctx.strokeStyle = rgba(COLORS.phase, 0.35 + 0.45 * split); ctx.lineWidth = 1.5;
         ctx.beginPath(); ctx.arc(x, y + bob, r * 1.45, 0, 6.283); ctx.stroke();
@@ -221,7 +248,7 @@ export class GardenRenderer {
   }
 
   private drawLinks(t: number, motion: boolean): void {
-    const { ctx } = this;
+    const ctx = this.ctx!;
     const seen = new Set<string>();
     for (const l of this.state.links) {
       const key = `${l.control}-${l.target}`; if (seen.has(key)) continue; seen.add(key);
@@ -247,7 +274,7 @@ export class GardenRenderer {
   }
 
   private drawBlooms(t: number, motion: boolean): void {
-    const { ctx } = this;
+    const ctx = this.ctx!;
     const labels = bitstrings(this.state.nQubits);
     const maxR = Math.min(46, this.w / (labels.length * 3.2));
     for (const b of labels) {
@@ -256,6 +283,14 @@ export class GardenRenderer {
       const measured = this.state.measured ? this.state.measured[b] ?? 0 : null;
       const active = this.state.active === b;
       const pulse = active && motion ? 1 + 0.08 * Math.sin(t * 9) : 1;
+      if (this.state.hideOdds && measured === null) {
+        // before a prediction: every bloom is a closed bud of the same size
+        this.flower(x, y, maxR * 0.35, 0.18, 0.35, t, motion, false);
+        ctx.fillStyle = rgba(COLORS.bloom, 0.5);
+        ctx.font = '600 11px ui-monospace, SFMono-Regular, Menlo, monospace'; ctx.textAlign = 'center';
+        ctx.fillText(`${b} ?`, x, y + maxR + 18);
+        continue;
+      }
       // predicted: petals, area ∝ probability
       const r = Math.max(5, Math.sqrt(p) * maxR) * pulse;
       this.flower(x, y, r, measured === null ? 0.75 : 0.0, measured === null ? 0.9 : 0.55, t, motion, active);
@@ -271,7 +306,7 @@ export class GardenRenderer {
   }
 
   private flower(x: number, y: number, r: number, fill: number, stroke: number, t: number, motion: boolean, active: boolean): void {
-    const { ctx } = this;
+    const ctx = this.ctx!;
     const petals = 6;
     const spin = motion ? t * 0.15 : 0;
     ctx.save(); ctx.translate(x, y); ctx.rotate(spin);
@@ -297,7 +332,7 @@ export class GardenRenderer {
   }
 
   private drawRipples(now: number): void {
-    const { ctx } = this;
+    const ctx = this.ctx!;
     for (const r of this.ripples) {
       const u = (now - r.t0) / 1600;
       const radius = this.state.reducedMotion ? 30 : 12 + u * 110;

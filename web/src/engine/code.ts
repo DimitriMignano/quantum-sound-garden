@@ -40,6 +40,7 @@ export function qiskitCode(circuit: Circuit, shots = 256): string {
     else if (op.op === 'link') lines.push(`qc.cx(${op.control}, ${op.target})    # ${EXPLAIN.link}`);
   }
   const regs = Array.from({ length: n }, (_, i) => String(i)).join(', ');
+  if (circuit.basis === 'x') for (let q = 0; q < n; q++) lines.push(`qc.h(${q})        # Bloom sideways: rotate seed ${q} into the X basis before measuring`);
   lines.push(
     `qc.measure([${regs}], [${regs}])   # Bloom: measure every seed`,
     '',

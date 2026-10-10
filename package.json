@@ -13,7 +13,7 @@
     "test:web": "cd web && npx vitest run",
     "build:web": "cd web && npx vite build",
     "build:qollab": "node scripts/build-qollab.mjs",
-    "check": "npm run test:py && npm run typecheck && npm run test:web && npm run build:qollab"
+    "check": "npm run test:py && npm run typecheck && npm run build:qollab && npm run test:web"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

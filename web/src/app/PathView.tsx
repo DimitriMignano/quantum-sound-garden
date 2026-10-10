@@ -16,6 +16,7 @@ const turnsLabel = (t: number) => (t === 0.5 ? '½' : t === 0.25 ? '¼' : t === 
 export function PathView({ nQubits, seedNames, ops, showGates, disabled, onRemove }: Props) {
   return (
     <div className="path" role="group" aria-label="The path: actions in order. Activate an action to remove it.">
+      {!disabled && ops.length > 0 && <p className="path__hint">The path, in order. Tap an action to remove it.</p>}
       {Array.from({ length: nQubits }, (_, q) => (
         <div key={q} className="path__lane">
           <span className="path__seed">{seedNames[q]}{showGates && <small> q[{q}]</small>}</span>
@@ -32,6 +33,7 @@ export function PathView({ nQubits, seedNames, ops, showGates, disabled, onRemov
                 <button key={i} type="button" className={`bead bead--${op.op}`} disabled={disabled} onClick={() => onRemove(i)}
                   aria-label={`Step ${i + 1}: ${text}${showGates ? ` (${gate})` : ''} on ${seedNames[q]}. Remove.`} title="Remove this action">
                   <span>{text}</span>{showGates && <small>{gate}</small>}
+                  {!disabled && <i className="bead__x" aria-hidden="true">×</i>}
                 </button>
               );
             })}

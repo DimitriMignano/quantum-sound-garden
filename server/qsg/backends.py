@@ -20,7 +20,7 @@ from typing import Any
 
 from qiskit import transpile
 from qiskit_aer import AerSimulator
-from qiskit_aer.noise import NoiseModel, ReadoutError, depolarizing_error
+from qiskit_aer.noise import NoiseModel, ReadoutError, pauli_error
 
 from . import circuit as C
 
@@ -32,9 +32,13 @@ except Exception:  # pragma: no cover
     pass
 
 
-# Noise presets. Numbers are ours, chosen from IonQ's PUBLISHED Aria-class figures (1-qubit gate fidelity about
-# 99.95%, 2-qubit about 99.4%, state preparation and measurement about 99.5%). They are not an official IonQ model.
-# "teaching" is exaggerated on purpose (roughly 20x) so a two-gate circuit audibly differs from a ten-gate one.
+# ONE noise model, "stochastic Pauli": after every 1-qubit gate the qubit suffers a uniformly random X, Y or Z with
+# probability p1; after every 2-qubit gate EACH of its qubits independently suffers one with probability p2; each
+# measured bit flips with probability `readout`. The in-app model (web/src/engine/statevector.ts sampleNoisy) is the
+# same channel with the same numbers, so "teaching" means the same thing on Aer and in the browser.
+# Numbers are ours. "ionq-inspired" is taken from IonQ's PUBLISHED Aria-class figures (1-qubit gate fidelity about
+# 99.95%, 2-qubit about 99.4%, state preparation and measurement about 99.5%); it is not an official IonQ model.
+# "teaching" is exaggerated on purpose (roughly 20x) so a two-gate circuit audibly differs from a six-gate one.
 NOISE_PRESETS: dict[str, dict[str, float]] = {
     "ionq-inspired": {"p1": 0.0005, "p2": 0.006, "readout": 0.005},
     "teaching": {"p1": 0.02, "p2": 0.06, "readout": 0.02},
@@ -43,11 +47,15 @@ ONE_QUBIT_GATES = ["x", "h", "p", "rz", "ry", "rx", "sx", "s", "sdg", "u", "u1",
 TWO_QUBIT_GATES = ["cx", "cz", "swap"]
 
 
+def _random_pauli(p: float):
+    return pauli_error([("I", 1 - p), ("X", p / 3), ("Y", p / 3), ("Z", p / 3)])
+
+
 def make_noise_model(preset: str) -> NoiseModel:
     cfg = NOISE_PRESETS[preset]
     nm = NoiseModel()
-    nm.add_all_qubit_quantum_error(depolarizing_error(cfg["p1"], 1), ONE_QUBIT_GATES)
-    nm.add_all_qubit_quantum_error(depolarizing_error(cfg["p2"], 2), TWO_QUBIT_GATES)
+    nm.add_all_qubit_quantum_error(_random_pauli(cfg["p1"]), ONE_QUBIT_GATES)
+    nm.add_all_qubit_quantum_error(_random_pauli(cfg["p2"]).tensor(_random_pauli(cfg["p2"])), TWO_QUBIT_GATES)
     r = cfg["readout"]
     nm.add_all_qubit_readout_error(ReadoutError([[1 - r, r], [r, 1 - r]]))
     return nm
@@ -77,6 +85,9 @@ class RunResult:
     fallback_from: str | None = None
     fallback_reason: str | None = None
     extra: dict[str, Any] = field(default_factory=dict)
+    basis: str = "z"
+    # the real per-shot order when the backend provides memory (Aer does); None otherwise
+    memory: list[str] | None = None
 
     def to_dict(self) -> dict:
         d = asdict(self)
@@ -150,12 +161,14 @@ def _aer(preset: str | None) -> AerSimulator:
     return _AER_CACHE[key]
 
 
-def run_local(n_qubits: int, ops: Any, shots: int, preset: str | None = None, seed: int | None = None) -> tuple[dict, str]:
-    qc = C.build_circuit(n_qubits, ops, measure=True)
+def run_local(n_qubits: int, ops: Any, shots: int, preset: str | None = None, seed: int | None = None, basis: str = "z") -> tuple[dict, str, list[str]]:
+    qc = C.build_circuit(n_qubits, ops, measure=True, basis=basis)
     sim = _aer(preset)
     tqc = transpile(qc, sim, optimization_level=0)  # keep the learner's gates as written: noise counts each one
-    result = sim.run(tqc, shots=shots, seed_simulator=seed).result()
-    return C.normalize_counts(result.get_counts(), n_qubits, shots)
+    result = sim.run(tqc, shots=shots, seed_simulator=seed, memory=True).result()
+    counts, kind = C.normalize_counts(result.get_counts(), n_qubits, shots)
+    memory = [m.replace(" ", "")[-n_qubits:] for m in result.get_memory()]
+    return counts, kind, memory
 
 
 # --- IonQ (qiskit-ionq) ------------------------------------------------------------------------------------------
@@ -166,7 +179,7 @@ def _ionq_timeout() -> float:
         return 90.0
 
 
-def run_ionq(n_qubits: int, ops: Any, shots: int, noise_model: str | None) -> tuple[dict, str, dict]:
+def run_ionq(n_qubits: int, ops: Any, shots: int, noise_model: str | None, basis: str = "z") -> tuple[dict, str, dict]:
     """Run on IonQ's cloud simulator. Raises on any failure; the caller decides about fallback."""
     from qiskit_ionq import IonQProvider
 
@@ -174,7 +187,7 @@ def run_ionq(n_qubits: int, ops: Any, shots: int, noise_model: str | None) -> tu
     backend = provider.get_backend("simulator")
     if noise_model:
         backend.set_options(noise_model=noise_model)
-    qc = C.build_circuit(n_qubits, ops, measure=True)
+    qc = C.build_circuit(n_qubits, ops, measure=True, basis=basis)
 
     def _go():
         job = backend.run(qc, shots=shots)
@@ -188,29 +201,29 @@ def run_ionq(n_qubits: int, ops: Any, shots: int, noise_model: str | None) -> tu
 
 
 # --- the one entry point ------------------------------------------------------------------------------------------
-def run(backend_id: str, n_qubits: int, ops: Any, shots: int, seed: int | None = None) -> RunResult:
+def run(backend_id: str, n_qubits: int, ops: Any, shots: int, seed: int | None = None, basis: str = "z") -> RunResult:
     shots = max(1, min(int(shots), 10000))
     info = get_backend_info(backend_id)
     t0 = time.perf_counter()
     if info.kind.startswith("local"):
-        counts, kind = run_local(n_qubits, ops, shots, info.noise_preset, seed)
-        return RunResult(counts, shots, kind, info, int((time.perf_counter() - t0) * 1000))
+        counts, kind, memory = run_local(n_qubits, ops, shots, info.noise_preset, seed, basis)
+        return RunResult(counts, shots, kind, info, int((time.perf_counter() - t0) * 1000), basis=basis, memory=memory)
 
     # IonQ path
     if not info.available:
-        return _fallback(info, info.reason or "IonQ unavailable", n_qubits, ops, shots, seed, t0)
+        return _fallback(info, info.reason or "IonQ unavailable", n_qubits, ops, shots, seed, t0, basis)
     try:
-        counts, kind, extra = run_ionq(n_qubits, ops, shots, info.noise_model if info.kind == "ionq-noisy" else None)
-        return RunResult(counts, shots, kind, info, int((time.perf_counter() - t0) * 1000), extra=extra)
+        counts, kind, extra = run_ionq(n_qubits, ops, shots, info.noise_model if info.kind == "ionq-noisy" else None, basis)
+        return RunResult(counts, shots, kind, info, int((time.perf_counter() - t0) * 1000), extra=extra, basis=basis)
     except concurrent.futures.TimeoutError:
-        return _fallback(info, f"IonQ did not answer within {int(_ionq_timeout())} s", n_qubits, ops, shots, seed, t0)
+        return _fallback(info, f"IonQ did not answer within {int(_ionq_timeout())} s", n_qubits, ops, shots, seed, t0, basis)
     except Exception as e:  # network, auth, API errors: fall back honestly
-        return _fallback(info, f"IonQ request failed: {type(e).__name__}: {_safe_message(e)}", n_qubits, ops, shots, seed, t0)
+        return _fallback(info, f"IonQ request failed: {type(e).__name__}: {_safe_message(e)}", n_qubits, ops, shots, seed, t0, basis)
 
 
-def _fallback(requested: BackendInfo, reason: str, n_qubits, ops, shots, seed, t0) -> RunResult:
+def _fallback(requested: BackendInfo, reason: str, n_qubits, ops, shots, seed, t0, basis: str = "z") -> RunResult:
     local = get_backend_info("local-ideal")
-    counts, kind = run_local(n_qubits, ops, shots, None, seed)
+    counts, kind, memory = run_local(n_qubits, ops, shots, None, seed, basis)
     return RunResult(
         counts,
         shots,
@@ -219,6 +232,8 @@ def _fallback(requested: BackendInfo, reason: str, n_qubits, ops, shots, seed, t
         int((time.perf_counter() - t0) * 1000),
         fallback_from=requested.id,
         fallback_reason=reason,
+        basis=basis,
+        memory=memory,
     )
 
 

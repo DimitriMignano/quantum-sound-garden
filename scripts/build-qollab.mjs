@@ -1,15 +1,17 @@
 #!/usr/bin/env node
 // Builds the Qollab JS/Qiskit project into ./qollab and zips it into ./dist. Idempotent; asserts every file it needs.
 import { execSync } from 'node:child_process';
-import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const root = resolve(new URL('..', import.meta.url).pathname);
-const q = resolve(root, 'qollab');
+const final = resolve(root, 'qollab');
+const q = resolve(root, 'qollab.staging');
 
+// Build into a fresh staging folder so nothing stale can ride along, then replace qollab/ atomically.
+rmSync(q, { recursive: true, force: true });
 mkdirSync(q, { recursive: true });
-for (const f of ['main.js', 'main.css']) if (existsSync(resolve(q, f))) rmSync(resolve(q, f));
-execSync('npx vite build', { cwd: resolve(root, 'web'), stdio: 'inherit', env: { ...process.env, QOLLAB: '1' } });
+execSync('npx vite build', { cwd: resolve(root, 'web'), stdio: 'inherit', env: { ...process.env, QOLLAB: '1', QOLLAB_OUT: q } });
 
 // The Python module Qollab imports as `qsg.circuit` — the exact file the server tests validated.
 mkdirSync(resolve(q, 'qsg'), { recursive: true });
@@ -37,9 +39,13 @@ for (const f of required) {
 const mainJs = readFileSync(resolve(q, 'main.js'), 'utf8');
 if (!/from\s*["']qsg\.circuit["']/.test(mainJs)) throw new Error('main.js lost its `qsg.circuit` import (must stay external)');
 if (/<script/i.test(readFileSync(resolve(q, 'index.html'), 'utf8'))) throw new Error('qollab/index.html must not contain <script>');
+const extra = readdirSync(q, { recursive: true }).map(String).filter((f) => !statSync(resolve(q, f)).isDirectory() && !required.includes(f));
+if (extra.length) throw new Error(`unexpected files in the Qollab bundle: ${extra.join(', ')}`);
+rmSync(final, { recursive: true, force: true });
+renameSync(q, final);
 mkdirSync(resolve(root, 'dist'), { recursive: true });
 const zip = resolve(root, 'dist/quantum-sound-garden-qollab.zip');
 if (existsSync(zip)) rmSync(zip);
-execSync(`zip -q -r ${JSON.stringify(zip)} . -x '.DS_Store'`, { cwd: q, stdio: 'inherit' });
-const kb = (statSync(resolve(q, 'main.js')).size / 1024).toFixed(0);
+execSync(`zip -q -r ${JSON.stringify(zip)} . -x '.DS_Store'`, { cwd: final, stdio: 'inherit' });
+const kb = (statSync(resolve(final, 'main.js')).size / 1024).toFixed(0);
 console.log(`qollab bundle ok: ${required.length} files, main.js ${kb} KB -> ${zip}`);

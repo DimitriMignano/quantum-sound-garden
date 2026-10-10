@@ -36,7 +36,10 @@ Use Chrome, Edge, Brave, Opera or Firefox; Qollab does not run projects in Safar
 
 ## Source, docs and tests
 Full source, architecture notes, the quantum-to-audio mapping, limitations and the test suite (pytest + vitest,
-including Qiskit-vs-browser parity fixtures) are in the public repository linked on this page.
+including Qiskit-vs-browser parity fixtures): https://github.com/DimitriMignano/quantum-sound-garden
+(`README.md`, `docs/`). Challenge 4's noise is simulated in-app (a stochastic Pauli model) unless you pick a
+noise-model backend in Select QPU; every other bloom runs on Qiskit (the chosen backend, or Qiskit's Statevector
+when an IonQ backend's one-job-per-Run limit applies). Each result says which.
 
 ## Disclosure
 Built during the hackathon window (2026-10-10 → 10-11) with AI assistance (Claude Code by Anthropic wrote code and

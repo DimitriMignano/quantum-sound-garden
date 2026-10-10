@@ -18,6 +18,7 @@
     0.0
    ]
   },
+  "basis": "z",
   "n_qubits": 2,
   "ops": [
    {
@@ -57,6 +58,7 @@
     0.0
    ]
   },
+  "basis": "z",
   "n_qubits": 2,
   "ops": [
    {
@@ -77,6 +79,46 @@
   },
   "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(2, 2)   # 2 seeds, one classical bit each\nqc.h(1)        # Split (Hadamard): one path becomes two equal paths\nqc.cx(1, 0)    # Link (CNOT): the control seed decides whether the target flips\nqc.measure([0, 1], [0, 1])   # Bloom: measure every seed\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
  },
+ "bell-sideways-2": {
+  "amplitudes": {
+   "00": [
+    0.707106781187,
+    0.0
+   ],
+   "01": [
+    0.0,
+    0.0
+   ],
+   "10": [
+    0.0,
+    0.0
+   ],
+   "11": [
+    0.707106781187,
+    0.0
+   ]
+  },
+  "basis": "x",
+  "n_qubits": 2,
+  "ops": [
+   {
+    "op": "split",
+    "q": 0
+   },
+   {
+    "control": 0,
+    "op": "link",
+    "target": 1
+   }
+  ],
+  "probabilities": {
+   "00": 0.5,
+   "01": 0.0,
+   "10": 0.0,
+   "11": 0.5
+  },
+  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(2, 2)   # 2 seeds, one classical bit each\nqc.h(0)        # Split (Hadamard): one path becomes two equal paths\nqc.cx(0, 1)    # Link (CNOT): the control seed decides whether the target flips\nqc.h(0)        # Bloom sideways: rotate seed 0 into the X basis before measuring\nqc.h(1)        # Bloom sideways: rotate seed 1 into the X basis before measuring\nqc.measure([0, 1], [0, 1])   # Bloom: measure every seed\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
+ },
  "both-split-2": {
   "amplitudes": {
    "00": [
@@ -96,6 +138,7 @@
     0.0
    ]
   },
+  "basis": "z",
   "n_qubits": 2,
   "ops": [
    {
@@ -126,6 +169,7 @@
     0.0
    ]
   },
+  "basis": "z",
   "n_qubits": 1,
   "ops": [],
   "probabilities": {
@@ -145,6 +189,7 @@
     0.0
    ]
   },
+  "basis": "z",
   "n_qubits": 1,
   "ops": [
    {
@@ -157,6 +202,45 @@
    "1": 1.0
   },
   "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(1, 1)   # 1 seed, one classical bit each\nqc.x(0)        # Flip (X gate): turns the seed over, |0> becomes |1>\nqc.measure([0], [0])   # Bloom: measure every seed\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
+ },
+ "flip-both-sideways-2": {
+  "amplitudes": {
+   "00": [
+    0.5,
+    0.0
+   ],
+   "01": [
+    -0.5,
+    0.0
+   ],
+   "10": [
+    -0.5,
+    0.0
+   ],
+   "11": [
+    0.5,
+    0.0
+   ]
+  },
+  "basis": "x",
+  "n_qubits": 2,
+  "ops": [
+   {
+    "op": "flip",
+    "q": 0
+   },
+   {
+    "op": "flip",
+    "q": 1
+   }
+  ],
+  "probabilities": {
+   "00": 0.25,
+   "01": 0.25,
+   "10": 0.25,
+   "11": 0.25
+  },
+  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(2, 2)   # 2 seeds, one classical bit each\nqc.x(0)        # Flip (X gate): turns the seed over, |0> becomes |1>\nqc.x(1)        # Flip (X gate): turns the seed over, |0> becomes |1>\nqc.h(0)        # Bloom sideways: rotate seed 0 into the X basis before measuring\nqc.h(1)        # Bloom sideways: rotate seed 1 into the X basis before measuring\nqc.measure([0, 1], [0, 1])   # Bloom: measure every seed\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
  },
  "flip-q1-2": {
   "amplitudes": {
@@ -177,6 +261,7 @@
     0.0
    ]
   },
+  "basis": "z",
   "n_qubits": 2,
   "ops": [
    {
@@ -203,6 +288,7 @@
     0.0
    ]
   },
+  "basis": "z",
   "n_qubits": 1,
   "ops": [
    {
@@ -231,6 +317,7 @@
     -0.0
    ]
   },
+  "basis": "z",
   "n_qubits": 1,
   "ops": [
    {
@@ -264,6 +351,7 @@
     -0.364484313711
    ]
   },
+  "basis": "z",
   "n_qubits": 1,
   "ops": [
    {
@@ -297,6 +385,7 @@
     -0.5
    ]
   },
+  "basis": "z",
   "n_qubits": 1,
   "ops": [
    {
@@ -338,6 +427,7 @@
     0.0
    ]
   },
+  "basis": "z",
   "n_qubits": 2,
   "ops": [
    {
@@ -395,6 +485,7 @@
     -0.5
    ]
   },
+  "basis": "z",
   "n_qubits": 2,
   "ops": [
    {
@@ -435,6 +526,7 @@
     0.0
    ]
   },
+  "basis": "z",
   "n_qubits": 1,
   "ops": [
    {
@@ -459,6 +551,7 @@
     0.0
    ]
   },
+  "basis": "z",
   "n_qubits": 1,
   "ops": [
    {
@@ -512,6 +605,7 @@
     0.0
    ]
   },
+  "basis": "z",
   "n_qubits": 3,
   "ops": [
    {
@@ -576,6 +670,7 @@
     0.5
    ]
   },
+  "basis": "z",
   "n_qubits": 3,
   "ops": [
    {
@@ -612,5 +707,35 @@
    "111": 0.25
   },
   "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(3, 3)   # 3 seeds, one classical bit each\nqc.h(0)        # Split (Hadamard): one path becomes two equal paths\nqc.p(-math.pi / 2, 0)   # Twist (phase gate): rotates the |1> path; invisible until paths recombine\nqc.cx(0, 1)    # Link (CNOT): the control seed decides whether the target flips\nqc.x(2)        # Flip (X gate): turns the seed over, |0> becomes |1>\nqc.h(0)        # Split (Hadamard): one path becomes two equal paths\nqc.measure([0, 1, 2], [0, 1, 2])   # Bloom: measure every seed\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
+ },
+ "twist-sideways-1": {
+  "amplitudes": {
+   "0": [
+    0.5,
+    0.5
+   ],
+   "1": [
+    0.5,
+    -0.5
+   ]
+  },
+  "basis": "x",
+  "n_qubits": 1,
+  "ops": [
+   {
+    "op": "split",
+    "q": 0
+   },
+   {
+    "op": "twist",
+    "q": 0,
+    "turns": 0.25
+   }
+  ],
+  "probabilities": {
+   "0": 0.5,
+   "1": 0.5
+  },
+  "qiskit_code": "from qiskit import QuantumCircuit\nfrom qiskit.quantum_info import Statevector\nimport math\n\nqc = QuantumCircuit(1, 1)   # 1 seed, one classical bit each\nqc.h(0)        # Split (Hadamard): one path becomes two equal paths\nqc.p(math.pi / 2, 0)   # Twist (phase gate): rotates the |1> path; invisible until paths recombine\nqc.h(0)        # Bloom sideways: rotate seed 0 into the X basis before measuring\nqc.measure([0], [0])   # Bloom: measure every seed\n\n# Ideal probabilities, before any shots:\nstate = Statevector.from_instruction(qc.remove_final_measurements(inplace=False))\nprint(state.probabilities_dict())\n\n# Run it. On Qollab `backend` is the device you picked; locally use AerSimulator().\njob = backend.run(qc, shots=256)\nprint(job.result().get_counts())\n"
  }
 }

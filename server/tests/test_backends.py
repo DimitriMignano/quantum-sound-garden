@@ -76,3 +76,18 @@ def test_ionq_ideal_simulator_live():
 
 def _fidelity(p: dict, q: dict) -> float:
     return sum((p.get(k, 0.0) * q.get(k, 0.0)) ** 0.5 for k in set(p) | set(q)) ** 2
+
+
+def test_local_runs_return_real_shot_order_and_sideways_bell_is_correlated():
+    r = B.run("local-ideal", 2, [SPLIT, LINK], 200, seed=9, basis="x")
+    assert r.basis == "x" and r.counts["01"] == 0 and r.counts["10"] == 0
+    assert r.memory is not None and len(r.memory) == 200 and set(r.memory) <= {"00", "11"}
+    assert sum(1 for m in r.memory if m == "11") == r.counts["11"]
+
+
+def test_teaching_noise_model_is_the_stochastic_pauli_channel():
+    # a single X gate under teaching noise: wrong answers appear at about p1*(2/3) + readout (Z does not flip)
+    r = B.run("local-noisy-teaching", 1, [{"op": "flip", "q": 0}], 10000, seed=11)
+    wrong = r.counts["0"] / r.shots
+    expected = 0.02 * 2 / 3 + 0.02 - (0.02 * 2 / 3) * 0.02 * 2
+    assert abs(wrong - expected) < 0.006

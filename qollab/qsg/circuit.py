@@ -88,8 +88,18 @@ def validate(n_qubits: int, ops: Any) -> list[dict]:
     return out
 
 
-def build_circuit(n_qubits: int, ops: Any, measure: bool = True) -> QuantumCircuit:
-    """Build the Qiskit circuit for a list of garden actions."""
+BASES = ("z", "x")
+
+
+def build_circuit(n_qubits: int, ops: Any, measure: bool = True, basis: str = "z") -> QuantumCircuit:
+    """Build the Qiskit circuit for a list of garden actions.
+
+    basis "z" measures as usual; basis "x" ("Bloom sideways") applies H to every qubit first, so the
+    measurement asks each seed a complementary question. A Bell pair stays perfectly correlated sideways; two
+    classically correlated seeds do not.
+    """
+    if basis not in BASES:
+        raise CircuitError("basis must be 'z' or 'x'")
     ops = validate(n_qubits, ops)
     qc = QuantumCircuit(n_qubits, n_qubits if measure else 0)
     for op in ops:
@@ -102,6 +112,9 @@ def build_circuit(n_qubits: int, ops: Any, measure: bool = True) -> QuantumCircu
             qc.p(turns_to_radians(op["turns"]), op["q"])
         elif kind == "link":
             qc.cx(op["control"], op["target"])
+    if basis == "x":
+        for q in range(n_qubits):
+            qc.h(q)
     if measure:
         qc.measure(range(n_qubits), range(n_qubits))
     return qc
@@ -111,15 +124,16 @@ def bitstrings(n_qubits: int) -> list[str]:
     return [format(i, f"0{n_qubits}b") for i in range(2**n_qubits)]
 
 
-def ideal(n_qubits: int, ops: Any) -> dict:
-    """Exact statevector result before any measurement: probabilities and amplitudes per outcome."""
-    qc = build_circuit(n_qubits, ops, measure=False)
+def ideal(n_qubits: int, ops: Any, basis: str = "z") -> dict:
+    """Exact statevector result before any measurement: probabilities and amplitudes per outcome (in `basis`)."""
+    qc = build_circuit(n_qubits, ops, measure=False, basis=basis)
     sv = Statevector.from_instruction(qc)
     probs = sv.probabilities()
     amps = sv.data
     labels = bitstrings(n_qubits)
     return {
         "n_qubits": n_qubits,
+        "basis": basis,
         "probabilities": {labels[i]: float(round(float(probs[i]), 12)) for i in range(len(labels))},
         "amplitudes": {
             labels[i]: [float(round(float(amps[i].real), 12)), float(round(float(amps[i].imag), 12))]
@@ -130,12 +144,14 @@ def ideal(n_qubits: int, ops: Any) -> dict:
     }
 
 
-def ideal_json(n_qubits: int, ops_json: str) -> str:
-    return json.dumps(ideal(int(n_qubits), ops_json))
+def ideal_json(n_qubits: int, ops_json: str, basis: str = "z") -> str:
+    return json.dumps(ideal(int(n_qubits), ops_json, basis))
 
 
-def qiskit_code(n_qubits: int, ops: Any, shots: int = 256) -> str:
+def qiskit_code(n_qubits: int, ops: Any, shots: int = 256, basis: str = "z") -> str:
     """Readable Qiskit source that rebuilds the same circuit, for the code reveal."""
+    if basis not in BASES:
+        raise CircuitError("basis must be 'z' or 'x'")
     ops = validate(n_qubits, ops)
     lines = [
         "from qiskit import QuantumCircuit",
@@ -155,6 +171,9 @@ def qiskit_code(n_qubits: int, ops: Any, shots: int = 256) -> str:
         elif kind == "link":
             lines.append(f"qc.cx({op['control']}, {op['target']})    # {EXPLAIN['link']}")
     regs = ", ".join(str(i) for i in range(n_qubits))
+    if basis == "x":
+        for q in range(n_qubits):
+            lines.append(f"qc.h({q})        # Bloom sideways: rotate seed {q} into the X basis before measuring")
     lines += [
         f"qc.measure([{regs}], [{regs}])   # Bloom: measure every seed",
         "",
@@ -242,14 +261,14 @@ def _backend_name(backend: Any) -> str:
     return str(name or type(backend).__name__)
 
 
-def run_json(backend: Any, n_qubits: int, ops_json: str, shots: int = 256) -> str:
+def run_json(backend: Any, n_qubits: int, ops_json: str, shots: int = 256, basis: str = "z") -> str:
     """Qollab entry point: build the circuit, run it on the backend Qollab chose, return counts as JSON.
 
-    Called from main.js as `await circuit.run_json.callPromising(backend, n, opsJson, shots)`.
+    Called from main.js as `await circuit.run_json.callPromising(backend, n, opsJson, shots, basis)`.
     """
     n = int(n_qubits)
     shots = max(1, min(int(shots), 10000))
-    qc = build_circuit(n, ops_json, measure=True)
+    qc = build_circuit(n, ops_json, measure=True, basis=basis)
     job = backend.run(qc, shots=shots)
     result = job.result()
     raw = result.get_counts()
@@ -261,6 +280,7 @@ def run_json(backend: Any, n_qubits: int, ops_json: str, shots: int = 256) -> st
             "counts_kind": kind,
             "backend_name": _backend_name(backend),
             "backend_class": type(backend).__name__,
+            "basis": basis,
         }
     )
 
@@ -275,6 +295,8 @@ def describe_backend_json(backend: Any) -> str:
         kind = "ionq-qpu" if "qpu" in lowered else "ionq-simulator"
     elif "fake" in lowered or "noise" in lowered:
         kind = "local-noisy"
-    else:
+    elif "basic" in lowered or "aer" in lowered or "statevector" in lowered or "braket" in lowered:
         kind = "local-ideal"
+    else:
+        kind = "unknown"
     return json.dumps({"name": name, "class": cls, "module": module, "kind": kind})

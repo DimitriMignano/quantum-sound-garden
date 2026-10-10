@@ -31,7 +31,6 @@
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
-html, body { margin: 0; background: #05060f; }
 .qsg *, .qsg *::before, .qsg *::after { box-sizing: border-box; }
 .qsg h1, .qsg h2, .qsg h3 { font-family: var(--font-display); font-weight: 500; letter-spacing: -0.01em; margin: 0; }
 .qsg h2 { font-size: 1.55rem; line-height: 1.2; }
@@ -177,3 +176,21 @@ html, body { margin: 0; background: #05060f; }
 /* motion */
 @media (prefers-reduced-motion: reduce) { .qsg * { transition-duration: 0.01ms !important; } }
 .is-still .bar span, .is-still .action, .is-still .outcome { transition: none; }
+
+/* review round 1 additions */
+.outcome__seeds { display: flex; gap: 0.6rem; font-size: 0.72rem; color: var(--ink-faint); font-family: var(--font-mono); }
+.legend { font-size: 0.85rem; color: var(--ink-dim); }
+.legend summary { cursor: pointer; color: var(--ink-faint); }
+.legend ul { list-style: none; padding: 0.4rem 0 0; margin: 0; display: grid; gap: 0.3rem; }
+.legend li { display: flex; gap: 0.5rem; align-items: flex-start; }
+.legend__mark { flex: 0 0 auto; width: 14px; height: 14px; border-radius: 50%; margin-top: 3px; }
+.legend__mark--glow { background: linear-gradient(90deg, var(--cool), var(--accent)); }
+.legend__mark--ring { border: 2px solid var(--phase); }
+.legend__mark--vine { background: var(--vine); height: 3px; margin-top: 8px; border-radius: 2px; }
+.legend__mark--bloom { border: 1.5px solid var(--accent); background: rgba(255,176,64,0.4); }
+.path__hint { grid-column: 1 / -1; margin: 0 0 0.2rem; font-size: 0.78rem; color: var(--ink-faint); }
+.bead { gap: 0.1rem; }
+.bead__x { position: absolute; top: -6px; right: -6px; width: 16px; height: 16px; border-radius: 50%; background: var(--panel-solid); border: 1px solid var(--line-strong); font-style: normal; font-size: 0.7rem; line-height: 14px; text-align: center; color: var(--ink-faint); opacity: 0.7; }
+.bead:hover:not(:disabled) .bead__x, .bead:focus-visible .bead__x { color: var(--danger); border-color: var(--danger); opacity: 1; }
+.deeper { display: grid; gap: 0.5rem; padding: 0.8rem; border-radius: var(--radius-s); border: 1px solid var(--line-strong); background: rgba(0,0,0,0.2); }
+.deeper__result { padding: 0.5rem 0.7rem; border-left: 2px solid var(--phase); }

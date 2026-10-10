@@ -9,7 +9,7 @@ export const APP = {
   title: 'Quantum Sound Garden',
   tagline: 'Hear quantum behavior. Predict it. Shape it. Then read the circuit.',
   honesty:
-    'You are not hearing a quantum state. The sound is ordinary audio driven by the probabilities and the measured shots of a real Qiskit circuit.',
+    'You are not hearing a quantum state. The sound is ordinary audio driven by the probabilities and the measured shots of a circuit: a real Qiskit circuit whenever a Qiskit engine is available, and every result names the engine that produced it.',
   startButton: 'Enter the garden',
   startHint: 'Sound starts only after you press this. Headphones help.',
   creatorTitle: 'Creator',
@@ -19,14 +19,21 @@ export const APP = {
 export interface ActionCopy { verb: string; gate: string; what: string; key: string }
 export const ACTIONS: Record<Op['op'] | 'bloom', ActionCopy> = {
   flip: { verb: 'Flip', gate: 'X', what: 'Turn the seed over: 0 becomes 1, 1 becomes 0.', key: 'F' },
-  split: { verb: 'Split', gate: 'H', what: 'One path becomes two equal paths. Measurement then lands on either.', key: 'S' },
+  split: { verb: 'Split', gate: 'H', what: 'From a definite seed, one path becomes two equal paths. Applied to an already split seed, the paths meet again.', key: 'S' },
   twist: { verb: 'Twist', gate: 'P(θ)', what: 'Rotate the phase of the 1 path. Nothing you can hear changes, until paths meet again.', key: 'T' },
-  link: { verb: 'Link', gate: 'CX', what: 'The control seed decides whether the target seed flips. Split the control first and the pair becomes correlated.', key: 'L' },
+  link: { verb: 'Link', gate: 'CX', what: 'The control seed decides whether the target seed flips. With the target at 0 and the control split, the pair becomes correlated.', key: 'L' },
   bloom: { verb: 'Bloom', gate: 'measure', what: 'Measure every seed. Each shot gives one definite outcome; the garden plays them.', key: 'B' },
 };
 
 export const WHY_SHOTS_VARY =
-  'A measurement gives one definite outcome, drawn with the probabilities the circuit prepared. Repeating the same circuit does not repeat the same answer; it repeats the same odds. More shots make the measured bars approach the predicted ones, but any single bloom is its own sample.';
+  'A measurement gives one definite outcome, drawn with the probabilities the circuit prepared. Repeating the same circuit does not repeat the same answer; it repeats the same odds. More shots make the measured bars approach the predicted ones, but any single bloom is its own sample. The order you hear is the real shot order when the backend reports it (the local Qiskit simulator does); otherwise it is a shuffle of the counts, because most backends return totals, not order.';
+
+export const LEGEND = [
+  { mark: 'glow', text: 'Seed glow: blue is 0, amber is 1; both lobes apart means a split seed, the brighter lobe the likelier reading.' },
+  { mark: 'ring', text: 'Magenta ring: the twist (phase) of a split seed. Hidden while a seed is linked, because then its phase is shared.' },
+  { mark: 'vine', text: 'Mint vine: a link between seeds; it glows brighter the more their readings agree.' },
+  { mark: 'bloom', text: 'Blooms above: outline is the predicted chance of each outcome, solid is what the shots measured.' },
+];
 
 export const BACKEND_NOTES = {
   browser: 'Browser math, not Qiskit. Start the local Qiskit server or open this on Qollab for real backends.',
@@ -34,7 +41,15 @@ export const BACKEND_NOTES = {
   probabilities: 'This backend returned exact probabilities (no shot noise); they were scaled to the shot count.',
 };
 
-export interface Prediction { id: string; label: string; matches: (ideal: Ideal) => boolean }
+/** `measured` is the distribution of the bloom that just happened (undefined before any bloom). */
+export interface Prediction { id: string; label: string; matches: (ideal: Ideal, measured?: Record<string, number>) => boolean }
+export interface Deeper {
+  title: string;
+  intro: string;
+  /** buttons: a bloom with options; `twins` are op lists sharing the shots (a classical mixture) */
+  runs: Array<{ id: string; label: string; basis?: 'z' | 'x'; twins?: Op[][]; useCircuit?: boolean; explain: string }>;
+  outro: string;
+}
 export interface Seed { name: string; sound: string }
 export interface Challenge {
   id: string;
@@ -52,7 +67,10 @@ export interface Challenge {
   success: (ideal: Ideal, circuit: Circuit, measuredFidelity?: number) => boolean;
   hints: string[];       // progressive; never the full answer in the first
   reveal: { title: string; body: string[]; }; // the physics, the gate names
+  deeper?: Deeper;       // the quantum-versus-classical A/B after the reveal
   bloomShots: number;
+  moments: number;       // how many shots are played aloud
+  step: number;          // seconds per moment
 }
 
 const near = (a: number, b: number, eps = 0.02) => Math.abs(a - b) <= eps;
@@ -88,6 +106,8 @@ export const CHALLENGES: Challenge[] = [
       ],
     },
     bloomShots: 12,
+    moments: 8,
+    step: 0.8,
   },
   {
     id: 'pair',
@@ -103,7 +123,7 @@ export const CHALLENGES: Challenge[] = [
       { id: 'independent', label: 'Rain and thunder each 50/50, independent of each other', matches: (i) => near(p1(i, 0), 0.5, 0.05) && near(p1(i, 1), 0.5, 0.05) && near(agreement(i.probabilities, 0, 1), 0.5, 0.05) },
       { id: 'together', label: 'Rain and thunder always together, or neither', matches: (i) => near(p1(i, 0), 0.5, 0.05) && agreement(i.probabilities, 0, 1) > 0.98 },
       { id: 'both', label: 'Always both', matches: (i) => p1(i, 0) > 0.98 && p1(i, 1) > 0.98 },
-      { id: 'other', label: 'Something else', matches: () => true },
+      { id: 'other', label: 'Something else', matches: (i) => !(near(p1(i, 0), 0.5, 0.05) && near(p1(i, 1), 0.5, 0.05) && near(agreement(i.probabilities, 0, 1), 0.5, 0.05)) && !(near(p1(i, 0), 0.5, 0.05) && agreement(i.probabilities, 0, 1) > 0.98) && !(p1(i, 0) > 0.98 && p1(i, 1) > 0.98) },
     ],
     success: (i) => p1(i, 0) > 0.35 && p1(i, 0) < 0.65 && p1(i, 1) > 0.35 && p1(i, 1) < 0.65 && agreement(i.probabilities, 0, 1) > 0.99,
     hints: [
@@ -114,11 +134,23 @@ export const CHALLENGES: Challenge[] = [
     reveal: {
       title: 'What you did: a Bell pair',
       body: [
-        'Split (H) put the sky in an equal superposition. Link (CX) with the sky as control made the storm copy it, path by path. The pair is now in the state (|00⟩ + |11⟩)/√2.',
-        'Each seed alone is a fair coin, but the outcomes 01 and 10 have zero probability. That correlation is stronger than any classical copy made after the fact, and it is the signature of entanglement. Measured shots show only 00 and 11.',
+        'Split (H) put the sky in an equal superposition. Link (CX) with the sky as control made the storm copy it, path by path. The circuit prepares the Bell state (|00⟩ + |11⟩)/√2.',
+        'Each seed alone is a fair coin, yet 01 and 10 have zero probability. Honest caveat: in this one basis, two classical coins glued together would sound exactly the same. What makes the pair quantum shows up when you ask a different question. Go deeper below.',
       ],
     },
+    deeper: {
+      title: 'Is it really entanglement? Bloom sideways.',
+      intro: 'Bloom sideways measures every seed in the X basis (a Split right before measuring). Try the same question on your pair and on two classical twins: seeds that were simply both set to 0 or both set to 1 by a coin toss before the bloom.',
+      runs: [
+        { id: 'pair-x', label: 'Your pair, sideways', basis: 'x', useCircuit: true, explain: 'Still only together-or-neither. The Bell pair agrees in the sideways question too.' },
+        { id: 'twins-z', label: 'Classical twins', basis: 'z', twins: [[], [{ op: 'flip', q: 0 }, { op: 'flip', q: 1 }]], explain: 'In the usual question the twins agree just like your pair: together or neither.' },
+        { id: 'twins-x', label: 'Classical twins, sideways', basis: 'x', twins: [[], [{ op: 'flip', q: 0 }, { op: 'flip', q: 1 }]], explain: 'Sideways, the twins fall apart: all four outcomes, thunder on dry nights. No classical agreement survives both questions. The Bell pair does.' },
+      ],
+      outro: 'That is the difference entanglement makes: correlation that holds in complementary measurements. (A full Bell test needs more angles; this is the two-question version you can hear.)',
+    },
     bloomShots: 16,
+    moments: 10,
+    step: 0.8,
   },
   {
     id: 'footsteps',
@@ -149,7 +181,18 @@ export const CHALLENGES: Challenge[] = [
         'Split again is where the paths meet. With the minus sign still there, H sends the state to |1⟩: footsteps every time. Twist half a turn first (P(π), which here equals Z) to return to (|0⟩ + |1⟩)/√2, and the second H sends it to |0⟩: silence, every time. Destructive interference on 1, constructive on 0.',
       ],
     },
+    deeper: {
+      title: 'What if the paths forgot each other?',
+      intro: 'A dephased twin is the same garden where, half the time, an extra half-turn twist scrambles the phase between the two paths before they meet. That is what noise on a real device does to coherence.',
+      runs: [
+        { id: 'coherent', label: 'Your garden', basis: 'z', useCircuit: true, explain: 'Coherent paths: the twist decides where they add and where they cancel.' },
+        { id: 'dephased', label: 'Dephased twin', basis: 'z', twins: [[{ op: 'split', q: 0 }, { op: 'twist', q: 0, turns: 0.5 }, { op: 'twist', q: 0, turns: 0.5 }, { op: 'split', q: 0 }], [{ op: 'split', q: 0 }, { op: 'twist', q: 0, turns: 0.5 }, { op: 'split', q: 0 }]], explain: 'Half the shots carry a scrambled phase. The silence is gone: footsteps return, 50/50, however you twist. Interference needs the paths to remember each other.' },
+      ],
+      outro: 'No classical mixture of the two paths can cancel the footsteps. Only a coherent superposition can, and that is the behavior this whole garden is built on.',
+    },
     bloomShots: 12,
+    moments: 8,
+    step: 0.8,
   },
   {
     id: 'repair',
@@ -167,9 +210,9 @@ export const CHALLENGES: Challenge[] = [
     noisy: true,
     intended: [{ op: 'split', q: 0 }, { op: 'link', control: 0, target: 1 }],
     predictions: [
-      { id: 'clean', label: 'Only together-or-neither, as intended', matches: () => false },
-      { id: 'leaks', label: 'Mostly as intended, with some stray thunder or lonely rain', matches: () => true },
-      { id: 'random', label: 'Anything goes, four outcomes alike', matches: () => false },
+      { id: 'clean', label: 'Only together-or-neither, as intended', matches: (_i, m) => !!m && (m['01'] ?? 0) + (m['10'] ?? 0) < 0.03 },
+      { id: 'leaks', label: 'Mostly as intended, with some stray thunder or lonely rain', matches: (_i, m) => !!m && (m['01'] ?? 0) + (m['10'] ?? 0) >= 0.03 && (m['01'] ?? 0) + (m['10'] ?? 0) < 0.4 },
+      { id: 'random', label: 'Anything goes, four outcomes alike', matches: (_i, m) => !!m && (m['01'] ?? 0) + (m['10'] ?? 0) >= 0.4 },
     ],
     success: (i, c, fid) => {
       const bell = { '00': 0.5, '01': 0, '10': 0, '11': 0.5 };
@@ -179,16 +222,18 @@ export const CHALLENGES: Challenge[] = [
     hints: [
       'Two Splits in a row on the same seed cancel out. Two Links in a row cancel out too. Tap an action on the path to remove it.',
       'The intended garden is Split the sky, Link sky to storm. Nothing else. Compare the measured bars with the predicted ones before and after.',
-      'Fewer actions, fewer chances for noise. On real hardware this is why circuit depth matters so much.',
+      'Fewer actions, fewer chances for noise. On real hardware circuit depth is one of the first things that decides whether a result survives.',
     ],
     reveal: {
       title: 'What you did: circuit optimization',
       body: [
         'H·H = I and CX·CX = I, so the six-action garden meant exactly the same state as the two-action one. The ideal probabilities never changed. The measured ones did, because every gate on a noisy device is a chance for an error.',
-        'The noise here is a simple stochastic Pauli model (a random X, Y or Z after a gate, plus readout flips), exaggerated so you can hear it. Real IonQ systems are far quieter, but the lesson is the same: the shortest circuit that means the same thing is the robust one.',
+        'The noise here is a stochastic Pauli model (after each action, with a small probability, a random X, Y or Z; plus readout flips), exaggerated so you can hear it. It is simulated in-app unless you picked a noise-model backend, and real IonQ systems are far quieter. In this model, and often on hardware, a shorter circuit with the same meaning measures closer to its intention. Real devices add their own twists: native gates, idle time, calibration.',
       ],
     },
     bloomShots: 48,
+    moments: 16,
+    step: 0.6,
   },
 ];
 

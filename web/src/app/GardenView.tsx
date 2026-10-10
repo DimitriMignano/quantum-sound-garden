@@ -3,6 +3,8 @@ import { GardenRenderer, type GardenState } from '../garden/renderer';
 import type { GardenApi } from './useGarden';
 import { bitstrings } from '../engine/outcomes';
 import { captionFor, type Assignment } from '../audio/mixer';
+import { LEGEND } from '../content/content';
+import { bitOf } from '../engine/outcomes';
 
 interface Props {
   garden: GardenApi;
@@ -27,7 +29,8 @@ export function GardenView({ garden, seedNames, assignment, reducedMotion }: Pro
     measured: garden.measured,
     active: garden.playback?.outcome ?? null,
     reducedMotion,
-  }), [garden.circuit.nQubits, seedNames, garden.ideal, links, garden.measured, garden.playback?.outcome, reducedMotion]);
+    hideOdds: garden.oddsHidden,
+  }), [garden.circuit.nQubits, seedNames, garden.ideal, links, garden.measured, garden.playback?.outcome, reducedMotion, garden.oddsHidden]);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -45,8 +48,11 @@ export function GardenView({ garden, seedNames, assignment, reducedMotion }: Pro
   }, [garden.playback, garden.circuit.nQubits]);
 
   const labels = bitstrings(garden.circuit.nQubits);
-  const caption = garden.playback?.caption
-    ? garden.playback.outcome ? `Shot ${garden.playback.index + 1} of ${garden.playback.total}: ${garden.playback.caption}.` : 'Bloom finished.'
+  const hidden = garden.oddsHidden;
+  const caption = garden.playback && !garden.playback.finished && garden.playback.outcome
+    ? `Shot ${garden.playback.index + 1} of ${garden.playback.total}: ${garden.playback.caption}.`
+    : garden.playback?.finished ? `Bloom finished${garden.resultLabel ? ` (${garden.resultLabel})` : ''}.`
+    : hidden ? 'The odds are hidden until you predict. The seeds show their state; listen after you commit.'
     : `Hearing the odds: ${describeOdds(garden.ideal.probabilities, assignment)}`;
 
   return (
@@ -69,18 +75,25 @@ export function GardenView({ garden, seedNames, assignment, reducedMotion }: Pro
                 <code className="outcome__bits" title={`measurement result ${b} (qubit 0 is the rightmost bit)`}>{b}</code>
                 <span className="outcome__name">{captionFor(assignment, b)}</span>
               </div>
+              {seedNames.length > 1 && <div className="outcome__seeds">{seedNames.map((n, q) => <span key={q}>{n} {bitOf(b, q)}</span>)}</div>}
               <div className="outcome__bars">
-                <div className="bar bar--predicted" title={`predicted ${pct(p)}`}><span style={{ width: `${p * 100}%` }} /></div>
+                <div className="bar bar--predicted" title={hidden ? 'predicted: hidden until you predict' : `predicted ${pct(p)}`}><span style={{ width: hidden ? '0%' : `${p * 100}%` }} /></div>
                 {m !== undefined && <div className="bar bar--measured" title={`measured ${pct(m)}`}><span style={{ width: `${m * 100}%` }} /></div>}
               </div>
               <div className="outcome__nums">
-                <span>predicted <b>{pct(p)}</b></span>
+                <span>predicted <b>{hidden ? '?' : pct(p)}</b></span>
                 {m !== undefined && <span>measured <b>{pct(m)}</b></span>}
               </div>
             </li>
           );
         })}
       </ul>
+      <details className="legend">
+        <summary>How to read the garden</summary>
+        <ul>
+          {LEGEND.map((l) => <li key={l.mark}><span className={`legend__mark legend__mark--${l.mark}`} aria-hidden="true" />{l.text}</li>)}
+        </ul>
+      </details>
     </div>
   );
 }

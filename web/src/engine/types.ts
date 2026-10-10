@@ -14,9 +14,13 @@ export const GATE_NAME: Record<OpKind, string> = {
   link: 'CX (CNOT)',
 };
 
+export type Basis = 'z' | 'x';
+
 export interface Circuit {
   nQubits: number;
   ops: Op[];
+  /** 'z' (default) measures as usual; 'x' is "Bloom sideways": H on every qubit before measuring. */
+  basis?: Basis;
 }
 
 /** Exact statevector result before measurement. Keys are Qiskit bitstrings (qubit 0 rightmost). */
@@ -34,6 +38,7 @@ export type EngineKind =
   | 'qollab-local' // Qollab's in-browser simulator chosen in Select QPU
   | 'qollab-noisy' // an IBM noise-model simulator chosen in Qollab
   | 'qollab-ionq' // an IonQ cloud simulator (or QPU) chosen in Qollab
+  | 'qollab-statevector' // Qiskit Statevector computed in Pyodide, shots sampled in the browser (no backend job)
   | 'server-local' // local Aer through the FastAPI server
   | 'server-local-noisy' // local Aer with a noise preset
   | 'server-ionq' // IonQ cloud simulator through qiskit-ionq
@@ -66,6 +71,9 @@ export interface RunResult {
   fallbackReason?: string;
   /** In-app simulated noise applied (browser engine only). */
   simulatedNoise?: NoiseSpec;
+  /** The real per-shot order when the backend provided it (Aer memory); otherwise undefined and the UI shuffles. */
+  memory?: string[];
+  basis: Basis;
 }
 
 export interface NoiseSpec {

@@ -3,11 +3,10 @@
  * is Qiskit), runs, playback and captions. Challenge and creator scenes both sit on it.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { Circuit, Ideal, NoiseSpec, Op, QuantumEngine, RunResult } from '../engine/types';
+import type { Basis, Circuit, Ideal, NoiseSpec, Op, QuantumEngine, RunResult } from '../engine/types';
 import { previewIdeal, TEACHING_NOISE } from '../engine/browser';
 import { OneJobLimitError } from '../engine/qollab';
 import { distribution, fidelity, shotSequence } from '../engine/outcomes';
-import { audio } from '../audio/engine';
 import { mixer, type Assignment, GardenMixer } from '../audio/mixer';
 
 export interface Playback {
@@ -15,6 +14,18 @@ export interface Playback {
   total: number;
   outcome: string | null;
   caption: string;
+  finished: boolean;
+}
+
+export interface BloomOptions {
+  noise?: boolean;
+  backendId?: string;
+  moments?: number;
+  step?: number;
+  basis?: Basis;
+  /** A "twin": several circuits sharing the shots, counts merged (a classical mixture). */
+  mixture?: Op[][];
+  label?: string;
 }
 
 export interface GardenApi {
@@ -23,35 +34,41 @@ export interface GardenApi {
   qiskitIdeal: Ideal | null;   // authoritative, when the engine is Qiskit; null on the browser engine
   idealAgrees: boolean | null; // browser preview vs Qiskit, within 1e-6
   result: RunResult | null;
+  resultLabel: string | null;  // what the last bloom was ("Bloom sideways", "Classical twins, sideways")
   measured: Record<string, number> | null;
   measuredFidelity: number | null;
   playback: Playback | null;
   busy: boolean;
   error: string | null;
+  oddsHidden: boolean;
+  setOddsHidden(v: boolean): void;
   addOp(op: Op): void;
   removeOp(index: number): void;
   setOps(ops: Op[]): void;
   reset(ops?: Op[]): void;
-  bloom(shots: number, opts?: { noise?: boolean; backendId?: string; moments?: number; step?: number }): Promise<RunResult | null>;
+  bloom(shots: number, opts?: BloomOptions): Promise<RunResult | null>;
   replay(): void;
+  skip(): void;
   stopPlayback(): void;
   hearOdds(): void;
   code(shots: number): Promise<string>;
 }
 
-export function useGarden(engine: QuantumEngine, nQubits: number, assignment: Assignment, startOps: Op[] = []): GardenApi {
+export function useGarden(engine: QuantumEngine, nQubits: number, assignment: Assignment, startOps: Op[] = [], hideOddsUntilAsked = false): GardenApi {
   const [ops, setOpsState] = useState<Op[]>(startOps);
   const circuit = useMemo<Circuit>(() => ({ nQubits, ops }), [nQubits, ops]);
   const ideal = useMemo(() => previewIdeal(circuit), [circuit]);
   const [qiskitIdeal, setQiskitIdeal] = useState<Ideal | null>(null);
   const [result, setResult] = useState<RunResult | null>(null);
+  const [resultLabel, setResultLabel] = useState<string | null>(null);
   const [playback, setPlayback] = useState<Playback | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [oddsHidden, setOddsHidden] = useState(hideOddsUntilAsked);
   const seqRef = useRef<string[]>([]);
   const assignmentRef = useRef(assignment);
-  assignmentRef.current = assignment;
   const lastStepRef = useRef(0.9);
+  const playRef = useRef<(seq: string[], step: number) => void>(() => {});
 
   // authoritative ideal from Qiskit (debounced), when available
   useEffect(() => {
@@ -72,12 +89,23 @@ export function useGarden(engine: QuantumEngine, nQubits: number, assignment: As
     return Object.keys(ideal.probabilities).every((k) => Math.abs((qiskitIdeal.probabilities[k] ?? 0) - ideal.probabilities[k]) < 1e-6);
   }, [ideal, qiskitIdeal]);
 
-  // the circuit changed: hear the new odds (quietly), forget the old measurement
+  // the circuit changed: forget the old measurement; hide the odds again if this garden asks for predictions first
   useEffect(() => {
     setResult(null);
+    setResultLabel(null);
     setPlayback(null);
-    if (audio.started) mixer.blend(assignmentRef.current, ideal.probabilities);
-  }, [ideal]);
+    if (hideOddsUntilAsked) setOddsHidden(true);
+  }, [ideal, hideOddsUntilAsked]);
+
+  // hear the odds whenever they are allowed to be heard (circuit or sound assignment changed)
+  useEffect(() => {
+    assignmentRef.current = assignment;
+    if (oddsHidden) mixer.silence(0.8);
+    else mixer.blend(assignment, ideal.probabilities);
+  }, [assignment, ideal, oddsHidden]);
+
+  // leaving the scene: nothing keeps playing underneath the next one
+  useEffect(() => () => { mixer.silence(0.5); }, []);
 
   const measured = useMemo(() => (result ? distribution(result.counts) : null), [result]);
   const measuredFidelity = useMemo(() => (measured ? fidelity(measured, ideal.probabilities) : null), [measured, ideal]);
@@ -85,30 +113,42 @@ export function useGarden(engine: QuantumEngine, nQubits: number, assignment: As
   const setOps = useCallback((next: Op[]) => { setOpsState(next); setError(null); }, []);
   const addOp = useCallback((op: Op) => setOpsState((prev) => [...prev, op]), []);
   const removeOp = useCallback((index: number) => setOpsState((prev) => prev.filter((_, i) => i !== index)), []);
-  const reset = useCallback((next?: Op[]) => { mixer.stopSequence(); setOpsState(next ?? startOps); setResult(null); setPlayback(null); setError(null); }, [startOps]);
+  const reset = useCallback((next?: Op[]) => { mixer.stopSequence(); setOpsState(next ?? startOps); setResult(null); setResultLabel(null); setPlayback(null); setError(null); }, [startOps]);
 
-  const play = useCallback((seq: string[], step: number) => {
-    const probs = ideal.probabilities;
-    setPlayback({ index: -1, total: seq.length, outcome: null, caption: '' });
-    mixer.playSequence(assignmentRef.current, seq, probs, {
+  playRef.current = (seq: string[], step: number) => {
+    setPlayback({ index: -1, total: seq.length, outcome: null, caption: '', finished: false });
+    mixer.playSequence(assignmentRef.current, seq, ideal.probabilities, {
       step,
-      onMoment: (index, outcome, caption) => setPlayback({ index, total: seq.length, outcome, caption }),
-      onEnd: () => setPlayback((p) => (p ? { ...p, outcome: null, index: p.total } : null)),
+      onMoment: (index, outcome, caption) => setPlayback({ index, total: seq.length, outcome, caption, finished: false }),
+      onEnd: () => setPlayback((p) => (p ? { ...p, outcome: null, index: p.total, finished: true } : null)),
     });
-  }, [ideal]);
+  };
 
-  const bloom = useCallback(async (shots: number, opts: { noise?: boolean; backendId?: string; moments?: number; step?: number } = {}) => {
+  const bloom = useCallback(async (shots: number, opts: BloomOptions = {}) => {
     setBusy(true); setError(null);
     mixer.stopSequence();
     try {
       const noise: NoiseSpec | undefined = opts.noise ? TEACHING_NOISE : undefined;
-      const r = await engine.run(circuit, shots, opts.backendId, noise);
+      const basis = opts.basis ?? 'z';
+      let r: RunResult;
+      if (opts.mixture && opts.mixture.length > 1) {
+        // a classical mixture: each twin gets a share of the shots, counts are merged, the order is shuffled
+        const share = Math.max(1, Math.floor(shots / opts.mixture.length));
+        const parts: RunResult[] = [];
+        for (const twinOps of opts.mixture) parts.push(await engine.run({ nQubits, ops: twinOps, basis }, share, opts.backendId, noise));
+        const counts: Record<string, number> = {};
+        for (const p of parts) for (const [k, v] of Object.entries(p.counts)) counts[k] = (counts[k] ?? 0) + v;
+        r = { ...parts[0], counts, shots: share * parts.length, memory: undefined, elapsedMs: parts.reduce((s, p) => s + p.elapsedMs, 0) };
+      } else {
+        r = await engine.run({ ...circuit, basis }, shots, opts.backendId, noise);
+      }
       setResult(r);
-      const full = shotSequence(r.counts, shots * 7919 + r.elapsedMs);
-      const seq = GardenMixer.thin(full, opts.moments ?? Math.min(24, shots));
+      setResultLabel(opts.label ?? null);
+      const full = r.memory && r.memory.length === r.shots ? r.memory : shotSequence(r.counts, r.shots * 7919 + r.elapsedMs);
+      const seq = GardenMixer.thin(full, opts.moments ?? Math.min(24, r.shots));
       seqRef.current = seq;
       lastStepRef.current = opts.step ?? 0.9;
-      if (audio.started) play(seq, lastStepRef.current);
+      playRef.current(seq, lastStepRef.current);
       return r;
     } catch (e) {
       setError(e instanceof OneJobLimitError ? e.message : e instanceof Error ? e.message : String(e));
@@ -116,12 +156,13 @@ export function useGarden(engine: QuantumEngine, nQubits: number, assignment: As
     } finally {
       setBusy(false);
     }
-  }, [engine, circuit, play]);
+  }, [engine, circuit, nQubits]);
 
-  const replay = useCallback(() => { if (seqRef.current.length && audio.started) play(seqRef.current, lastStepRef.current); }, [play]);
-  const stopPlayback = useCallback(() => { mixer.stopSequence(); setPlayback(null); if (audio.started) mixer.blend(assignmentRef.current, ideal.probabilities); }, [ideal]);
-  const hearOdds = useCallback(() => { if (audio.started) mixer.blend(assignmentRef.current, ideal.probabilities, 0.5); }, [ideal]);
+  const replay = useCallback(() => { if (seqRef.current.length) playRef.current(seqRef.current, lastStepRef.current); }, []);
+  const skip = useCallback(() => { mixer.stopSequence(); setPlayback((p) => (p ? { ...p, outcome: null, index: p.total, finished: true } : null)); }, []);
+  const stopPlayback = useCallback(() => { mixer.stopSequence(); setPlayback((p) => (p ? { ...p, outcome: null, index: p.total, finished: true } : null)); if (!oddsHidden) mixer.blend(assignmentRef.current, ideal.probabilities); }, [ideal, oddsHidden]);
+  const hearOdds = useCallback(() => { setOddsHidden(false); mixer.blend(assignmentRef.current, ideal.probabilities, 0.5); }, [ideal]);
   const code = useCallback((shots: number) => engine.qiskitCode(circuit, shots), [engine, circuit]);
 
-  return { circuit, ideal, qiskitIdeal, idealAgrees, result, measured, measuredFidelity, playback, busy, error, addOp, removeOp, setOps, reset, bloom, replay, stopPlayback, hearOdds, code };
+  return { circuit, ideal, qiskitIdeal, idealAgrees, result, resultLabel, measured, measuredFidelity, playback, busy, error, oddsHidden, setOddsHidden, addOp, removeOp, setOps, reset, bloom, replay, skip, stopPlayback, hearOdds, code };
 }

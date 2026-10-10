@@ -55,6 +55,7 @@ export class BrowserEngine implements QuantumEngine {
       backend: { ...BROWSER_BACKEND, noisy: !!noise },
       elapsedMs: Math.round(performance.now() - t0),
       simulatedNoise: noise,
+      basis: circuit.basis ?? 'z',
     };
   }
 }

@@ -12,7 +12,7 @@ If ../web/dist exists it is served at / so one process can host the whole standa
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -35,6 +35,7 @@ app.add_middleware(
 class CircuitBody(BaseModel):
     n_qubits: int = Field(ge=1, le=C.MAX_QUBITS)
     ops: list[dict[str, Any]]
+    basis: Literal["z", "x"] = "z"
 
 
 class RunBody(CircuitBody):
@@ -56,8 +57,8 @@ def backends():
 @app.post("/api/ideal")
 def ideal(body: CircuitBody):
     try:
-        out = C.ideal(body.n_qubits, body.ops)
-        out["qiskit_code"] = C.qiskit_code(body.n_qubits, body.ops)
+        out = C.ideal(body.n_qubits, body.ops, body.basis)
+        out["qiskit_code"] = C.qiskit_code(body.n_qubits, body.ops, basis=body.basis)
         out["qasm"] = C.qasm(body.n_qubits, body.ops)
         return out
     except C.CircuitError as e:
@@ -67,7 +68,7 @@ def ideal(body: CircuitBody):
 @app.post("/api/run")
 def run(body: RunBody):
     try:
-        return B.run(body.backend_id, body.n_qubits, body.ops, body.shots, body.seed).to_dict()
+        return B.run(body.backend_id, body.n_qubits, body.ops, body.shots, body.seed, body.basis).to_dict()
     except C.CircuitError as e:
         raise HTTPException(status_code=400, detail=str(e)) from e
 

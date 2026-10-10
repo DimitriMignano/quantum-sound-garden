@@ -74,6 +74,7 @@ export function applyOp(state: State, op: Op): void {
 export function simulate(circuit: Circuit): State {
   const s = zeroState(circuit.nQubits);
   for (const op of circuit.ops) applyOp(s, op);
+  if (circuit.basis === 'x') for (let q = 0; q < circuit.nQubits; q++) gates.h(s, q);
   return s;
 }
 
@@ -144,6 +145,9 @@ export function sampleNoisy(circuit: Circuit, shots: number, noise: NoiseSpec, r
       } else if (random() < noise.p1) {
         pauli(s, op.q);
       }
+    }
+    if (circuit.basis === 'x') {
+      for (let q = 0; q < circuit.nQubits; q++) { gates.h(s, q); if (random() < noise.p1) pauli(s, q); }
     }
     // measure
     const probs = probabilities(s);

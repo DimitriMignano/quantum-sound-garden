@@ -26,20 +26,26 @@ CASES = {
     "both-split-2": (2, [S0, S1]),
     "noisy-garden-padded-2": (2, [S0, S1, S1, L01, L01, L01]),
     "three-ghz-3": (3, [S0, L01, {"op": "link", "control": 1, "target": 2}]),
+    "bell-sideways-2": (2, [S0, L01], "x"),
+    "flip-both-sideways-2": (2, [{"op": "flip", "q": 0}, {"op": "flip", "q": 1}], "x"),
+    "twist-sideways-1": (1, [S0, {"op": "twist", "q": 0, "turns": 0.25}], "x"),
     "twist-chain-3": (3, [S0, {"op": "twist", "q": 0, "turns": -0.25}, L01, {"op": "flip", "q": 2}, S0]),
 }
 
 
 def test_write_parity_fixture():
     out = {}
-    for name, (n, ops) in CASES.items():
-        ideal = C.ideal(n, ops)
+    for name, case in CASES.items():
+        n, ops = case[0], case[1]
+        basis = case[2] if len(case) > 2 else "z"
+        ideal = C.ideal(n, ops, basis)
         out[name] = {
             "n_qubits": n,
             "ops": ops,
+            "basis": basis,
             "probabilities": ideal["probabilities"],
             "amplitudes": ideal["amplitudes"],
-            "qiskit_code": C.qiskit_code(n, ops, shots=256),
+            "qiskit_code": C.qiskit_code(n, ops, shots=256, basis=basis),
         }
     FIXTURE.parent.mkdir(parents=True, exist_ok=True)
     FIXTURE.write_text(json.dumps(out, indent=1, sort_keys=True) + "\n")

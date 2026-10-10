@@ -27,7 +27,7 @@ export function CreatorScene({ engine, backends, defaultBackendId, reducedMotion
   const labels = useMemo(() => bitstrings(2), []);
   const selectable = backends.filter((b) => b.available || b.reason);
 
-  const bloom = () => garden.bloom(shots, { noise, backendId, moments: 22, step: 0.9 });
+  const bloom = () => garden.bloom(shots, { noise, backendId, moments: 22, step: 0.9, label: 'your soundscape' });
 
   return (
     <div className="scene">
@@ -86,7 +86,7 @@ export function CreatorScene({ engine, backends, defaultBackendId, reducedMotion
           <div className="row">
             <button type="button" className="primary" onClick={bloom} disabled={garden.busy}>{garden.busy ? 'Blooming…' : garden.result ? 'Regenerate' : 'Bloom'}</button>
             {garden.result && <button type="button" className="ghost" onClick={garden.replay} disabled={garden.busy}>Replay</button>}
-            {garden.playback && garden.playback.outcome !== null && <button type="button" className="ghost" onClick={garden.stopPlayback}>Stop</button>}
+            {garden.playback && !garden.playback.finished && <button type="button" className="ghost" onClick={garden.stopPlayback}>Stop</button>}
           </div>
           {garden.error && <p className="error" role="alert">{garden.error}</p>}
           {garden.result && <ResultNote result={garden.result} />}

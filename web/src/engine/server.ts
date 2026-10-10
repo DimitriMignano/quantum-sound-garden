@@ -59,12 +59,12 @@ export class ServerEngine implements QuantumEngine {
 
   async ideal(circuit: Circuit): Promise<Ideal> {
     const r = await this.post<{ probabilities: Record<string, number>; amplitudes: Record<string, [number, number]>; gate_count: number; depth: number }>(
-      '/api/ideal', { n_qubits: circuit.nQubits, ops: circuit.ops });
+      '/api/ideal', { n_qubits: circuit.nQubits, ops: circuit.ops, basis: circuit.basis ?? 'z' });
     return { nQubits: circuit.nQubits, probabilities: r.probabilities, amplitudes: r.amplitudes, gateCount: r.gate_count, depth: r.depth, source: 'qiskit' };
   }
 
   async qiskitCode(circuit: Circuit, shots: number): Promise<string> {
-    const r = await this.post<{ qiskit_code: string }>('/api/ideal', { n_qubits: circuit.nQubits, ops: circuit.ops });
+    const r = await this.post<{ qiskit_code: string }>('/api/ideal', { n_qubits: circuit.nQubits, ops: circuit.ops, basis: circuit.basis ?? 'z' });
     return r.qiskit_code.replace(/shots=\d+/, `shots=${shots}`);
   }
 
@@ -74,8 +74,8 @@ export class ServerEngine implements QuantumEngine {
     const id = noise && backendId === 'local-ideal' ? 'local-noisy-teaching' : backendId;
     const r = await this.post<{
       counts: Record<string, number>; shots: number; counts_kind: 'counts' | 'probabilities'; elapsed_ms: number;
-      backend: ServerBackend; fallback_from: string | null; fallback_reason: string | null;
-    }>('/api/run', { n_qubits: circuit.nQubits, ops: circuit.ops, shots, backend_id: id });
+      backend: ServerBackend; fallback_from: string | null; fallback_reason: string | null; memory: string[] | null; basis: 'z' | 'x';
+    }>('/api/run', { n_qubits: circuit.nQubits, ops: circuit.ops, shots, backend_id: id, basis: circuit.basis ?? 'z' });
     return {
       counts: r.counts,
       shots: r.shots,
@@ -84,6 +84,8 @@ export class ServerEngine implements QuantumEngine {
       elapsedMs: r.elapsed_ms,
       fallbackFrom: r.fallback_from ?? undefined,
       fallbackReason: r.fallback_reason ?? undefined,
+      memory: r.memory ?? undefined,
+      basis: r.basis ?? 'z',
     };
   }
 

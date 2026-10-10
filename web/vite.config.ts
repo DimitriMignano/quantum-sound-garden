@@ -13,8 +13,9 @@ export default defineConfig({
   server: { proxy: { '/api': 'http://localhost:8765' } },
   build: qollab
     ? {
-        outDir: '../qollab',
+        outDir: process.env.QOLLAB_OUT ?? '../qollab',
         emptyOutDir: false,
+        copyPublicDir: false,
         cssCodeSplit: false,
         sourcemap: false,
         target: 'es2022',
