@@ -14,7 +14,6 @@ import { DeeperPanel } from './DeeperPanel';
 interface Props {
   engine: QuantumEngine;
   challenge: Challenge;
-  reducedMotion: boolean;
   details: boolean;
   onNext(): void;
   onSolved(): void;
@@ -34,7 +33,7 @@ export function closenessOf(challenge: Challenge, probabilities: Record<string, 
 
 const closenessWord = (c: number) => (c >= 0.995 ? 'there' : c >= 0.9 ? 'almost' : c >= 0.7 ? 'closer' : c >= 0.4 ? 'warmer' : 'far');
 
-export function ChallengeScene({ engine, challenge, reducedMotion, details, onNext, onSolved, isLast }: Props) {
+export function ChallengeScene({ engine, challenge, details, onNext, onSolved, isLast }: Props) {
   const trackNames = useMemo(() => challenge.tracks.map((t) => t.name), [challenge]);
   const assignment = useMemo(() => assignmentFor(challenge.tracks), [challenge]);
   const garden = useGarden(engine, challenge.tracks.length, assignment, challenge.start);
@@ -67,7 +66,7 @@ export function ChallengeScene({ engine, challenge, reducedMotion, details, onNe
 
   const play = useCallback(async () => {
     setPhase('playing');
-    const r = await garden.bloom(challenge.beats, { noise: challenge.noisy, moments: challenge.moments, step: challenge.step });
+    const r = await garden.bloom(challenge.beats, { noise: challenge.noisy, moments: 1, step: 3.0 });
     if (!r) setPhase('build');
   }, [challenge, garden]);
 
@@ -80,8 +79,8 @@ export function ChallengeScene({ engine, challenge, reducedMotion, details, onNe
 
   let caption: string;
   if (phase === 'result' && garden.measured) {
-    const heard = describeHeard(garden.measured, assignment);
-    caption = goalMet ? `Solved. You heard ${heard}.` : `You heard ${heard}. ${challenge.noisy ? '' : 'Change the mix and Play again.'}`;
+    const heard = describeHeard(garden.measured, assignment, garden.result?.memory?.[0] ?? null);
+    caption = goalMet ? `Solved. You heard ${heard}.` : `You heard ${heard}. ${challenge.noisy ? '' : 'Change the mix and Play again, or Play again to hear another landing.'}`;
     if (challenge.noisy && garden.measuredFidelity !== null) {
       caption += ` Match to the clean mix: ${pct(garden.measuredFidelity)}`;
       caption += baseline && garden.circuit.ops.length < baseline.ops ? ` (it was ${pct(baseline.fidelity)} with ${baseline.ops} moves; yours has ${garden.circuit.ops.length}).` : '.';
@@ -98,13 +97,13 @@ export function ChallengeScene({ engine, challenge, reducedMotion, details, onNe
         <p className="story">{challenge.story}</p>
       </header>
 
-      <GardenView garden={garden} seedNames={trackNames} assignment={assignment} reducedMotion={reducedMotion} details={readings} caption={caption} />
+      <GardenView garden={garden} tracks={challenge.tracks} assignment={assignment} details={readings} caption={caption} />
 
       {phase === 'result' && garden.result && (
         <div className={`verdict${goalMet ? ' is-good' : ''}`} aria-live="polite">
           <div className="row">
             {goalMet && <button type="button" className="primary" onClick={onNext}>{isLast ? 'Open the studio' : 'Next puzzle'}</button>}
-            <button type="button" className="ghost" onClick={() => { setPhase('playing'); garden.replay(); }}>Replay</button>
+            <button type="button" className="ghost" onClick={() => { setPhase('playing'); garden.replay(); }}>Hear it again</button>
             {solved && <button type="button" className="ghost" aria-expanded={why} onClick={() => setWhy((w) => !w)}>{why ? 'Hide why' : 'Why?'}</button>}
             {!goalMet && hintsShown < challenge.hints.length && <button type="button" className="ghost" onClick={() => setHintsShown((h) => h + 1)}>Hint</button>}
           </div>

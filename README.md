@@ -1,15 +1,15 @@
 # Quantum Sound Garden
 
 **Quantum Beats Studio — make beats with the rules of quantum physics.** Learn four moves by ear → solve four
-puzzles → build your own beat → read the Qiskit code. Eyes closed works.
+puzzles → build your own → read the Qiskit code. Eyes closed works.
 
 An audio-first learning and creation experience for people who have never played an instrument or touched a qubit.
 Each track is a qubit that plays one of two sounds. You **Swap** (X), **Shuffle** (Hadamard), **Turn** (phase) and
-**Sync** (CNOT) the tracks, then **Play** (measure): every beat is one measurement of a real Qiskit circuit, and the
+**Sync** (CNOT) the tracks, then **Play** (measure): each Play is one measurement of a real Qiskit circuit, and the
 studio plays crickets, rain, wind, thunder, footsteps or birds for what was read. A nine-page tutorial teaches each move by ear (Swap = X, Shuffle = H, Turn =
 phase, Sync = CX, Play = measure); four puzzles make you use them (superposition, entanglement, interference, noise)
-with a closeness hum as the eyes-closed progress bar; a two-track studio with four sound pads then makes a 20-second
-beat. The **Circuit** button shows gate names, bits, percentages and the Qiskit code behind any mix.
+with a closeness hum as the eyes-closed progress bar; a two-track studio with four sound pads then lets you build any
+mix and hear what it lands on. The **Circuit** button shows gate names, bits, percentages and the Qiskit code behind any mix.
 
 Entry for the Qollab + IonQ Quantum Hackathon (theme: Quantum Playground). _This effort is supported by Qollab & IonQ._
 

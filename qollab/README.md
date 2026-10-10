@@ -1,15 +1,15 @@
 # Quantum Beats Studio
 
-**Make beats with the rules of quantum physics.** Learn four moves by ear → solve four puzzles → build your own beat
+**Make sounds with the rules of quantum physics.** Learn four moves by ear → solve four puzzles → build your own
 → read the Qiskit code. Eyes closed works.
 
 Each track is a qubit that plays one of two sounds. You **Swap** (X), **Shuffle** (Hadamard), **Turn** (phase) and
-**Sync** (CNOT) the tracks, then **Play** (measure): every beat is one measurement of a real Qiskit circuit, and the
+**Sync** (CNOT) the tracks, then **Play** (measure): each Play is one measurement of a real Qiskit circuit, and the
 studio plays crickets, rain, wind, thunder, footsteps or birds for what was read. A nine-page tutorial teaches each
 move by ear, with the two rules dice can never follow (two Shuffles cancel; a Turn is silent until the next
 Shuffle). Four puzzles make you use them (superposition, entanglement, interference, noise), and a closeness hum
 tells you how near the goal you are, so you can solve them without looking. A two-track studio with four sound pads
-then makes a 20-second beat. The **Circuit** button in the top bar shows gate names, bits, percentages and the
+lets you build any mix and hear what it lands on. The **Circuit** button in the top bar shows gate names, bits, percentages and the
 Qiskit code behind any mix. (Repository name: quantum-sound-garden.)
 
 _This effort is supported by Qollab & IonQ._
@@ -17,7 +17,7 @@ _This effort is supported by Qollab & IonQ._
 ## How to run it here
 1. Press **Run Project**, then **Run**, and pick a backend in **Select QPU**. The built-in simulator gives unlimited
    Plays on the device itself. With an IonQ cloud simulator, Qollab allows **one job per Run**, so the tutorial and
-   the puzzles play on Qiskit's Statevector (computed in your browser, beats sampled locally) and the studio offers the
+   the puzzles play on Qiskit's Statevector (computed in your browser, readings sampled locally) and the studio offers the
    single IonQ job (with IonQ's noise model of a real QPU) when you choose it; press Run again for another.
 2. Press **Start**. Sound starts only after that press (browser autoplay rules). Headphones help.
 3. Learn the moves, press **Start the puzzles**, solve the four, then open **Studio**.

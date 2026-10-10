@@ -443,7 +443,7 @@ const mk = (id: string, name: string, kind: SoundKind, caption: string, weight: 
 
 export const SOUND_LIBRARY: SoundAsset[] = [
   mk('hush', 'Night hush', 'texture', 'a soft night hush', 0.35, (c, o) => new Wind(c, o, 0.35, 260, 0.06)),
-  mk('rain', 'Rain', 'texture', 'rain falling', 0.7, (c, o) => new Rain(c, o, 0.7)),
+  mk('rain', 'Rain', 'texture', 'rain falling', 1.0, (c, o) => new Rain(c, o, 1.0)),
   mk('thunder', 'Thunder', 'event', 'thunder rolling', 1.0, (c, o) => new Thunder(c, o, 1.0)),
   mk('wind', 'Wind', 'texture', 'wind moving through', 0.6, (c, o) => new Wind(c, o, 0.6)),
   mk('waves', 'Waves', 'texture', 'waves on a shore', 0.6, (c, o) => new Waves(c, o, 0.6)),
@@ -452,8 +452,8 @@ export const SOUND_LIBRARY: SoundAsset[] = [
   mk('heartbeat', 'Heartbeat', 'event', 'a heartbeat', 0.8, (c, o) => new Heartbeat(c, o, 0.8)),
   mk('bells', 'Bells', 'event', 'bells ringing', 0.45, (c, o) => new Bells(c, o, 0.45)),
   mk('crickets', 'Crickets', 'texture', 'crickets in the grass', 0.14, (c, o) => new Crickets(c, o, 0.14)),
-  mk('traffic', 'Traffic', 'texture', 'traffic going by', 0.6, (c, o) => new Traffic(c, o, 0.6)),
-  mk('crowd', 'Crowd', 'texture', 'a crowd murmuring', 0.6, (c, o) => new Crowd(c, o, 0.6)),
+  mk('traffic', 'Traffic', 'texture', 'traffic going by', 1.0, (c, o) => new Traffic(c, o, 1.0)),
+  mk('crowd', 'Crowd', 'texture', 'a crowd murmuring', 1.0, (c, o) => new Crowd(c, o, 1.0)),
   mk('glitch', 'Glitch', 'event', 'a soft electronic glitch', 0.4, (c, o) => new Glitch(c, o, 0.4)),
 ];
 

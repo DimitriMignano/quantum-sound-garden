@@ -50,16 +50,16 @@ export function App({ engine }: Props) {
       <TopBar info={info} scene={scene} onScene={setScene} reducedMotion={reducedMotion} onReducedMotion={setReducedMotion} details={details} onDetails={setDetails} unlocked={unlocked} entered={scene !== 'welcome'} />
       {scene === 'welcome' && <Welcome info={info} reducedMotion={reducedMotion} audioOk={audioOk} stuck={audio.stuck} onStart={start} />}
       {scene === 'learn' && (
-        <main><TutorialScene engine={engine} reducedMotion={reducedMotion} details={details} onDone={() => setScene('c1')} /></main>
+        <main><TutorialScene engine={engine} details={details} onDone={() => setScene('c1')} /></main>
       )}
       {CHALLENGES.map((c) => scene === `c${c.index}` && (
         <main key={c.id}>
-          <ChallengeScene engine={engine} challenge={c} reducedMotion={reducedMotion} details={details} onNext={() => goNext(c.index)} onSolved={() => setUnlocked((u) => Math.max(u, c.index + 1))} isLast={c.index === CHALLENGES.length} />
+          <ChallengeScene engine={engine} challenge={c} details={details} onNext={() => goNext(c.index)} onSolved={() => setUnlocked((u) => Math.max(u, c.index + 1))} isLast={c.index === CHALLENGES.length} />
         </main>
       ))}
       {scene === 'studio' && info && (
         <main>
-          <StudioScene engine={engine} backends={info.backends} defaultBackendId={info.defaultBackendId} reducedMotion={reducedMotion} details={details} />
+          <StudioScene engine={engine} backends={info.backends} defaultBackendId={info.defaultBackendId} details={details} />
         </main>
       )}
       {scene === 'studio' && !info && <main><p className="help">Loading the quantum engine…</p></main>}

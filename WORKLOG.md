@@ -65,3 +65,11 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
   puzzle exposes one more layer of the circuit (1 gate names · 2 bits and odds · 3 code on solve · 4 full view); studio tempo.
   The silent Play was Chrome's audio service hung again (new AudioContexts never resume): restarted the helper, added in-app
   detection ("quit and reopen the browser") and a README section. Measured: Try it on Tracks 0.32, on Swap (rain) 0.18.
+- 10-10 21:15 founder: sounds still unclear ("the 6 pulses sound nothing like thunder… I can only hear a car honk… the murmur is
+  impossible to distinguish… pew pew laser noise on Play… hitting play once plays a noise once… the flowers and orbs confuse").
+  Done: one Play = one reading = one sound for ~3 s (the engine still takes its readings; the Circuit view shows them all); the
+  drums are gone (the "pew" was the hit drum's falling tone); the canvas garden is gone, replaced by one tile per track (its two
+  sounds, an odds bar, the one that just played lit); the studio lost its beat and tempo chips; the tutorial copy says "press Play
+  a few times" where the point is randomness. Open: the sounds themselves. Procedural rain/thunder/traffic/crowd are not
+  recognizable to the founder; proposed CC0 recordings from Wikimedia Commons (needs the founder's go to download ~70 MB of
+  sources, trimmed to a few seconds each) or simpler abstract sounds.

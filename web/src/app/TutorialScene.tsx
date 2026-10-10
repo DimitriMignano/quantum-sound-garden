@@ -6,13 +6,14 @@ import { GardenView } from './GardenView';
 import { Board } from './Board';
 import { CodePanel } from './CodePanel';
 
-interface Props { engine: QuantumEngine; reducedMotion: boolean; details: boolean; onDone(): void }
+interface Props { engine: QuantumEngine; details: boolean; onDone(): void }
 
 const sameOps = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
 
 /** Learn: one page per idea. Each page has one or two sentences, the moves it is about, Try it, Play and Next. */
-export function TutorialScene({ engine, reducedMotion, details, onDone }: Props) {
+export function TutorialScene({ engine, details, onDone }: Props) {
   const trackNames = useMemo(() => LESSON_TRACKS.map((t) => t.name), []);
+  const ONE = { moments: 1, step: 3.0 };
   const assignment = useMemo(() => assignmentFor(LESSON_TRACKS), []);
   const garden = useGarden(engine, LESSON_TRACKS.length, assignment, []);
   const [step, setStep] = useState(0);
@@ -25,11 +26,11 @@ export function TutorialScene({ engine, reducedMotion, details, onDone }: Props)
   useEffect(() => {
     if (!pending || !sameOps(garden.circuit.ops, pending.ops)) return;
     const l = pending; setPending(null);
-    garden.bloom(l.beats, { moments: l.beats, step: 0.6, label: l.title }).then((r) => { if (r) setPlayed(l.id); });
+    garden.bloom(l.beats, { ...ONE, label: l.title }).then((r) => { if (r) setPlayed(l.id); });
   }, [pending, garden]);
 
   const tryIt = () => { setPlayed(null); garden.reset(lesson.ops); setPending(lesson); };
-  const play = () => { setPlayed(null); garden.bloom(lesson.beats, { moments: lesson.beats, step: 0.6, label: lesson.title }).then((r) => { if (r) setPlayed(lesson.id); }); };
+  const play = () => { setPlayed(null); garden.bloom(lesson.beats, { ...ONE, label: lesson.title }).then((r) => { if (r) setPlayed(lesson.id); }); };
   const go = (i: number) => { setStep(i); setPlayed(null); garden.reset([]); };
 
   if (lesson.intro) {
@@ -64,7 +65,7 @@ export function TutorialScene({ engine, reducedMotion, details, onDone }: Props)
         <p className="lesson__text">{lesson.text}</p>
       </header>
 
-      <GardenView garden={garden} seedNames={trackNames} assignment={assignment} reducedMotion={reducedMotion} details={details} caption={caption} />
+      <GardenView garden={garden} tracks={LESSON_TRACKS} assignment={assignment} details={details} caption={caption} />
 
       <div className="lesson__actions">
         <button type="button" className="primary" onClick={tryIt} disabled={garden.busy}>Try it</button>

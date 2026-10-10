@@ -1,8 +1,8 @@
 /**
  * The garden mixer: turns an outcome -> sounds assignment plus probabilities or a shot sequence into cohesive audio.
  *  - blend(): "hear the odds" — each sound's level is the probability mass of the outcomes that include it.
- *  - playSequence(): a Bloom — one moment per shot, the outcome's sounds swell and its events fire, the rest sink
- *    to a bed. Restrained layering, fades and spacing; nothing is triggered at random.
+ *  - playSequence(): a Play — normally ONE moment (one reading, its sounds play once for `step` seconds and fade);
+ *    several moments in a row are still supported. Nothing is triggered at random.
  */
 import { audio } from './engine';
 import { soundById, type SoundInstance } from './sounds';
@@ -77,50 +77,9 @@ class GoalHum {
   dispose(): void { try { this.root.stop(); this.upper.stop(); } catch { /* already stopped */ } this.out.disconnect(); }
 }
 
-/**
- * The pulse: one short drum per track per beat, so a beat is felt even when a track's sounds are soft textures.
- * A track on its first sound thumps low; a track that hits snaps bright. Track 0 sits a little left, track 1 a
- * little right, so two tracks can be told apart with eyes closed.
- */
-class Pulse {
-  private out: GainNode;
-  constructor(private ctx: AudioContext, bus: AudioNode) { this.out = ctx.createGain(); this.out.gain.value = 0.9; this.out.connect(bus); }
-  private pan(q: number, n: number): AudioNode {
-    if (typeof this.ctx.createStereoPanner !== 'function' || n < 2) return this.out;
-    const p = this.ctx.createStereoPanner(); p.pan.value = (q / (n - 1)) * 1.2 - 0.6; p.connect(this.out); return p;
-  }
-  /** hit: a bright snap (noise burst through a band-pass); base: a low thump (a sine dropping in pitch). */
-  beat(q: number, n: number, hit: boolean, when = this.ctx.currentTime): void {
-    const dest = this.pan(q, n);
-    const g = this.ctx.createGain(); g.connect(dest);
-    if (hit) {
-      // a snap with a body: bright noise plus a short falling tone, so a hit lands as hard as a thump
-      const len = Math.floor(this.ctx.sampleRate * 0.2);
-      const buf = this.ctx.createBuffer(1, len, this.ctx.sampleRate); const d = buf.getChannelData(0);
-      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
-      const src = this.ctx.createBufferSource(); src.buffer = buf;
-      const hp = this.ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1400; hp.Q.value = 0.7;
-      src.connect(hp).connect(g);
-      const tone = this.ctx.createOscillator(); tone.type = 'triangle';
-      tone.frequency.setValueAtTime(1100, when); tone.frequency.exponentialRampToValueAtTime(420, when + 0.07);
-      const tg = this.ctx.createGain(); tg.gain.setValueAtTime(0.8, when); tg.gain.exponentialRampToValueAtTime(0.001, when + 0.12);
-      tone.connect(tg).connect(dest);
-      g.gain.setValueAtTime(1.4, when); g.gain.exponentialRampToValueAtTime(0.001, when + 0.2);
-      src.start(when); src.stop(when + 0.22); tone.start(when); tone.stop(when + 0.14);
-    } else {
-      const osc = this.ctx.createOscillator(); osc.type = 'sine';
-      osc.frequency.setValueAtTime(150, when); osc.frequency.exponentialRampToValueAtTime(48, when + 0.14);
-      osc.connect(g);
-      g.gain.setValueAtTime(0.9, when); g.gain.exponentialRampToValueAtTime(0.001, when + 0.26);
-      osc.start(when); osc.stop(when + 0.3);
-    }
-  }
-}
-
 export class GardenMixer {
   private layers = new Map<string, SoundInstance>();
   private goal: GoalHum | null = null;
-  private pulse: Pulse | null = null;
   private current: PlaybackHandle | null = null;
   private blendScale = 0.7; // "hearing the odds" sits under a full Play
 
@@ -190,21 +149,17 @@ export class GardenMixer {
     for (const ids of Object.values(assignment)) for (const id of ids) allIds.add(id);
     for (const id of allIds) this.ensure(id);
 
-    if (audio.ctx && audio.bus && !this.pulse) this.pulse = new Pulse(audio.ctx, audio.bus);
-    const n = sequence[0]?.length ?? 1;
     const moment = (i: number) => {
       if (stopped) return;
       const outcome = sequence[i];
       const active = new Set(assignment[outcome] ?? []);
-      // the drum: one per track, thump or snap by what that track read (qubit 0 is the rightmost bit)
-      for (let q = 0; q < n; q++) this.pulse?.beat(q, n, outcome[outcome.length - 1 - q] === '1');
       for (const id of allIds) {
         const inst = this.layers.get(id);
         if (!inst) continue;
         if (active.has(id)) {
-          // a hit, not a crossfade: up fast, then settle toward the bed before the next beat
-          inst.setLevel(1, 0.03);
-          timers.push(window.setTimeout(() => { if (!stopped) inst.setLevel(Math.max(bed * (mass[id] ?? 0), 0.35), 0.3); }, step * 450));
+          // the sound comes up, holds for most of its time, then fades before the end
+          inst.setLevel(1, 0.08);
+          timers.push(window.setTimeout(() => { if (!stopped) inst.setLevel(0, 0.9); }, Math.max(300, step * 1000 - 1000)));
           if (soundById(id).kind === 'event') inst.trigger();
         } else {
           inst.setLevel(bed * (mass[id] ?? 0), 0.2);

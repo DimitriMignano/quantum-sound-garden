@@ -204,3 +204,29 @@ corrections go in a new entry. Newest at the bottom. Fill every field (`n/a` if 
 - Deferred work: a human listening pass on all four sounds; three-track studio; saving and sharing beats; a tempo in puzzles.
 - Risks: Chrome's audio service on this Mac hangs repeatedly (twice today); a judge's machine may differ, but the README now
   says what to do; the sounds are judged by a meter and by design intent, not by ear.
+
+### 2026-10-10 21:15 — One Play, one sound; tiles instead of flowers; the drums are gone
+- Branch / worktree: `main`
+- Task: the founder: the sounds are unidentifiable, Play made a "pew pew" laser noise and repeated six times, the flowers
+  and orbs confuse. Rules now: Play once = one sound once (longer is fine); nothing repeats; the picture must fit.
+- Files changed: `web/src/audio/mixer.ts` (Pulse removed; a single moment swells, holds, fades; multi-moment still works),
+  `web/src/app/GardenView.tsx` (canvas gone; one tile per track: two sounds, odds bar, the landed one lit; Sync chips;
+  outcome cards only in Circuit view; describeHeard takes the played reading), `web/src/garden/renderer.ts` (deleted),
+  `web/src/content/content.ts` (single-Play copy for the intro, lessons, puzzles, actions; LEGEND removed),
+  `web/src/app/{TutorialScene,ChallengeScene,StudioScene,App}.tsx` (moments: 1, 3–4 s; "Hear it again"; the studio
+  drops beat and tempo chips and derives its tiles from the pads), `web/src/audio/sounds.ts` (rain/traffic/crowd weight
+  1.0), `web/src/styles.css` (tiles), `README.md`, `docs/{QOLLAB_PAGE,DEMO_SCRIPT}.md`, `CLAUDE.md`, `qollab/`, `WORKLOG.md`
+- Verification run: tsc clean; `npm run check` green before the weight change (pytest 27 + 1 skipped, vitest 69, bundle
+  394 KB), rerun in the commit chain. Live in Chrome: Start → Learn → Tracks → Try it plays one sound (caption "Traffic
+  going by and a crowd murmuring", tiles "Track A · Traffic | Rain · always Traffic" with Traffic lit, peak RMS 0.135 before
+  the weight raise). Chrome's audio hung a third time this evening before this check; the helper restart cleared it.
+- Commit hash: this commit (parent 78ce7c2)
+- Seams (§22): unchanged
+- Decisions: a Play is one measurement you hear, not a sequence; the engine still takes its readings (12–64) so the Circuit
+  view keeps predicted-versus-measured bars and puzzle 4 keeps its match score, and the copy says you hear the first reading;
+  the picture is the two sounds and a bar, nothing metaphorical; the drums were a crutch for ambient textures and are gone
+  because the sounds themselves must carry recognition.
+- Deferred work: real recordings (CC0 from Wikimedia Commons, pending the founder's go) or simpler abstract sounds; a human
+  listening pass; keyboard; phone width.
+- Risks: identifiability of the procedural sounds is the open problem; the single-sound level (RMS ≈ 0.13–0.2) may read as
+  quiet on laptop speakers; Chrome's audio service on this Mac keeps hanging.

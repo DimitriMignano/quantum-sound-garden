@@ -8,9 +8,9 @@ Quantum Beats Studio (repository: quantum-sound-garden; the in-app title is one 
 people who have never touched an instrument or a qubit, and it is audio-first: you can play it with your eyes
 closed. Each track is a qubit that plays one of two sounds; the person Swaps (X), Shuffles (H), Turns (phase) and
 Syncs (CX) the tracks and Plays (measures) them, and hears crickets, rain, wind, thunder, footsteps or birds for what
-a real Qiskit circuit read on each beat. A nine-page tutorial teaches each move by ear with no quantum words; four
-puzzles make the moves necessary, with a closeness hum as the progress bar; a two-track studio makes a 20-second
-beat; the Circuit toggle and the Why? reveals carry the gates, the bits and the Qiskit code. It deliberately is not
+a real Qiskit circuit read on each Play (one Play, one sound). A nine-page tutorial teaches each move by ear with no quantum words; four
+puzzles make the moves necessary, with a closeness hum as the progress bar; a two-track studio lets them build any
+mix; the Circuit toggle and the Why? reveals carry the gates, the bits and the Qiskit code. It deliberately is not
 a synthesizer, a DAW or a step sequencer, and it never claims the person is "hearing a quantum state": the sound is
 classical audio driven by probabilities and shots.
 
@@ -29,7 +29,7 @@ classical audio driven by probabilities and shots.
 - **Qollab target (the judged artifact):** a Qollab *JS/Qiskit project* — `qollab/index.html` (body-only markup),
   `qollab/main.js` + `main.css` (built by Vite in library mode from `web/src`), `qollab/qsg/*.py` (pure Qiskit
   module called from JS via `.callPromising`), the pre-created `backend` global for runs. Pyodide in the browser.
-- **Web app source:** Vite 8 · React 19 · TypeScript 6 · vitest. Canvas 2D for the garden, Web Audio for procedural sound.
+- **Web app source:** Vite 8 · React 19 · TypeScript 6 · vitest. plain React tiles for the picture (two sounds and an odds bar per track), Web Audio for sound.
 - **Standalone/dev server:** Python 3.12 venv in `server/.venv` · Qiskit 2.5 · qiskit-aer 0.17 · qiskit-ionq 1.1 ·
   FastAPI. Gives local ideal + noisy Aer runs and the IonQ simulator path with `IONQ_API_KEY`.
 - **Browser fallback:** a TypeScript statevector + sampler (`web/src/engine/statevector.ts`), parity-tested against Qiskit.

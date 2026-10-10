@@ -1,85 +1,75 @@
-import { useEffect, useMemo, useRef, type ReactNode } from 'react';
-import { GardenRenderer, type GardenState } from '../garden/renderer';
+import { useMemo, type ReactNode } from 'react';
 import type { GardenApi } from './useGarden';
-import { bitstrings, bitOf } from '../engine/outcomes';
+import { bitstrings, bitOf, marginalOne } from '../engine/outcomes';
 import { captionFor, nameFor, type Assignment } from '../audio/mixer';
-import { LEGEND } from '../content/content';
+import { soundById } from '../audio/sounds';
+import type { Track } from '../content/content';
 
 interface Props {
   garden: GardenApi;
-  seedNames: string[];
+  tracks: Track[];
   assignment: Assignment;
-  reducedMotion: boolean;
-  /** the circuit view: outcome cards with bits and percentages, and the legend */
+  /** the circuit view: outcome cards with bits and percentages */
   details: boolean;
-  /** the one line under the garden when nothing is playing (the scene's current instruction or result) */
+  /** the one line under the tiles when nothing is playing (the scene's current instruction or result) */
   caption?: ReactNode;
 }
 
-/** The garden canvas (decorative), the one caption line, and in circuit view the accessible outcome list. */
-export function GardenView({ garden, seedNames, assignment, reducedMotion, details, caption }: Props) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const rendererRef = useRef<GardenRenderer | null>(null);
-  const lastMoment = useRef(-1);
+/** One tile per track: its two sounds, how likely each is right now, and which one just played. */
+export function GardenView({ garden, tracks, assignment, details, caption }: Props) {
   const labels = useMemo(() => bitstrings(garden.circuit.nQubits), [garden.circuit.nQubits]);
-  const outcomeNames = useMemo(() => Object.fromEntries(labels.map((b) => [b, nameFor(assignment, b)])), [labels, assignment]);
-
-  const links = useMemo(() => garden.circuit.ops.flatMap((o) => (o.op === 'link' ? [{ control: o.control, target: o.target }] : [])), [garden.circuit]);
-  const state = useMemo<GardenState>(() => ({
-    nQubits: garden.circuit.nQubits,
-    seedNames,
-    probabilities: garden.ideal.probabilities,
-    amplitudes: garden.ideal.amplitudes,
-    links,
-    measured: garden.measured,
-    active: garden.playback?.outcome ?? null,
-    reducedMotion,
-    hideOdds: garden.oddsHidden,
-    outcomeNames,
-  }), [garden.circuit.nQubits, seedNames, garden.ideal, links, garden.measured, garden.playback?.outcome, reducedMotion, garden.oddsHidden, outcomeNames]);
-
-  useEffect(() => {
-    if (!canvasRef.current) return;
-    rendererRef.current = new GardenRenderer(canvasRef.current, state);
-    return () => { rendererRef.current?.dispose(); rendererRef.current = null; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  useEffect(() => { rendererRef.current?.setState(state); }, [state]);
-  useEffect(() => {
-    const p = garden.playback;
-    if (!p || p.outcome === null || p.index === lastMoment.current) return;
-    lastMoment.current = p.index;
-    rendererRef.current?.ripple({ outcome: p.outcome });
-    for (let q = 0; q < garden.circuit.nQubits; q++) if (p.outcome[p.outcome.length - 1 - q] === '1') rendererRef.current?.ripple({ q });
-  }, [garden.playback, garden.circuit.nQubits]);
-
+  const synced = useMemo(() => garden.circuit.ops.filter((o) => o.op === 'link').map((o) => (o.op === 'link' ? o : null)!), [garden.circuit.ops]);
   const playing = garden.playback && !garden.playback.finished && garden.playback.outcome;
-  const live = playing ? `${garden.playback!.index + 1} of ${garden.playback!.total}: ${garden.playback!.caption}` : null;
+  const outcome = garden.playback?.outcome ?? null;
+  const lastOutcome = garden.playback?.finished ? garden.result?.memory?.[0] ?? null : null;
   const hidden = garden.oddsHidden;
-  const fallback = hidden ? 'Press Play to find out.' : `Hearing the odds: ${describeOdds(garden.ideal.probabilities, assignment)}`;
+  const live = playing ? (garden.playback!.total > 1 ? `${garden.playback!.index + 1} of ${garden.playback!.total}: ${garden.playback!.caption}` : cap(garden.playback!.caption)) : null;
+  const fallback = hidden ? 'Press Play to find out.' : `Right now: ${describeOdds(garden.ideal.probabilities, assignment)}`;
 
   return (
     <div className="garden">
-      <div className="garden__stage">
-        <canvas ref={canvasRef} className="garden__canvas" aria-hidden="true" />
-        <div className="garden__seeds" aria-hidden="true">
-          {seedNames.map((n, q) => <span key={q} className="garden__seedname" style={{ left: `${(100 * (q + 1)) / (seedNames.length + 1)}%` }}>{n}{details && <small>qubit {q}</small>}</span>)}
-        </div>
+      <div className={`tiles tiles--${tracks.length}`}>
+        {tracks.map((t, q) => {
+          const pHit = marginalOne(garden.ideal.probabilities, q);
+          const now = outcome ? bitOf(outcome, q) : lastOutcome ? bitOf(lastOutcome, q) : null;
+          const base = soundById(t.base).name, hit = soundById(t.hit).name;
+          const state = hidden ? 'hidden' : pHit < 0.01 ? 'base' : pHit > 0.99 ? 'hit' : 'mixed';
+          return (
+            <div key={q} className={`tile tile--${state}${outcome ? ' is-playing' : ''}`}>
+              <div className="tile__head">
+                <span className="tile__name">{t.name}</span>
+                {details && <small className="tile__qubit">qubit {q}</small>}
+              </div>
+              <div className="tile__sounds">
+                <span className={`tile__sound tile__sound--base${now === 0 ? ' is-on' : ''}`}>{base}</span>
+                <span className={`tile__sound tile__sound--hit${now === 1 ? ' is-on' : ''}`}>{hit}</span>
+              </div>
+              <div className="tile__bar" role="img" aria-label={hidden ? `${t.name}: odds hidden` : `${t.name}: ${hit} ${pct(pHit)}, ${base} ${pct(1 - pHit)}`}>
+                <span className="tile__fill" style={{ width: hidden ? '0%' : `${pHit * 100}%` }} />
+                {!hidden && <span className="tile__pct">{state === 'base' ? `always ${base}` : state === 'hit' ? `always ${hit}` : `${pct(1 - pHit)} · ${pct(pHit)}`}</span>}
+                {hidden && <span className="tile__pct">?</span>}
+              </div>
+            </div>
+          );
+        })}
       </div>
+      {synced.length > 0 && (
+        <p className="synced">{synced.map((l, i) => <span key={i} className="synced__chip">Sync: {tracks[l.control]?.name} → {tracks[l.target]?.name}</span>)}</p>
+      )}
       <p className={`caption${playing ? ' is-live' : ''}`} role="status" aria-live="polite">{live ?? caption ?? fallback}</p>
       {details && (
-        <ul className="outcomes" aria-label="Outcomes">
+        <ul className="outcomes" aria-label="Readings">
           {labels.map((b) => {
             const p = garden.ideal.probabilities[b] ?? 0;
             const m = garden.measured?.[b];
-            const active = garden.playback?.outcome === b;
+            const active = outcome === b;
             return (
               <li key={b} className={`outcome${active ? ' is-active' : ''}`}>
                 <div className="outcome__head">
                   <code className="outcome__bits" title={`measurement result ${b} (qubit 0 is the rightmost bit)`}>{b}</code>
                   <span className="outcome__name">{captionFor(assignment, b)}</span>
                 </div>
-                {seedNames.length > 1 && <div className="outcome__seeds">{seedNames.map((n, q) => <span key={q}>{n} {bitOf(b, q)}</span>)}</div>}
+                {tracks.length > 1 && <div className="outcome__seeds">{tracks.map((t, q) => <span key={q}>{t.name} {bitOf(b, q)}</span>)}</div>}
                 <div className="outcome__bars">
                   <div className="bar bar--predicted" title={hidden ? 'predicted: hidden' : `predicted ${pct(p)}`}><span style={{ width: hidden ? '0%' : `${p * 100}%` }} /></div>
                   {m !== undefined && <div className="bar bar--measured" title={`measured ${pct(m)}`}><span style={{ width: `${m * 100}%` }} /></div>}
@@ -93,27 +83,21 @@ export function GardenView({ garden, seedNames, assignment, reducedMotion, detai
           })}
         </ul>
       )}
-      {details && (
-        <details className="legend">
-          <summary>How to read the picture</summary>
-          <ul>
-            {LEGEND.map((l) => <li key={l.mark}><span className={`legend__mark legend__mark--${l.mark}`} aria-hidden="true" />{l.text}</li>)}
-          </ul>
-        </details>
-      )}
     </div>
   );
 }
 
 export const pct = (p: number) => `${Math.round(p * 100)}%`;
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 function describeOdds(probs: Record<string, number>, assignment: Assignment): string {
   const parts = Object.entries(probs).filter(([, p]) => p > 0.005).sort((a, b) => b[1] - a[1]).map(([k, p]) => `${nameFor(assignment, k)} ${pct(p)}`);
   return parts.join(' · ');
 }
 
-/** What a bloom sounded like, in words: "Rain every time" or "Night hush 56%, Rain 44%". */
-export function describeHeard(measured: Record<string, number>, assignment: Assignment): string {
+/** What a Play sounded like, in words: the one reading that played, or a summary when several did. */
+export function describeHeard(measured: Record<string, number>, assignment: Assignment, played?: string | null): string {
+  if (played) return nameFor(assignment, played);
   const entries = Object.entries(measured).filter(([, p]) => p > 0).sort((a, b) => b[1] - a[1]);
   if (entries.length === 0) return 'nothing';
   if (entries[0][1] >= 0.97) return `${nameFor(assignment, entries[0][0])} every time`;

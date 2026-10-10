@@ -9,28 +9,30 @@ import { Board } from './Board';
 import { CodePanel } from './CodePanel';
 import { ResultNote } from './ResultNote';
 
-interface Props { engine: QuantumEngine; backends: BackendDescriptor[]; defaultBackendId: string; reducedMotion: boolean; details: boolean }
+interface Props { engine: QuantumEngine; backends: BackendDescriptor[]; defaultBackendId: string; details: boolean }
 
 const TRACKS = ['Track A', 'Track B'];
-const BEATS = [16, 64, 256];
-const TEMPOS = [{ label: 'Slow', step: 1.3 }, { label: 'Medium', step: 0.9 }, { label: 'Fast', step: 0.5 }];
+const READINGS = 64;
 
-/** The open studio: four pads (one sound per combination of the two tracks), all four moves, Play for a 20-second beat. */
-export function StudioScene({ engine, backends, defaultBackendId, reducedMotion, details }: Props) {
+/** The open studio: four pads (one sound per way the two tracks can land), all four moves, Play for one sound. */
+export function StudioScene({ engine, backends, defaultBackendId, details }: Props) {
   const [assignment, setAssignment] = useState<Record<string, string[]>>(DEFAULT_STUDIO_ASSIGNMENT);
-  const [beats, setBeats] = useState(64);
   const [noise, setNoise] = useState(false);
-  const [step, setStep] = useState(0.9);
   const [backendId, setBackendId] = useState(defaultBackendId);
   const [why, setWhy] = useState(false);
   const garden = useGarden(engine, 2, assignment, []);
-  const code = useCallback(() => garden.code(beats), [garden, beats]);
+  const code = useCallback(() => garden.code(READINGS), [garden]);
   const labels = useMemo(() => bitstrings(2), []);
+  // the tiles need two sounds per track: the "both quiet" pad and the pad where only this track is on
+  const studioTracks = useMemo(() => [
+    { name: TRACKS[0], base: assignment['00'][0], hit: assignment['01'][0] },
+    { name: TRACKS[1], base: assignment['00'][0], hit: assignment['10'][0] },
+  ], [assignment]);
   const selectable = backends.filter((b) => b.available || b.reason);
   const playing = garden.playback && !garden.playback.finished;
 
-  const play = () => garden.bloom(beats, { noise, backendId, moments: Math.round(20 / step), step, label: 'your beat' });
-  const caption = garden.playback?.finished ? 'Play again for new beats from the same mix, or change the mix.'
+  const play = () => garden.bloom(READINGS, { noise, backendId, moments: 1, step: 4.0, label: 'your sound' });
+  const caption = garden.playback?.finished ? 'Play again for another landing of the same mix, or change the mix.'
     : garden.circuit.ops.length === 0 ? 'Pick a sound for each pad, then build the mix and press Play.' : undefined;
 
   return (
@@ -38,10 +40,10 @@ export function StudioScene({ engine, backends, defaultBackendId, reducedMotion,
       <header className="puzzle__head">
         <p className="eyebrow">{APP.studioTitle}</p>
         <h2>{APP.studioTagline}</h2>
-        <p className="story">Each pad is one way the two tracks can land. Give it a sound. Build the mix with the moves, then Play for a 20-second beat drawn from real measurements.</p>
+        <p className="story">Each pad is one way the two tracks can land. Give it a sound. Build the mix with the moves, then press Play: one landing, one sound, from a real measurement.</p>
       </header>
 
-      <GardenView garden={garden} seedNames={TRACKS} assignment={assignment} reducedMotion={reducedMotion} details={details} caption={caption} />
+      <GardenView garden={garden} tracks={studioTracks} assignment={assignment} details={details} caption={caption} />
 
       <div className="pads" role="group" aria-label="A sound for each pad">
         {labels.map((b) => (
@@ -49,9 +51,9 @@ export function StudioScene({ engine, backends, defaultBackendId, reducedMotion,
             <span className="pad__lamps" aria-hidden="true">
               {TRACKS.map((n, q) => <span key={q} className={`lamp${bitOf(b, q) ? ' is-on' : ''}`}>{n.slice(-1)}</span>)}
             </span>
-            <span className="sr-only">{TRACKS.map((n, q) => `${n} ${bitOf(b, q) ? 'hits' : 'rests'}`).join(', ')}</span>
+            <span className="sr-only">{TRACKS.map((n, q) => `${n} ${bitOf(b, q) ? 'on' : 'off'}`).join(', ')}</span>
             {details && <code className="pad__bits" title="qubit 0 is the rightmost bit">{b}</code>}
-            <select value={assignment[b][0]} onChange={(e) => setAssignment({ ...assignment, [b]: [e.target.value] })} aria-label={`Sound when ${TRACKS.map((n, q) => `${n} ${bitOf(b, q) ? 'hits' : 'rests'}`).join(' and ')}`}>
+            <select value={assignment[b][0]} onChange={(e) => setAssignment({ ...assignment, [b]: [e.target.value] })} aria-label={`Sound when ${TRACKS.map((n, q) => `${n} is ${bitOf(b, q) ? 'on' : 'off'}`).join(' and ')}`}>
               {SOUND_LIBRARY.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
           </label>
@@ -62,15 +64,11 @@ export function StudioScene({ engine, backends, defaultBackendId, reducedMotion,
         onAdd={garden.addOp} onRemove={garden.removeOp} onReset={() => garden.reset([])}
         bloom={{ label: garden.busy ? 'Playing…' : garden.result ? 'Play again' : 'Play', onClick: play }}
         extra={<>
-          {garden.result && !playing && <button type="button" className="ghost" onClick={garden.replay} disabled={garden.busy}>Replay</button>}
+          {garden.result && !playing && <button type="button" className="ghost" onClick={garden.replay} disabled={garden.busy}>Hear it again</button>}
           {playing && <button type="button" className="ghost" onClick={garden.stopPlayback}>Stop</button>}
         </>} />
 
       <div className="row wrap settings">
-        <span className="label">Beats</span>
-        {BEATS.map((s) => <button key={s} type="button" className={`chip${beats === s ? ' is-on' : ''}`} aria-pressed={beats === s} onClick={() => setBeats(s)}>{s}</button>)}
-        <span className="label">Tempo</span>
-        {TEMPOS.map((t) => <button key={t.label} type="button" className={`chip${step === t.step ? ' is-on' : ''}`} aria-pressed={step === t.step} onClick={() => setStep(t.step)}>{t.label}</button>)}
         <label className="toggle"><input type="checkbox" checked={noise} onChange={(e) => setNoise(e.target.checked)} /> Add noise</label>
         {details && selectable.length > 1 && (
           <label className="row">
