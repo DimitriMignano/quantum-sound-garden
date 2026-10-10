@@ -1,0 +1,9 @@
+fastapi==0.143.0
+httpx==0.28.1
+numpy==2.5.3
+pytest==9.1.1
+python-dotenv==1.2.4
+qiskit==2.5.2
+qiskit-aer==0.17.2
+qiskit-ionq==1.1.1
+uvicorn==0.54.0

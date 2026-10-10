@@ -11,3 +11,10 @@ build/
 *.key
 *.p8
 *.p12
+# python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+# built zip
+*.zip
