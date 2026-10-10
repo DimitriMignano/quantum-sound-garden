@@ -51,3 +51,31 @@ corrections go in a new entry. Newest at the bottom. Fill every field (`n/a` if 
 - Deferred work: everything below in WORKLOG.md
 - Risks: Qollab's exact `backend`/Python-proxy behavior is documented thinly; the bundle is untestable here without a
   Qollab account, so the Qollab engine is written defensively and the first upload is the live test.
+
+### 2026-10-10 15:00 — The whole first draft: quantum core, engines, audio, garden, challenges, creator, docs, two reviews
+- Branch / worktree: `main` (origin: github.com/DimitriMignano/quantum-sound-garden, private)
+- Task: build the hackathon draft end to end from the brief; make it honest, testable and uploadable to Qollab.
+- Files changed: `server/qsg/{circuit,backends,api}.py`, `server/tests/*`, `web/src/**` (engine · audio · garden · app ·
+  content · test), `web/vite.config.ts`, `scripts/build-qollab.mjs`, `qollab/` (built artifact, committed), `docs/*`,
+  `README.md`, `LICENSE`, `WORKLOG.md`, `package.json`, `CLAUDE.md`
+- Verification run: `npm run check` green at 01baee6 — pytest 26 passed + 1 skipped (live IonQ, no key), tsc clean,
+  vitest 69 passed (parity vs Qiskit on 19 fixture circuits incl. X basis, code byte-identical; taught behaviors;
+  sampling; noise; built-bundle smoke test in a Qollab-shaped jsdom page), Qollab bundle built (8 files, main.js 392 KB).
+  Live in Chrome against the local server: challenges 1–4 solved end to end, both "Go deeper" comparisons, skip/replay,
+  hidden-odds gating, prediction lock. Not live-tested: the creator scene, phone width, keyboard-only navigation, the
+  real Qollab runtime (no account here), the IonQ path (no key).
+- Commit hash: 02c40bb → 55137c8 → 5856cff (gate was red; fixed in 1f6ead6) → 01baee6
+- Seams (§22): data n/a · seam LIVE (three engines, parity-tested) · surface LIVE (all scenes) · console n/a ·
+  hosted PARTIAL (nothing hosted; Qollab upload is a human's act) · delivery PARTIAL (`npm run build:qollab` produces
+  the zip; upload + publish + video + submission still owed) — overall PARTIAL until a human publishes on Qollab.
+- Decisions: Qollab JS/Qiskit project as the judged artifact (runtime docs); one React codebase for Qollab + standalone;
+  procedural Web Audio instead of samples; a TS statevector for instant preview, held to Qiskit by fixtures; one
+  stochastic Pauli noise model on both sides; on IonQ-in-Qollab the challenges bloom on Qiskit's Statevector and the
+  single job is spent only on request; odds hidden until a prediction is committed; X-basis "Bloom sideways" with
+  classical twins and a dephased twin as the quantum-vs-classical payoff; `codex exec` read-only as the second opinion
+  (2 runs: 30 + 10 findings, triaged in WORKLOG and here: the P0/P1s fixed, the IonQ-detection heuristic and the
+  missing real Qollab integration test accepted and documented, procedural-randomness and creator-always-open rejected).
+- Deferred work: human steps in WORKLOG.md (IonQ key, public repo, Qollab upload + first live run, video, submission);
+  per-shot order from IonQ; CHSH game; custom sounds/export.
+- Risks: the Qollab adapter is only smoke-tested against a fake module and backend — the first upload is the real test;
+  IonQ detection keys on the backend name containing "ionq"; the repo is private while the rules require public.
