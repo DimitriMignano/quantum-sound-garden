@@ -11,6 +11,8 @@ export class AudioEngine {
   private scratch: Float32Array<ArrayBuffer> | null = null;
   private _volume = 0.85;
   private _muted = false;
+  /** true when the browser's audio engine would not start within 2.5 s of a gesture (Chrome's audio service hung) */
+  stuck = false;
   private listeners = new Set<() => void>();
 
   /** Resolve to true when audio is live. Must be called from a user gesture the first time. */
@@ -37,7 +39,12 @@ export class AudioEngine {
       this.applyMaster(0.01);
     }
     if (this.ctx.state !== 'running') {
-      try { await this.ctx.resume(); } catch { /* the gesture may have ended */ }
+      // Chrome's audio service can hang (seen on macOS): resume() then never settles. Report it instead of waiting forever.
+      const settled = await Promise.race([
+        this.ctx.resume().then(() => true, () => false),
+        new Promise<false>((r) => setTimeout(() => r(false), 2500)),
+      ]);
+      if (!settled && (this.ctx.state as AudioContextState) !== 'running') this.stuck = true;
     }
     this.emit();
     return this.ctx.state === 'running';

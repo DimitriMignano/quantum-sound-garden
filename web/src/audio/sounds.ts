@@ -107,37 +107,53 @@ abstract class Layer implements SoundInstance {
 }
 
 // ---- textures ------------------------------------------------------------------------------------------------
+const rainCache = new WeakMap<AudioContext, AudioBuffer>();
+/** Six seconds of droplets hitting a surface: ~150 impacts a second, each a damped sine plus a little noise. */
+function rainBuffer(ctx: AudioContext): AudioBuffer {
+  let b = rainCache.get(ctx);
+  if (b) return b;
+  const sr = ctx.sampleRate, len = sr * 6;
+  b = ctx.createBuffer(2, len, sr);
+  for (let ch = 0; ch < 2; ch++) {
+    const d = b.getChannelData(ch);
+    for (let k = 0; k < 900; k++) {
+      const start = Math.floor(Math.random() * (len - sr * 0.05));
+      const f = 700 + Math.random() * 2600, decay = 0.003 + Math.random() * 0.012, amp = (0.15 + Math.random() * 0.85) ** 2;
+      const n = Math.floor(sr * decay * 6);
+      for (let i = 0; i < n && start + i < len; i++) {
+        const t = i / sr, env = Math.exp(-t / decay);
+        d[start + i] += amp * env * (Math.sin(6.283 * f * t) * 0.6 + (Math.random() * 2 - 1) * 0.4);
+      }
+    }
+    let peak = 0; for (let i = 0; i < len; i++) peak = Math.max(peak, Math.abs(d[i]));
+    const scale = 0.9 / (peak || 1); for (let i = 0; i < len; i++) d[i] *= scale;
+  }
+  rainCache.set(ctx, b);
+  return b;
+}
+
 class Rain extends Layer {
   private nodes: AudioNode[] = [];
-  private src: AudioBufferSourceNode;
+  private drops: AudioBufferSourceNode; private bed: AudioBufferSourceNode;
   constructor(ctx: AudioContext, out: AudioNode, weight: number) {
     super(ctx, out, weight);
+    // droplets: the thing that says "rain"
+    this.drops = ctx.createBufferSource(); this.drops.buffer = rainBuffer(ctx); this.drops.loop = true; this.drops.start(0, Math.random() * 5);
+    const dropsG = gain(ctx, 0.8);
+    const dropsLp = ctx.createBiquadFilter(); dropsLp.type = 'lowpass'; dropsLp.frequency.value = 4200;
+    this.drops.connect(dropsLp).connect(dropsG).connect(this.level);
+    // the wash underneath: mid-band noise, not a bright hiss
     const { pink } = noiseBuffers(ctx);
-    this.src = loopNoise(ctx, pink);
-    const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 900;
-    const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 3200; bp.Q.value = 0.6;
-    const shimmer = ctx.createGain(); shimmer.gain.value = 0.9;
-    const lfo = ctx.createOscillator(); lfo.frequency.value = 0.23;
-    const lfoG = ctx.createGain(); lfoG.gain.value = 0.12;
-    lfo.connect(lfoG).connect(shimmer.gain); lfo.start();
-    this.src.connect(hp).connect(bp).connect(shimmer).connect(this.level);
-    this.nodes = [hp, bp, shimmer, lfo, lfoG];
+    this.bed = loopNoise(ctx, pink);
+    const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 250;
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1800;
+    const bedG = gain(ctx, 0.32);
+    const lfo = ctx.createOscillator(); lfo.frequency.value = 0.19;
+    const lfoG = gain(ctx, 0.08); lfo.connect(lfoG).connect(bedG.gain); lfo.start();
+    this.bed.connect(hp).connect(lp).connect(bedG).connect(this.level);
+    this.nodes = [dropsG, dropsLp, hp, lp, bedG, lfo, lfoG];
   }
-  protected override onLevel(): void {
-    // drips: tiny high clicks, more frequent the heavier the rain
-    this.clock(() => this.drip(), () => 120 + Math.random() * 400 * (1.2 - this.currentLevel));
-  }
-  private drip() {
-    const { white } = noiseBuffers(this.ctx);
-    const s = this.ctx.createBufferSource(); s.buffer = white;
-    const f = this.ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 5000 + Math.random() * 4000; f.Q.value = 8;
-    const g = gain(this.ctx, 0);
-    s.connect(f).connect(g).connect(this.level);
-    const t = this.ctx.currentTime;
-    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.25, t + 0.004); g.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
-    s.start(t, Math.random() * 3, 0.08);
-  }
-  protected teardown(): void { try { this.src.stop(); } catch { /* already */ } for (const n of this.nodes) n.disconnect(); this.level.disconnect(); }
+  protected teardown(): void { try { this.drops.stop(); this.bed.stop(); } catch { /* already */ } for (const n of this.nodes) n.disconnect(); this.level.disconnect(); }
 }
 
 class Wind extends Layer {
@@ -182,35 +198,95 @@ class Waves extends Layer {
   protected teardown(): void { try { this.src.stop(); } catch { /* already */ } for (const n of this.nodes) { if (n instanceof AudioBufferSourceNode) { try { n.stop(); } catch { /* */ } } n.disconnect(); } this.level.disconnect(); }
 }
 
-class City extends Layer {
-  private src: AudioBufferSourceNode; private nodes: AudioNode[];
+class Traffic extends Layer {
+  private src: AudioBufferSourceNode; private hiss: AudioBufferSourceNode; private nodes: AudioNode[]; private hornTimer: number | null = null;
   constructor(ctx: AudioContext, out: AudioNode, weight: number) {
     super(ctx, out, weight);
-    const { brown } = noiseBuffers(ctx);
+    const { brown, pink } = noiseBuffers(ctx);
     this.src = loopNoise(ctx, brown);
-    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 260;
-    const hum = ctx.createOscillator(); hum.type = 'triangle'; hum.frequency.value = 55;
-    const humG = gain(ctx, 0.08);
-    hum.connect(humG).connect(this.level); hum.start();
-    this.src.connect(lp).connect(this.level);
-    this.nodes = [lp, hum, humG];
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 480;
+    const roar = gain(ctx, 0.9);
+    this.src.connect(lp).connect(roar).connect(this.level);
+    this.hiss = loopNoise(ctx, pink);
+    const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1300; bp.Q.value = 0.6;
+    const hissG = gain(ctx, 0.22);
+    this.hiss.connect(bp).connect(hissG).connect(this.level);
+    this.nodes = [lp, roar, bp, hissG];
   }
   protected override onLevel(): void {
-    // distant passing cars: slow filtered sweeps
-    this.clock(() => this.car(), () => 2500 + Math.random() * 4000);
+    this.clock(() => this.car(), () => 1100 + Math.random() * 1600);
+    if (this.hornTimer === null) this.scheduleHorn();
+  }
+  private scheduleHorn(): void {
+    this.hornTimer = window.setTimeout(() => {
+      this.hornTimer = null;
+      if (this.stopped || this.currentLevel <= 0.001) return;
+      this.horn();
+      this.scheduleHorn();
+    }, 4000 + Math.random() * 7000);
   }
   private car() {
     const { pink } = noiseBuffers(this.ctx);
     const s = this.ctx.createBufferSource(); s.buffer = pink;
-    const f = this.ctx.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 1.2;
+    const f = this.ctx.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 1.0;
     const g = gain(this.ctx, 0);
     s.connect(f).connect(g).connect(this.level);
-    const t = this.ctx.currentTime, d = 2.4 + Math.random() * 1.5;
-    f.frequency.setValueAtTime(300, t); f.frequency.linearRampToValueAtTime(900, t + d * 0.5); f.frequency.linearRampToValueAtTime(250, t + d);
-    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.22, t + d * 0.5); g.gain.linearRampToValueAtTime(0, t + d);
+    const t = this.ctx.currentTime, d = 1.6 + Math.random() * 1.2;
+    f.frequency.setValueAtTime(500, t); f.frequency.linearRampToValueAtTime(1700, t + d * 0.45); f.frequency.linearRampToValueAtTime(420, t + d);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.5, t + d * 0.45); g.gain.linearRampToValueAtTime(0, t + d);
     s.start(t, Math.random() * 2, d + 0.1);
   }
-  protected teardown(): void { try { this.src.stop(); } catch { /* */ } for (const n of this.nodes) { if (n instanceof OscillatorNode) { try { n.stop(); } catch { /* */ } } n.disconnect(); } this.level.disconnect(); }
+  private horn() {
+    const t = this.ctx.currentTime, d = 0.25 + Math.random() * 0.35, base = 370 + Math.random() * 80;
+    const g = gain(this.ctx, 0);
+    const lp = this.ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2200;
+    g.connect(lp).connect(this.level);
+    for (const ratio of [1, 1.26]) {
+      const o = this.ctx.createOscillator(); o.type = 'square'; o.frequency.value = base * ratio;
+      o.connect(g); o.start(t); o.stop(t + d + 0.05);
+    }
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.16, t + 0.02); g.gain.setValueAtTime(0.16, t + d - 0.04); g.gain.linearRampToValueAtTime(0, t + d);
+  }
+  protected teardown(): void { if (this.hornTimer !== null) clearTimeout(this.hornTimer); try { this.src.stop(); this.hiss.stop(); } catch { /* */ } for (const n of this.nodes) n.disconnect(); this.level.disconnect(); }
+}
+
+/** A crowd: six babble voices (formant-swept noise pulsing at syllable rate) over a low murmur, with the odd shout. */
+class Crowd extends Layer {
+  private sources: AudioScheduledSourceNode[] = []; private nodes: AudioNode[] = [];
+  constructor(ctx: AudioContext, out: AudioNode, weight: number) {
+    super(ctx, out, weight);
+    const { pink, brown } = noiseBuffers(ctx);
+    for (let v = 0; v < 6; v++) {
+      const src = loopNoise(ctx, pink);
+      const formant = ctx.createBiquadFilter(); formant.type = 'bandpass'; formant.frequency.value = 350 + v * 180; formant.Q.value = 7;
+      const walk = ctx.createOscillator(); walk.frequency.value = 0.25 + Math.random() * 0.6;
+      const walkG = gain(ctx, 220 + Math.random() * 200); walk.connect(walkG).connect(formant.frequency); walk.start();
+      const syl = ctx.createOscillator(); syl.frequency.value = 2.8 + Math.random() * 2.2; // syllables
+      const sylG = gain(ctx, 0.5); const off = ctx.createConstantSource(); off.offset.value = 0.5;
+      const am = gain(ctx, 0); syl.connect(sylG).connect(am.gain); off.connect(am.gain); syl.start(); off.start();
+      const voiceG = gain(ctx, 0.5);
+      src.connect(formant).connect(am).connect(voiceG).connect(this.level);
+      this.sources.push(src, walk, syl, off); this.nodes.push(formant, walkG, sylG, am, voiceG);
+    }
+    const murmur = loopNoise(ctx, brown);
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 380;
+    const mg = gain(ctx, 0.5);
+    murmur.connect(lp).connect(mg).connect(this.level);
+    this.sources.push(murmur); this.nodes.push(lp, mg);
+  }
+  protected override onLevel(): void { this.clock(() => this.shout(), () => 1800 + Math.random() * 3500); }
+  private shout() {
+    const t = this.ctx.currentTime, d = 0.25 + Math.random() * 0.3, f0 = 140 + Math.random() * 160;
+    const o = this.ctx.createOscillator(); o.type = 'sawtooth';
+    o.frequency.setValueAtTime(f0, t); o.frequency.linearRampToValueAtTime(f0 * (0.8 + Math.random() * 0.5), t + d);
+    const vib = this.ctx.createOscillator(); vib.frequency.value = 6; const vibG = gain(this.ctx, f0 * 0.04); vib.connect(vibG).connect(o.frequency); vib.start(t); vib.stop(t + d);
+    const lp = this.ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1400;
+    const g = gain(this.ctx, 0);
+    o.connect(lp).connect(g).connect(this.level);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.22, t + 0.04); g.gain.exponentialRampToValueAtTime(0.001, t + d);
+    o.start(t); o.stop(t + d + 0.05);
+  }
+  protected teardown(): void { for (const src of this.sources) { try { src.stop(); } catch { /* */ } } for (const n of this.nodes) n.disconnect(); this.level.disconnect(); }
 }
 
 class Crickets extends Layer {
@@ -260,18 +336,28 @@ class Thunder extends Layer {
   protected override onLevel(): void { this.clock(() => this.trigger(), () => 3500 + Math.random() * 5000); }
   override trigger(): void {
     if (this.stopped) return;
-    const { brown } = noiseBuffers(this.ctx);
-    const t = this.ctx.currentTime, d = 2.6 + Math.random() * 1.4;
+    const { brown, white } = noiseBuffers(this.ctx);
+    const t = this.ctx.currentTime, d = 1.5 + Math.random() * 0.9;
+    // the crack
+    const c = this.ctx.createBufferSource(); c.buffer = white;
+    const cf = this.ctx.createBiquadFilter(); cf.type = 'bandpass'; cf.frequency.value = 1100; cf.Q.value = 0.8;
+    const cg = gain(this.ctx, 0);
+    c.connect(cf).connect(cg).connect(this.level);
+    cg.gain.setValueAtTime(0, t); cg.gain.linearRampToValueAtTime(0.9, t + 0.008); cg.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+    c.start(t, Math.random() * 2, 0.15);
+    // the rumble, rolling
     const s = this.ctx.createBufferSource(); s.buffer = brown;
-    const f = this.ctx.createBiquadFilter(); f.type = 'lowpass'; f.Q.value = 1.5;
-    f.frequency.setValueAtTime(420, t); f.frequency.exponentialRampToValueAtTime(90, t + d);
+    const f = this.ctx.createBiquadFilter(); f.type = 'lowpass'; f.Q.value = 1.2;
+    f.frequency.setValueAtTime(360, t + 0.05); f.frequency.exponentialRampToValueAtTime(70, t + d);
+    const roll = gain(this.ctx, 1); const lfo = this.ctx.createOscillator(); lfo.frequency.value = 2.6 + Math.random() * 1.5;
+    const lfoG = gain(this.ctx, 0.45); lfo.connect(lfoG).connect(roll.gain); lfo.start(t); lfo.stop(t + d);
     const g = gain(this.ctx, 0);
-    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(1.0, t + 0.12); g.gain.linearRampToValueAtTime(0.55, t + 0.6); g.gain.exponentialRampToValueAtTime(0.001, t + d);
-    s.connect(f).connect(g).connect(this.level);
+    g.gain.setValueAtTime(0, t + 0.03); g.gain.linearRampToValueAtTime(1.0, t + 0.14); g.gain.linearRampToValueAtTime(0.6, t + 0.5); g.gain.exponentialRampToValueAtTime(0.001, t + d);
+    s.connect(f).connect(roll).connect(g).connect(this.level);
     s.start(t, Math.random() * 2, d + 0.1);
-    const sub = this.ctx.createOscillator(); sub.frequency.setValueAtTime(48, t); sub.frequency.exponentialRampToValueAtTime(30, t + d);
+    const sub = this.ctx.createOscillator(); sub.frequency.setValueAtTime(46, t); sub.frequency.exponentialRampToValueAtTime(28, t + d);
     const sg = gain(this.ctx, 0);
-    sg.gain.setValueAtTime(0, t); sg.gain.linearRampToValueAtTime(0.35, t + 0.2); sg.gain.exponentialRampToValueAtTime(0.001, t + d * 0.8);
+    sg.gain.setValueAtTime(0, t); sg.gain.linearRampToValueAtTime(0.4, t + 0.15); sg.gain.exponentialRampToValueAtTime(0.001, t + d * 0.8);
     sub.connect(sg).connect(this.level); sub.start(t); sub.stop(t + d);
   }
   protected teardown(): void { this.level.disconnect(); }
@@ -357,8 +443,8 @@ const mk = (id: string, name: string, kind: SoundKind, caption: string, weight: 
 
 export const SOUND_LIBRARY: SoundAsset[] = [
   mk('hush', 'Night hush', 'texture', 'a soft night hush', 0.35, (c, o) => new Wind(c, o, 0.35, 260, 0.06)),
-  mk('rain', 'Rain', 'texture', 'rain falling', 0.55, (c, o) => new Rain(c, o, 0.55)),
-  mk('thunder', 'Thunder', 'event', 'thunder rolling', 0.9, (c, o) => new Thunder(c, o, 0.9)),
+  mk('rain', 'Rain', 'texture', 'rain falling', 0.7, (c, o) => new Rain(c, o, 0.7)),
+  mk('thunder', 'Thunder', 'event', 'thunder rolling', 1.0, (c, o) => new Thunder(c, o, 1.0)),
   mk('wind', 'Wind', 'texture', 'wind moving through', 0.6, (c, o) => new Wind(c, o, 0.6)),
   mk('waves', 'Waves', 'texture', 'waves on a shore', 0.6, (c, o) => new Waves(c, o, 0.6)),
   mk('birds', 'Birds', 'event', 'birds calling', 0.5, (c, o) => new Birds(c, o, 0.5)),
@@ -366,7 +452,8 @@ export const SOUND_LIBRARY: SoundAsset[] = [
   mk('heartbeat', 'Heartbeat', 'event', 'a heartbeat', 0.8, (c, o) => new Heartbeat(c, o, 0.8)),
   mk('bells', 'Bells', 'event', 'bells ringing', 0.45, (c, o) => new Bells(c, o, 0.45)),
   mk('crickets', 'Crickets', 'texture', 'crickets in the grass', 0.14, (c, o) => new Crickets(c, o, 0.14)),
-  mk('city', 'City at night', 'texture', 'a distant city', 0.5, (c, o) => new City(c, o, 0.5)),
+  mk('traffic', 'Traffic', 'texture', 'traffic going by', 0.6, (c, o) => new Traffic(c, o, 0.6)),
+  mk('crowd', 'Crowd', 'texture', 'a crowd murmuring', 0.6, (c, o) => new Crowd(c, o, 0.6)),
   mk('glitch', 'Glitch', 'event', 'a soft electronic glitch', 0.4, (c, o) => new Glitch(c, o, 0.4)),
 ];
 

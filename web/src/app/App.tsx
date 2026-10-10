@@ -32,6 +32,7 @@ export function App({ engine }: Props) {
   const start = async () => {
     const ok = await audio.start();
     setAudioOk(ok);
+    if (!ok && audio.stuck) return; // say so on the welcome screen instead of opening a silent tutorial
     // #learn, #c3 or #studio in the URL opens that scene directly (for demos and testing); the gesture is still required.
     const hash = window.location.hash.replace('#', '');
     if (/^c[1-4]$/.test(hash) || hash === 'studio' || hash === 'learn') { setUnlocked(CHALLENGES.length); setScene(hash); return; }
@@ -47,7 +48,7 @@ export function App({ engine }: Props) {
   return (
     <div className={`app${reducedMotion ? ' is-still' : ''}`} data-scene={scene}>
       <TopBar info={info} scene={scene} onScene={setScene} reducedMotion={reducedMotion} onReducedMotion={setReducedMotion} details={details} onDetails={setDetails} unlocked={unlocked} entered={scene !== 'welcome'} />
-      {scene === 'welcome' && <Welcome info={info} reducedMotion={reducedMotion} audioOk={audioOk} onStart={start} />}
+      {scene === 'welcome' && <Welcome info={info} reducedMotion={reducedMotion} audioOk={audioOk} stuck={audio.stuck} onStart={start} />}
       {scene === 'learn' && (
         <main><TutorialScene engine={engine} reducedMotion={reducedMotion} details={details} onDone={() => setScene('c1')} /></main>
       )}

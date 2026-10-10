@@ -2,12 +2,12 @@ import { useEffect, useRef } from 'react';
 import type { EngineInfo } from '../engine/types';
 import { APP } from '../content/content';
 
-interface Props { info: EngineInfo | null; reducedMotion: boolean; audioOk: boolean | null; onStart(): void }
+interface Props { info: EngineInfo | null; reducedMotion: boolean; audioOk: boolean | null; stuck: boolean; onStart(): void }
 
 const GLYPHS = ['♪', '♫', '♩', '♬', '♪', '♫'];
 
 /** The front door: the name, one line, one button, and a beat you can see (rings on a pulse, notes drifting). */
-export function Welcome({ info, reducedMotion, audioOk, onStart }: Props) {
+export function Welcome({ info, reducedMotion, audioOk, stuck, onStart }: Props) {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -61,7 +61,7 @@ export function Welcome({ info, reducedMotion, audioOk, onStart }: Props) {
         <p className="welcome__lead">{APP.lead}</p>
         <button type="button" className="primary primary--big" onClick={onStart}>{APP.startButton}</button>
         <p className="help">{APP.startHint}</p>
-        {audioOk === false && <p className="error" role="alert">Audio could not start in this browser. The studio still works visually.</p>}
+        {audioOk === false && <p className="error" role="alert">{stuck ? 'Your browser’s audio engine is not responding (Chrome does this sometimes). Quit the browser completely and reopen it, then come back here.' : 'Audio could not start in this browser. The studio still works visually.'}</p>}
         <details className="howto">
           <summary>What you are actually hearing</summary>
           <p className="honesty">{APP.honesty}</p>

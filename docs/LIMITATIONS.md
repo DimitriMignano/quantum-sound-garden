@@ -36,3 +36,9 @@
 ## Not done (stretch)
 - Custom uploads or recordings, downloadable audio export, more than two qubits in the creator, a CHSH game, real
   per-shot order from IonQ (qiskit-ionq exposes per-shot data; not wired).
+
+## Browser audio can hang (Chrome, macOS)
+Observed on 2026-10-10: Chrome's audio service stopped starting new streams; every new AudioContext stayed suspended and
+`resume()` never settled, while other apps still played. The app detects this (Start reports it within 2.5 s) and never
+claims audio it does not have. Restarting Chrome's audio helper process or Chrome itself clears it. Not an app bug, but
+a judge on such a machine would hear nothing: the README's last section says what to do.

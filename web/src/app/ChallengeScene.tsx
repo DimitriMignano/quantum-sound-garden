@@ -73,6 +73,10 @@ export function ChallengeScene({ engine, challenge, reducedMotion, details, onNe
 
   const code = useCallback(() => garden.code(challenge.beats), [garden, challenge.beats]);
   const busy = garden.busy || phase === 'playing';
+  // progressive exposure: gate names from puzzle 1, bits and odds from 2, the code once solved from 3, everything at 4
+  const gates = details || challenge.exposure >= 1;
+  const readings = details || challenge.exposure >= 2;
+  const codeOnSolve = details || challenge.exposure >= 3;
 
   let caption: string;
   if (phase === 'result' && garden.measured) {
@@ -94,7 +98,7 @@ export function ChallengeScene({ engine, challenge, reducedMotion, details, onNe
         <p className="story">{challenge.story}</p>
       </header>
 
-      <GardenView garden={garden} seedNames={trackNames} assignment={assignment} reducedMotion={reducedMotion} details={details} caption={caption} />
+      <GardenView garden={garden} seedNames={trackNames} assignment={assignment} reducedMotion={reducedMotion} details={readings} caption={caption} />
 
       {phase === 'result' && garden.result && (
         <div className={`verdict${goalMet ? ' is-good' : ''}`} aria-live="polite">
@@ -112,7 +116,7 @@ export function ChallengeScene({ engine, challenge, reducedMotion, details, onNe
           {challenge.hints.slice(0, hintsShown).map((h, i) => <p key={i}><span className="eyebrow">Hint {i + 1}</span> {h}</p>)}
         </div>
       )}
-      <Board seedNames={trackNames} allowed={challenge.allowed} ops={garden.circuit.ops} disabled={busy} showGates={details}
+      <Board seedNames={trackNames} allowed={challenge.allowed} ops={garden.circuit.ops} disabled={busy} showGates={gates}
         onAdd={garden.addOp} onRemove={garden.removeOp} onReset={() => garden.reset()}
         bloom={{ label: phase === 'playing' ? 'Playing…' : 'Play', onClick: play }}
         extra={phase === 'playing' && garden.playback && !garden.playback.finished ? <button type="button" className="ghost" onClick={garden.skip}>Skip</button> : null} />
@@ -121,10 +125,16 @@ export function ChallengeScene({ engine, challenge, reducedMotion, details, onNe
         <summary>The moves</summary>
         <ul>
           {(['flip', 'split', 'twist', 'link', 'bloom'] as const).filter((k) => k === 'bloom' || challenge.allowed.includes(k)).map((k) => (
-            <li key={k}><b className={`rule__title rule__title--${k}`}>{ACTIONS[k].verb}</b> {ACTIONS[k].what}{details && <code> {ACTIONS[k].gate}</code>}</li>
+            <li key={k}><b className={`rule__title rule__title--${k}`}>{ACTIONS[k].verb}</b> {ACTIONS[k].what}{gates && <code> {ACTIONS[k].gate}</code>}</li>
           ))}
         </ul>
       </details>
+      {solved && codeOnSolve && !why && (
+        <section className="reveal reveal--code" aria-label="The circuit you built">
+          <p className="eyebrow">The circuit you just built, in Qiskit</p>
+          <CodePanel load={code} />
+        </section>
+      )}
       {solved && why && (
         <section className="reveal" aria-label="Why it works">
           <p className="eyebrow">Why it works · the quantum behind it</p>

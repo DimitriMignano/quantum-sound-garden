@@ -13,12 +13,14 @@ interface Props { engine: QuantumEngine; backends: BackendDescriptor[]; defaultB
 
 const TRACKS = ['Track A', 'Track B'];
 const BEATS = [16, 64, 256];
+const TEMPOS = [{ label: 'Slow', step: 1.3 }, { label: 'Medium', step: 0.9 }, { label: 'Fast', step: 0.5 }];
 
 /** The open studio: four pads (one sound per combination of the two tracks), all four moves, Play for a 20-second beat. */
 export function StudioScene({ engine, backends, defaultBackendId, reducedMotion, details }: Props) {
   const [assignment, setAssignment] = useState<Record<string, string[]>>(DEFAULT_STUDIO_ASSIGNMENT);
   const [beats, setBeats] = useState(64);
   const [noise, setNoise] = useState(false);
+  const [step, setStep] = useState(0.9);
   const [backendId, setBackendId] = useState(defaultBackendId);
   const [why, setWhy] = useState(false);
   const garden = useGarden(engine, 2, assignment, []);
@@ -27,7 +29,7 @@ export function StudioScene({ engine, backends, defaultBackendId, reducedMotion,
   const selectable = backends.filter((b) => b.available || b.reason);
   const playing = garden.playback && !garden.playback.finished;
 
-  const play = () => garden.bloom(beats, { noise, backendId, moments: 22, step: 0.9, label: 'your beat' });
+  const play = () => garden.bloom(beats, { noise, backendId, moments: Math.round(20 / step), step, label: 'your beat' });
   const caption = garden.playback?.finished ? 'Play again for new beats from the same mix, or change the mix.'
     : garden.circuit.ops.length === 0 ? 'Pick a sound for each pad, then build the mix and press Play.' : undefined;
 
@@ -67,6 +69,8 @@ export function StudioScene({ engine, backends, defaultBackendId, reducedMotion,
       <div className="row wrap settings">
         <span className="label">Beats</span>
         {BEATS.map((s) => <button key={s} type="button" className={`chip${beats === s ? ' is-on' : ''}`} aria-pressed={beats === s} onClick={() => setBeats(s)}>{s}</button>)}
+        <span className="label">Tempo</span>
+        {TEMPOS.map((t) => <button key={t.label} type="button" className={`chip${step === t.step ? ' is-on' : ''}`} aria-pressed={step === t.step} onClick={() => setStep(t.step)}>{t.label}</button>)}
         <label className="toggle"><input type="checkbox" checked={noise} onChange={(e) => setNoise(e.target.checked)} /> Add noise</label>
         {details && selectable.length > 1 && (
           <label className="row">

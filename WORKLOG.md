@@ -58,3 +58,10 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
   crickets are lower and softer; the hit drum got a body so an all-hits Play lands as hard as an all-thumps one. Measured: arrival 0.000
   on the intro, Tracks, Swap and puzzle pages; cue peak 0.11 then 0.000; puzzle Play peak 0.23 (was 0.07). Also found and worked
   around: Chrome's audio service on this Mac had hung (new AudioContexts never resumed); a full Chrome restart fixed it.
+- 10-10 20:30 founder: sounds "don't sound like what they're supposed to represent… rain sounds like cymbals"; Play silent again;
+  the rain/traffic + thunder/crowd example; progressive exposure to circuits; free creation at the end. Done: Rain rebuilt as
+  pre-rendered droplets over a mid wash; Thunder as crack + rolling rumble; Traffic (road roar, tire hiss, cars, horns) and Crowd
+  (six babble voices, murmur, shouts) added; tracks are now Track A = traffic/rain and Track B = crowd/thunder everywhere; each
+  puzzle exposes one more layer of the circuit (1 gate names · 2 bits and odds · 3 code on solve · 4 full view); studio tempo.
+  The silent Play was Chrome's audio service hung again (new AudioContexts never resume): restarted the helper, added in-app
+  detection ("quit and reopen the browser") and a README section. Measured: Try it on Tracks 0.32, on Swap (rain) 0.18.

@@ -59,3 +59,9 @@ scripts/     build-qollab.mjs                                        WORKLOG.md 
 
 ## License
 MIT (see `LICENSE`). Sounds are procedural Web Audio: no recordings, no third-party assets.
+
+## If Start does nothing, or Play is silent (Chrome on macOS)
+Chrome's audio service can hang: a new AudioContext then never leaves "suspended", and the app's Start button waits on
+it on purpose (it never pretends to have sound). The welcome screen says so after 2.5 s. Fix: quit Chrome completely
+(Cmd+Q) and reopen it. If it keeps happening, the macOS audio daemon is slow to open streams; `sudo killall coreaudiod`
+in a terminal restarts it (macOS relaunches it at once), or restart the Mac. Seen 2026-10-10 on the founder's machine.

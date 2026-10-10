@@ -175,3 +175,32 @@ corrections go in a new entry. Newest at the bottom. Fill every field (`n/a` if 
   not have.
 - Deferred work: a human listening pass; phone width; keyboard.
 - Risks: levels judged by a meter; the cue length (1 s) and the crickets timbre are guesses until someone listens.
+
+### 2026-10-10 20:30 — Recognizable sounds, the founder's pairing, progressive circuit exposure
+- Branch / worktree: `main`
+- Task: the founder: rain sounded like cymbals and nothing else was identifiable; Play was silent again; the example
+  "rain and traffic together, thunder and a crowd together… split each, then combine" (which is exactly the Bell pair:
+  Shuffle A, Sync A to B); exposure to the real circuit should grow puzzle by puzzle; the end state is free creation.
+- Files changed: `web/src/audio/sounds.ts` (Rain: a 6 s pre-rendered droplet buffer, ~150 impacts/s, damped sines plus
+  noise, over a 250–1800 Hz wash; Thunder: white-noise crack then a brown rumble with a 2.6–4 Hz roll, 1.5–2.4 s; Traffic
+  replaces City: road roar, tire hiss, cars every 1–3 s with a 500→1700→420 Hz sweep, two-tone horns every 4–11 s; Crowd:
+  six formant-swept babble voices pulsing at 3–5 Hz, a low murmur, sawtooth shouts), `web/src/content/content.ts`
+  (Track A traffic/rain, Track B crowd/thunder in tutorial, puzzles and studio defaults; `exposure` 1–4 per puzzle),
+  `web/src/app/ChallengeScene.tsx` (exposure: gate names ≥1, readings ≥2, code on solve ≥3, full view 4),
+  `web/src/app/StudioScene.tsx` (tempo), `web/src/audio/engine.ts` + `web/src/app/{App,Welcome}.tsx` (a resume() that
+  does not settle in 2.5 s sets `stuck` and the welcome says to quit and reopen the browser), `README.md`,
+  `docs/LIMITATIONS.md`, `qollab/` (rebuilt), `WORKLOG.md`
+- Verification run: tsc clean; `npm run check` green (pytest 27 + 1 skipped, vitest 69, bundle 409 KB). Live in Chrome
+  after restarting Chrome's audio helper: Tracks "Try it" peak 0.323 with caption "traffic going by and a crowd
+  murmuring"; Swap "Try it" peak 0.175 with "rain falling and a crowd murmuring"; console shows only Vite refresh notes.
+  Not verified: how the new sounds read to a human ear (the whole point); Thunder's new trigger path (not played live);
+  puzzles 2–4 and the studio with the new sounds.
+- Commit hash: this commit (parent 618c139)
+- Seams (§22): unchanged
+- Decisions: identifiability over realism: each sound carries one unmistakable cue (droplets, a crack, horns, babble);
+  the founder's pairing is the canonical track set because it makes the Bell pair intuitive ("rain with thunder, traffic
+  with the crowd, never crossed"); circuit exposure is a per-puzzle number so the curve is one line to tune; the Chrome
+  audio hang is treated as an environment fault with detection and documentation, not as app code.
+- Deferred work: a human listening pass on all four sounds; three-track studio; saving and sharing beats; a tempo in puzzles.
+- Risks: Chrome's audio service on this Mac hangs repeatedly (twice today); a judge's machine may differ, but the README now
+  says what to do; the sounds are judged by a meter and by design intent, not by ear.

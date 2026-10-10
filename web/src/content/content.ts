@@ -75,6 +75,9 @@ export interface Challenge {
   allowed: Array<Op['op']>;
   /** the ideal distribution of a solved mix; the closeness hum compares the current odds to it */
   target: Record<string, number>;
+  /** how much of the quantum circuit this puzzle shows: 1 gate names · 2 + the readings as bits and odds · 3 + the Qiskit
+   *  code once solved · 4 the full Circuit view. Each puzzle shows one step more than the last. */
+  exposure: 1 | 2 | 3 | 4;
   noisy?: boolean;       // Play with the teaching noise model
   intended?: Op[];       // for the clean-up puzzle: the clean mix the noisy one should match
   success: (ideal: Ideal, circuit: Circuit, measuredFidelity?: number) => boolean;
@@ -88,8 +91,8 @@ export interface Challenge {
 
 const near = (a: number, b: number, eps = 0.02) => Math.abs(a - b) <= eps;
 const p1 = (ideal: Ideal, q = 0) => marginalOne(ideal.probabilities, q);
-const SKY: Track = { name: 'Sky', base: 'crickets', hit: 'rain' };
-const STORM: Track = { name: 'Storm', base: 'wind', hit: 'thunder' };
+const TRACK_A: Track = { name: 'Track A', base: 'traffic', hit: 'rain' };
+const TRACK_B: Track = { name: 'Track B', base: 'crowd', hit: 'thunder' };
 const BELL = { '00': 0.5, '01': 0, '10': 0, '11': 0.5 };
 
 export const CHALLENGES: Challenge[] = [
@@ -97,16 +100,17 @@ export const CHALLENGES: Challenge[] = [
     id: 'rain',
     index: 1,
     title: 'Make It Rain',
-    goal: 'Make Sky hit rain on every beat.',
-    story: 'Sky is playing crickets. Make it rain, every beat, no misses.',
-    tracks: [SKY],
+    goal: 'Make Track A play rain on every beat.',
+    story: 'Track A is playing traffic. Make it rain, every beat, no misses. This puzzle also shows the name of each move’s gate.',
+    tracks: [TRACK_A],
     start: [],
     allowed: ['flip', 'split', 'twist'],
     target: { '0': 0, '1': 1 },
+    exposure: 1,
     success: (i) => p1(i) > 0.99,
     hints: [
-      'Press Play with no moves first. Crickets on every beat. Which move switches a track to its other sound?',
-      'Swap switches the track: crickets becomes rain. Swap, then Play.',
+      'Press Play with no moves first. Traffic on every beat. Which move switches a track to its other sound?',
+      'Swap switches the track: traffic becomes rain. Swap, then Play.',
       'A second route: Shuffle, Turn halfway, Shuffle. Two Shuffles with a half Turn between them also switch the track. Same rain, different path.',
     ],
     reveal: {
@@ -124,22 +128,23 @@ export const CHALLENGES: Challenge[] = [
     id: 'pair',
     index: 2,
     title: 'Perfect Pair',
-    goal: 'Thunder only ever with rain, while each track on its own stays a coin toss.',
-    story: 'Two tracks: Sky and Storm. Two separate coin tosses would give thunder on a dry beat half the time. Make them agree.',
-    tracks: [SKY, STORM],
+    goal: 'Rain always with thunder, traffic always with the crowd, while each track on its own stays a coin toss.',
+    story: 'Track A plays traffic or rain. Track B plays a crowd or thunder. Two separate coin tosses would give thunder over traffic half the time. Make them agree. This puzzle also shows what each track read, as bits and odds.',
+    tracks: [TRACK_A, TRACK_B],
     start: [],
     allowed: ['flip', 'split', 'twist', 'link'],
     target: BELL,
+    exposure: 2,
     success: (i) => p1(i, 0) > 0.35 && p1(i, 0) < 0.65 && p1(i, 1) > 0.35 && p1(i, 1) < 0.65 && agreement(i.probabilities, 0, 1) > 0.99,
     hints: [
-      'Shuffle Sky so rain is a coin toss. Play and listen: thunder never comes, because Storm is still on wind.',
-      'Now Sync Sky to Storm. Storm hits thunder only when Sky hits rain.',
-      'Try Shuffle on both tracks instead of a Sync and compare: thunder on dry beats. Two coin tosses are not a pair.',
+      'Shuffle Track A so rain is a coin toss. Play and listen: thunder never comes, because Track B is still on the crowd.',
+      'Now Sync Track A to Track B. Track B hits thunder only when Track A hits rain.',
+      'Try Shuffle on both tracks instead of a Sync and compare: thunder over traffic. Two coin tosses are not a pair.',
     ],
     reveal: {
       title: 'What you did: a Bell pair',
       body: [
-        'Shuffle (H) put Sky in an equal superposition. Sync (CX) with Sky as control made Storm copy it, path by path. The circuit prepares the Bell state (|00⟩ + |11⟩)/√2.',
+        'Shuffle (H) put Track A in an equal superposition. Sync (CX) with Track A as control made Track B copy it, path by path. The circuit prepares the Bell state (|00⟩ + |11⟩)/√2.',
         'Each track alone is a fair coin, yet 01 and 10 have zero probability. Honest caveat: in this one basis, two classical coins glued together would sound exactly the same. What makes the pair quantum shows up when you ask a different question. Go deeper below.',
       ],
     },
@@ -149,7 +154,7 @@ export const CHALLENGES: Challenge[] = [
       runs: [
         { id: 'pair-x', label: 'Your pair, sideways', basis: 'x', useCircuit: true, explain: 'Still only together-or-neither. The Bell pair agrees in the sideways question too.' },
         { id: 'twins-z', label: 'Classical twins', basis: 'z', twins: [[], [{ op: 'flip', q: 0 }, { op: 'flip', q: 1 }]], explain: 'In the usual question the twins agree just like your pair: together or neither.' },
-        { id: 'twins-x', label: 'Classical twins, sideways', basis: 'x', twins: [[], [{ op: 'flip', q: 0 }, { op: 'flip', q: 1 }]], explain: 'Sideways, this classical copy falls apart: all four combinations, thunder on dry beats. Its agreement lived in one question only. The Bell pair agrees in both.' },
+        { id: 'twins-x', label: 'Classical twins, sideways', basis: 'x', twins: [[], [{ op: 'flip', q: 0 }, { op: 'flip', q: 1 }]], explain: 'Sideways, this classical copy falls apart: all four combinations, thunder over traffic. Its agreement lived in one question only. The Bell pair agrees in both.' },
       ],
       outro: 'Agreement in both the usual and the sideways question is a standard entanglement witness (it assumes the measurements are what they say they are). It is not a Bell test of nonlocality, which needs more angles; it is the two-question version you can hear.',
     },
@@ -162,11 +167,12 @@ export const CHALLENGES: Challenge[] = [
     index: 3,
     title: 'Silence the Footsteps',
     goal: 'Make the footsteps vanish, using only Turn and Shuffle.',
-    story: 'The Path track was shuffled, then turned halfway. Right now it is 50/50 footsteps. Turning more changes nothing you can hear. Or does it?',
+    story: 'The Path track was shuffled, then turned halfway. Right now it is 50/50 footsteps. Turning more changes nothing you can hear. Or does it? This puzzle also shows the Qiskit code once you solve it.',
     tracks: [{ name: 'Path', base: 'crickets', hit: 'footsteps' }],
     start: [{ op: 'split', q: 0 }, { op: 'twist', q: 0, turns: 0.5 }],
     allowed: ['split', 'twist', 'flip'],
     target: { '0': 1, '1': 0 },
+    exposure: 3,
     success: (i) => p1(i) < 0.01,
     hints: [
       'Add a Turn and Play. The odds did not move. The dial is silent until the two paths meet again.',
@@ -197,15 +203,16 @@ export const CHALLENGES: Challenge[] = [
     id: 'repair',
     index: 4,
     title: 'Clean the Mix',
-    goal: 'This pair came back noisy: thunder on dry beats. Keep what it means, drop the extra moves, and hear it clean up.',
-    story: 'Someone built the Perfect Pair with six moves where two would do. Every move lets a little noise in. Noise is turned up here so your ear can catch it.',
-    tracks: [SKY, STORM],
+    goal: 'This pair came back noisy: thunder over traffic. Keep what it means, drop the extra moves, and hear it clean up.',
+    story: 'Someone built the Perfect Pair with six moves where two would do. Every move lets a little noise in. Noise is turned up here so your ear can catch it. This puzzle shows the whole circuit view.',
+    tracks: [TRACK_A, TRACK_B],
     start: [
       { op: 'split', q: 0 }, { op: 'split', q: 1 }, { op: 'split', q: 1 },
       { op: 'link', control: 0, target: 1 }, { op: 'link', control: 0, target: 1 }, { op: 'link', control: 0, target: 1 },
     ],
     allowed: ['flip', 'split', 'twist', 'link'],
     target: BELL,
+    exposure: 4,
     noisy: true,
     intended: [{ op: 'split', q: 0 }, { op: 'link', control: 0, target: 1 }],
     success: (i, c, fid) => {
@@ -214,7 +221,7 @@ export const CHALLENGES: Challenge[] = [
     },
     hints: [
       'Two Shuffles in a row on the same track cancel out. Two Syncs in a row cancel out too. Tap a move on the path to remove it.',
-      'The intended mix is Shuffle Sky, Sync Sky to Storm. Nothing else. Compare the measured bars with the predicted ones before and after.',
+      'The intended mix is Shuffle Track A, Sync Track A to Track B. Nothing else. Compare the measured bars with the predicted ones before and after.',
       'Fewer moves, fewer chances for noise. On real hardware circuit depth is one of the first things that decides whether a result survives.',
     ],
     reveal: {
@@ -242,27 +249,27 @@ export interface Lesson {
   /** an intro page: these lines instead of a board, and a single "Learn the moves" button */
   intro?: string[];
 }
-export const LESSON_TRACKS: Track[] = [SKY, STORM];
+export const LESSON_TRACKS: Track[] = [TRACK_A, TRACK_B];
 const SYNC: Op = { op: 'link', control: 0, target: 1 };
 export const LESSONS: Lesson[] = [
   { id: 'intro', title: 'What’s going on', text: 'Thirty seconds of context before the first sound.', show: [], ops: [], beats: 0, hear: '', intro: [
-    'This is a beat studio. It has tracks. On every beat, each track plays one of its two sounds. On this page, Sky plays crickets or rain.',
+    'This is a beat studio. It has tracks. On every beat, each track plays one of its two sounds. Track A plays traffic or rain. Track B plays a crowd or thunder.',
     'The twist: a track does not have to decide which sound until the beat is played. It can be truly undecided. And two tracks can be tied together so they decide the same way, every time.',
     'You get four moves to shape a track: Swap, Shuffle, Turn, Sync. Then Play rolls the beats and you hear what the tracks decided. Each beat thumps low for the first sound and snaps bright for the hit, so you can follow it with your eyes closed.',
     'First, learn the moves by ear, one page each. Then solve four puzzles: after each move, a short chord tells you how close you are. Then build your own beat.',
     'Everything you hear comes from a real quantum circuit being measured. That is the whole trick, and you do not need to know what that means yet.',
   ] },
-  { id: 'tracks', title: 'Tracks', text: 'A track plays one of two sounds on every beat. Sky plays crickets with a low thump, or it hits with rain and a bright snap. Press Try it to hear six beats.', show: [], ops: [], beats: 6, hear: 'Six low thumps with crickets. Nothing was changed, so Sky stayed on its first sound every beat.' },
-  { id: 'swap', title: 'Swap', text: 'Swap switches a track to its other sound.', show: ['flip'], ops: [{ op: 'flip', q: 0 }], beats: 6, hear: 'Six bright snaps with rain. Swap moved Sky to its other sound.' },
-  { id: 'shuffle', title: 'Shuffle', text: 'Shuffle makes every beat a coin toss: crickets or rain, and you never know which is next.', show: ['flip', 'split'], ops: [{ op: 'split', q: 0 }], beats: 8, hear: 'Crickets and rain in no pattern, about half and half.' },
-  { id: 'shuffle2', title: 'Shuffle, again', text: 'Shuffle a shuffled track and it goes steady again. Two Shuffles cancel. Dice never do that.', show: ['flip', 'split'], ops: [{ op: 'split', q: 0 }, { op: 'split', q: 0 }], beats: 6, hear: 'Crickets on every beat. The two Shuffles undid each other.' },
+  { id: 'tracks', title: 'Tracks', text: 'A track plays one of two sounds on every beat. Track A plays traffic with a low thump, or it hits with rain and a bright snap. Press Try it to hear six beats.', show: [], ops: [], beats: 6, hear: 'Six low thumps with traffic. Nothing was changed, so Track A stayed on its first sound every beat.' },
+  { id: 'swap', title: 'Swap', text: 'Swap switches a track to its other sound.', show: ['flip'], ops: [{ op: 'flip', q: 0 }], beats: 6, hear: 'Six bright snaps with rain. Swap moved Track A to its other sound.' },
+  { id: 'shuffle', title: 'Shuffle', text: 'Shuffle makes every beat a coin toss: traffic or rain, and you never know which is next.', show: ['flip', 'split'], ops: [{ op: 'split', q: 0 }], beats: 8, hear: 'Traffic and rain in no pattern, about half and half.' },
+  { id: 'shuffle2', title: 'Shuffle, again', text: 'Shuffle a shuffled track and it goes steady again. Two Shuffles cancel. Dice never do that.', show: ['flip', 'split'], ops: [{ op: 'split', q: 0 }, { op: 'split', q: 0 }], beats: 6, hear: 'Traffic on every beat. The two Shuffles undid each other.' },
   { id: 'turn', title: 'Turn', text: 'Turn moves a hidden dial on a shuffled track. On its own you hear no change at all.', show: ['split', 'twist'], ops: [{ op: 'split', q: 0 }, { op: 'twist', q: 0, turns: 0.5 }], beats: 8, hear: 'Still a coin toss. The dial moved, and a dial makes no sound.' },
-  { id: 'turn2', title: 'Turn, then Shuffle', text: 'The next Shuffle hears the dial. Turn halfway, then Shuffle: every beat is rain.', show: ['split', 'twist'], ops: [{ op: 'split', q: 0 }, { op: 'twist', q: 0, turns: 0.5 }, { op: 'split', q: 0 }], beats: 6, hear: 'Rain on every beat. Without the Turn, two Shuffles would have given crickets on every beat.' },
-  { id: 'sync', title: 'Sync', text: 'Sync makes Storm follow Sky: when Sky hits rain, Storm hits thunder.', show: ['flip', 'link'], ops: [{ op: 'flip', q: 0 }, SYNC], beats: 6, hear: 'Rain with thunder on every beat.' },
-  { id: 'sync2', title: 'Sync a shuffled track', text: 'Shuffle Sky, then Sync it to Storm: two coin tosses that always agree.', show: ['flip', 'split', 'link'], ops: [{ op: 'split', q: 0 }, SYNC], beats: 8, hear: 'Sometimes crickets with wind, sometimes rain with thunder. Never one without the other.' },
+  { id: 'turn2', title: 'Turn, then Shuffle', text: 'The next Shuffle hears the dial. Turn halfway, then Shuffle: every beat is rain.', show: ['split', 'twist'], ops: [{ op: 'split', q: 0 }, { op: 'twist', q: 0, turns: 0.5 }, { op: 'split', q: 0 }], beats: 6, hear: 'Rain on every beat. Without the Turn, two Shuffles would have given traffic on every beat.' },
+  { id: 'sync', title: 'Sync', text: 'Sync makes Track B follow Track A: when A hits rain, B hits thunder.', show: ['flip', 'link'], ops: [{ op: 'flip', q: 0 }, SYNC], beats: 6, hear: 'Rain with thunder on every beat.' },
+  { id: 'sync2', title: 'Sync a shuffled track', text: 'Shuffle Track A, then Sync it to Track B: two coin tosses that always agree. Rain with thunder, or traffic with the crowd.', show: ['flip', 'split', 'link'], ops: [{ op: 'split', q: 0 }, SYNC], beats: 8, hear: 'Sometimes traffic with the crowd, sometimes rain with thunder. Never rain with the crowd, never thunder over traffic.' },
   { id: 'hum', title: 'The cue', text: 'The studio stays silent until you press Play. Each move gives you one second of the odds: the likelier a sound, the louder it is in that second. In a puzzle a short chord follows it: rough when far from the goal, smooth when you are there. Eyes closed works.', show: ['flip', 'split', 'twist', 'link'], ops: [{ op: 'split', q: 0 }, SYNC], beats: 8, hear: 'That was the pair again, new beats. Make a move and listen for the one-second cue. Then try a puzzle.' },
 ];
 
 export const DEFAULT_STUDIO_ASSIGNMENT: Record<string, string[]> = {
-  '00': ['crickets'], '01': ['rain'], '10': ['birds'], '11': ['thunder'],
+  '00': ['traffic'], '01': ['rain'], '10': ['crowd'], '11': ['thunder'],
 };
