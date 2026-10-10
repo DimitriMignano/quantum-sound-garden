@@ -10,8 +10,9 @@ import type { Op } from '../engine/types';
 export const calls: Array<{ fn: string; args: unknown[] }> = [];
 
 function withPromising<T extends (...a: never[]) => unknown>(name: string, fn: T) {
-  const wrapped = ((...args: unknown[]) => { calls.push({ fn: name, args }); return (fn as (...a: unknown[]) => unknown)(...args); }) as unknown as T & { callPromising: (...a: unknown[]) => Promise<unknown> };
-  wrapped.callPromising = async (...args: unknown[]) => { calls.push({ fn: `${name}.callPromising`, args }); return (fn as (...a: unknown[]) => unknown)(...args); };
+  const call = fn as unknown as (...a: unknown[]) => unknown;
+  const wrapped = ((...args: unknown[]) => { calls.push({ fn: name, args }); return call(...args); }) as unknown as T & { callPromising: (...a: unknown[]) => Promise<unknown> };
+  wrapped.callPromising = async (...args: unknown[]) => { calls.push({ fn: `${name}.callPromising`, args }); return call(...args); };
   return wrapped;
 }
 

@@ -65,3 +65,5 @@ npm install && (cd web && npm install)
   all · check: the submission platform's "runtime environment" page · 2026-10-10
 - Never `git add -A` in a repo that holds a venv or build output: the first commit here staged 9,011 venv files ·
   check: `git diff --cached --stat | tail -1` before every commit, and `.venv/` in .gitignore on day one · 2026-10-10
+- A gate joined to its commit with `;` is not a gate: a red `npm run check` still committed and pushed once here ·
+  check: `npm run check && git commit … && git push`, never `;` · 2026-10-10
