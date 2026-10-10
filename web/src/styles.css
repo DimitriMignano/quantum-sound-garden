@@ -194,3 +194,9 @@
 .bead:hover:not(:disabled) .bead__x, .bead:focus-visible .bead__x { color: var(--danger); border-color: var(--danger); opacity: 1; }
 .deeper { display: grid; gap: 0.5rem; padding: 0.8rem; border-radius: var(--radius-s); border: 1px solid var(--line-strong); background: rgba(0,0,0,0.2); }
 .deeper__result { padding: 0.5rem 0.7rem; border-left: 2px solid var(--phase); }
+
+.predictions { border: 0; padding: 0; margin: 0; min-width: 0; display: grid; gap: 0.4rem; }
+.chip--radio { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+.chip--radio input { accent-color: var(--accent); margin: 0; }
+.chip--radio.is-locked { opacity: 0.45; cursor: not-allowed; }
+.chip--radio:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }

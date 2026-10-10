@@ -1,7 +1,17 @@
 import { useState } from 'react';
 import type { Deeper } from '../content/content';
+import type { Op } from '../engine/types';
 import type { GardenApi } from './useGarden';
 import { ResultNote } from './ResultNote';
+
+/** The learner's garden and a copy with a half-turn twist inserted before its last Split (the recombination). */
+export function dephasedTwins(ops: Op[]): Op[][] {
+  let last = -1;
+  ops.forEach((o, i) => { if (o.op === 'split') last = i; });
+  if (last < 0) return [ops, ops];
+  const q = (ops[last] as { q: number }).q;
+  return [ops, [...ops.slice(0, last), { op: 'twist', q, turns: 0.5 }, ...ops.slice(last)]];
+}
 
 interface Props { garden: GardenApi; deeper: Deeper; shots: number; moments: number; step: number }
 
@@ -18,7 +28,8 @@ export function DeeperPanel({ garden, deeper, shots, moments, step }: Props) {
         {deeper.runs.map((r) => (
           <button key={r.id} type="button" className={`chip${last === r.id ? ' is-on' : ''}`} disabled={garden.busy} onClick={async () => {
             setLast(r.id);
-            await garden.bloom(shots, { basis: r.basis, mixture: r.twins, moments, step, label: r.label });
+            const twins = r.dephaseLearner ? dephasedTwins(garden.circuit.ops) : r.twins;
+            await garden.bloom(shots, { basis: r.basis, mixture: twins, moments, step, label: r.label });
           }}>{r.label}</button>
         ))}
       </div>

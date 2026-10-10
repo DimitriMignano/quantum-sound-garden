@@ -24,10 +24,12 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
 - IonQ API key in `server/.env` (`IONQ_API_KEY=...`) to prove the standalone IonQ path (the live test skips without it).
 - Make the GitHub repository PUBLIC before submitting (the rules require a public repo; it is private now).
 - Upload `dist/quantum-sound-garden-qollab.zip` to Qollab (New Project → Upload your own files), run it once on the
-  built-in simulator and once on an IonQ simulator (this is the first live test of the Qollab adapter), publish
+  built-in simulator and once on an IonQ simulator (this is the first live test of the Qollab adapter; note the
+  backend label the top bar shows on each, because IonQ detection relies on the backend's name containing "ionq"), publish
   under MIT, paste `docs/QOLLAB_PAGE.md` as the project page, record the 2–3 minute video (`docs/DEMO_SCRIPT.md`),
   submit from the registration page before 2026-10-11 19:00 ET.
 
 ## Log
 - 10-10 11:50 scaffolded repo; 12:05 architecture locked after reading Qollab runtime docs.
 - 10-10 12:40 vertical slice live in Chrome; 12:50 review 1 back; 13:30 review-1 fixes: odds hidden until prediction, no-audio completion, Qollab one-job redesign, exclusive predictions, one Pauli noise model, X-basis blooms + classical twins + dephased twin, legend, remove affordance, docs.
+- 10-10 14:30 review 2 back: all 8 round-1 fixes verified; fixed the IonQ-path noise routing bug, prediction lock + Reconsider, native radios, feedback copy by result kind, entanglement-witness wording, dephased twin built from the learner's garden, explicit noise rates, #scene deep links for demos.

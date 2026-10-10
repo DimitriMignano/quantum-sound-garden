@@ -27,6 +27,9 @@ export function App({ engine }: Props) {
   const enter = async () => {
     const ok = await audio.start();
     setAudioOk(ok);
+    // #c3 or #creator in the URL opens that scene directly (for demos and testing); the gesture is still required.
+    const hash = window.location.hash.replace('#', '');
+    if (/^c[1-4]$/.test(hash) || hash === 'creator') { setUnlocked(CHALLENGES.length); setScene(hash); return; }
     setScene('c1');
   };
 

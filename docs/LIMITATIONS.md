@@ -11,8 +11,10 @@
 - Entanglement: challenge 2's normal bloom shows correlation in one basis, which two classical coins could mimic. The
   "Go deeper" panel adds the complementary (X-basis) question and a classical-twins comparison. That is a
   two-question demonstration, not a full Bell/CHSH test with multiple angles.
-- Noise: the teaching model is a stochastic Pauli channel with exaggerated rates (about 20× an IonQ Aria-class
-  device), identical on Aer and in-app. It is a teaching device, not a model of any specific machine. On Qollab,
+- Noise: the teaching model is a stochastic Pauli channel with exaggerated rates, identical on Aer and in-app:
+  2% random Pauli after a one-qubit gate, 6% per qubit after a two-qubit gate, 2% readout flip. The "ionq-inspired"
+  preset (0.05% / 0.6% / 0.5%) is our rough reading of IonQ's published Aria-class specifications, so the teaching
+  rates are roughly 40×, 10× and 4× those; it is a teaching device, not a model of any specific machine. On Qollab,
   picking an IBM or IonQ noise-model backend replaces it with the provider's model. "Shorter circuits measure closer
   to intention" is true in this model and often on hardware; real devices also depend on native gates, routing, idle
   time and calibration.

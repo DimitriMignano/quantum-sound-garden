@@ -114,8 +114,9 @@ export class QollabEngine implements QuantumEngine {
     const id = backendId ?? (device.oneJobPerRun ? 'statevector' : 'qollab');
     const random = rng(Date.now() ^ (this.seedCounter++ * 7919));
 
-    if (noise && !device.noisy) {
-      // Noisy garden on an ideal backend: the noise is simulated in-app (stochastic Pauli model) and SAID so.
+    if (noise && (id === 'statevector' || !device.noisy)) {
+      // Noisy garden with no provider noise in play (an ideal device, or the no-job statevector path on an IonQ
+      // device): the noise is simulated in-app (stochastic Pauli model) and SAID so.
       const counts = sampleNoisy(circuit, shots, noise, random);
       return { counts, shots, countsKind: 'counts', backend: { ...this.statevectorBackend(), id: 'statevector+noise', label: 'Browser math with in-app noise (not a Qiskit run)', qiskit: false, noisy: true }, elapsedMs: Math.round(performance.now() - t0), simulatedNoise: noise, basis };
     }

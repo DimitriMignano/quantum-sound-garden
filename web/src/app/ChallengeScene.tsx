@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { QuantumEngine } from '../engine/types';
+import type { QuantumEngine, RunResult } from '../engine/types';
 import { assignmentFor, type Challenge } from '../content/content';
 import { useGarden } from './useGarden';
 import { GardenView, pct } from './GardenView';
@@ -18,6 +18,15 @@ interface Props {
 }
 
 type Phase = 'build' | 'blooming' | 'result';
+
+/** Why the measured bars differ from the predicted ones, chosen from what actually produced the result. */
+function varianceNote(r: RunResult | null): string {
+  if (!r) return '';
+  if (r.countsKind === 'probabilities') return 'This backend returned exact probabilities, so the measured bars carry no shot noise.';
+  if (r.simulatedNoise) return 'The measured bars also carry in-app simulated noise, not only sampling.';
+  if (r.backend.noisy) return 'The measured bars wander around them from sampling and from this backend’s noise model.';
+  return 'The measured bars wander around them: that is sampling, not a different circuit.';
+}
 
 export function ChallengeScene({ engine, challenge, reducedMotion, onNext, isLast }: Props) {
   const seedNames = useMemo(() => challenge.seeds.map((s) => s.name), [challenge]);
@@ -88,11 +97,15 @@ export function ChallengeScene({ engine, challenge, reducedMotion, onNext, isLas
 
         <section className="panel__section" aria-label="Predict, then bloom">
           <h3>Before you hear anything: what will you hear?</h3>
-          <div className="predictions" role="radiogroup" aria-label="Your prediction">
+          <fieldset className="predictions" aria-label="Your prediction" disabled={busy}>
             {challenge.predictions.map((p) => (
-              <button key={p.id} type="button" role="radio" aria-checked={prediction === p.id} className={`chip chip--wide${prediction === p.id ? ' is-on' : ''}`} onClick={() => choosePrediction(p.id)} disabled={busy}>{p.label}</button>
+              <label key={p.id} className={`chip chip--wide chip--radio${prediction === p.id ? ' is-on' : ''}${prediction && prediction !== p.id ? ' is-locked' : ''}`}>
+                <input type="radio" name={`prediction-${challenge.id}`} value={p.id} checked={prediction === p.id} disabled={!!prediction && prediction !== p.id} onChange={() => choosePrediction(p.id)} />
+                {p.label}
+              </label>
             ))}
-          </div>
+          </fieldset>
+          {prediction && phase === 'build' && <button type="button" className="linklike" onClick={() => { setPrediction(null); garden.setOddsHidden(true); }}>Reconsider (hides the odds again)</button>}
           <div className="row">
             <button type="button" className="primary" onClick={onBloom} disabled={busy || !prediction} aria-describedby="bloom-help">
               {busy ? 'Blooming…' : `Bloom · ${challenge.bloomShots} shots`}
@@ -113,7 +126,7 @@ export function ChallengeScene({ engine, challenge, reducedMotion, onNext, isLas
             <h3>{goalMet ? 'That is it.' : predictedRight ? 'Your prediction held. The goal is still open.' : 'Not what you expected?'}</h3>
             <p>
               {predictedRight === null ? '' : predictedRight
-                ? (challenge.noisy ? 'Your prediction matches what the shots measured. ' : 'Your prediction matches the circuit’s ideal odds. The measured bars wander around them: that is sampling, not a different circuit. ')
+                ? (challenge.noisy ? 'Your prediction matches what the shots measured. ' : `Your prediction matches the circuit’s ideal odds. ${varianceNote(garden.result)} `)
                 : (challenge.noisy ? 'The measured bars disagree with your prediction; look at how much landed on 01 and 10. ' : 'The circuit’s ideal odds disagree with your prediction; compare predicted and measured under each outcome. ')}
               {challenge.noisy && garden.measuredFidelity !== null && (
                 <>Match to the intended garden: <b>{pct(garden.measuredFidelity)}</b>{baseline && garden.circuit.ops.length < baseline.ops ? <> (the tangled version measured {pct(baseline.fidelity)} with {baseline.ops} actions; yours has {garden.circuit.ops.length}).</> : '.'}</>

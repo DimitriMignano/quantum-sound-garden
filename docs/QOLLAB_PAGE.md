@@ -11,8 +11,9 @@ _This effort is supported by Qollab & IonQ._
 
 ## How to run it here
 1. Press **Run Project**, then **Run**, and pick a backend in **Select QPU**. The built-in simulator gives unlimited
-   Blooms. An IonQ cloud simulator applies IonQ's noise model of a real QPU, but Qollab allows **one job per Run**
-   on IonQ backends, so you get one Bloom per Run there (press Run again for another).
+   Blooms on the device itself. With an IonQ cloud simulator, Qollab allows **one job per Run**, so the challenges
+   bloom on Qiskit's Statevector (computed in your browser, shots sampled locally) and the creator offers the single
+   IonQ job (with IonQ's noise model of a real QPU) when you choose it; press Run again for another.
 2. Press **Enter the garden**. Sound starts only after that press (browser autoplay rules). Headphones help.
 3. Follow the four challenges, then open **Creator**.
 
@@ -37,9 +38,10 @@ Use Chrome, Edge, Brave, Opera or Firefox; Qollab does not run projects in Safar
 ## Source, docs and tests
 Full source, architecture notes, the quantum-to-audio mapping, limitations and the test suite (pytest + vitest,
 including Qiskit-vs-browser parity fixtures): https://github.com/DimitriMignano/quantum-sound-garden
-(`README.md`, `docs/`). Challenge 4's noise is simulated in-app (a stochastic Pauli model) unless you pick a
-noise-model backend in Select QPU; every other bloom runs on Qiskit (the chosen backend, or Qiskit's Statevector
-when an IonQ backend's one-job-per-Run limit applies). Each result says which.
+(`README.md`, `docs/`). Which engine produced what: challenges 1–3 and the creator bloom on the chosen backend (or on
+Qiskit's Statevector with local sampling when the one-job-per-Run limit applies); challenge 4's noise is simulated
+in-app by a stochastic Pauli sampler (not a Qiskit job) unless you picked a noise-model backend, in which case the
+provider's noise applies. Each result names its engine.
 
 ## Disclosure
 Built during the hackathon window (2026-10-10 → 10-11) with AI assistance (Claude Code by Anthropic wrote code and

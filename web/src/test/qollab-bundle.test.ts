@@ -56,7 +56,7 @@ describe('the built Qollab bundle', () => {
     const idealCall = fake.calls.filter((c) => c.fn === 'ideal_json.callPromising').at(-1);
     expect(idealCall?.args[0]).toBe(1);
     expect(JSON.parse(idealCall?.args[1] as string)).toEqual([{ op: 'flip', q: 0 }]);
-    (document.querySelectorAll('.predictions [role="radio"]')[1] as HTMLButtonElement).click(); // "Always rain"
+    (document.querySelectorAll('.predictions input[type="radio"]')[1] as HTMLInputElement).click(); // "Always rain"
     await new Promise((r) => setTimeout(r, 50));
     (document.querySelector('.predictions ~ .row .primary') as HTMLButtonElement).click(); // Bloom
     for (let i = 0; i < 50 && !fake.calls.some((c) => c.fn === 'run_json.callPromising'); i++) await new Promise((r) => setTimeout(r, 50));
@@ -78,7 +78,7 @@ describe('the built Qollab bundle', () => {
     for (let i = 0; i < 50 && !document.querySelector('.action--flip'); i++) await new Promise((r) => setTimeout(r, 50));
     (document.querySelector('.action--flip') as HTMLButtonElement).click();
     await new Promise((r) => setTimeout(r, 300));
-    (document.querySelectorAll('.predictions [role="radio"]')[1] as HTMLButtonElement).click();
+    (document.querySelectorAll('.predictions input[type="radio"]')[1] as HTMLInputElement).click();
     await new Promise((r) => setTimeout(r, 50));
     (document.querySelector('.predictions ~ .row .primary') as HTMLButtonElement).click();
     await new Promise((r) => setTimeout(r, 500));

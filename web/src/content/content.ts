@@ -46,8 +46,10 @@ export interface Prediction { id: string; label: string; matches: (ideal: Ideal,
 export interface Deeper {
   title: string;
   intro: string;
-  /** buttons: a bloom with options; `twins` are op lists sharing the shots (a classical mixture) */
-  runs: Array<{ id: string; label: string; basis?: 'z' | 'x'; twins?: Op[][]; useCircuit?: boolean; explain: string }>;
+  /** buttons: a bloom with options; `twins` are op lists sharing the shots (a classical mixture);
+   *  `dephaseLearner` builds the twin from the learner's own garden: a half-turn twist is inserted before its last
+   *  Split half of the time (a random I/Z before recombination = complete dephasing). */
+  runs: Array<{ id: string; label: string; basis?: 'z' | 'x'; twins?: Op[][]; useCircuit?: boolean; dephaseLearner?: boolean; explain: string }>;
   outro: string;
 }
 export interface Seed { name: string; sound: string }
@@ -144,9 +146,9 @@ export const CHALLENGES: Challenge[] = [
       runs: [
         { id: 'pair-x', label: 'Your pair, sideways', basis: 'x', useCircuit: true, explain: 'Still only together-or-neither. The Bell pair agrees in the sideways question too.' },
         { id: 'twins-z', label: 'Classical twins', basis: 'z', twins: [[], [{ op: 'flip', q: 0 }, { op: 'flip', q: 1 }]], explain: 'In the usual question the twins agree just like your pair: together or neither.' },
-        { id: 'twins-x', label: 'Classical twins, sideways', basis: 'x', twins: [[], [{ op: 'flip', q: 0 }, { op: 'flip', q: 1 }]], explain: 'Sideways, the twins fall apart: all four outcomes, thunder on dry nights. No classical agreement survives both questions. The Bell pair does.' },
+        { id: 'twins-x', label: 'Classical twins, sideways', basis: 'x', twins: [[], [{ op: 'flip', q: 0 }, { op: 'flip', q: 1 }]], explain: 'Sideways, this classical copy falls apart: all four outcomes, thunder on dry nights. Its agreement lived in one question only. The Bell pair agrees in both.' },
       ],
-      outro: 'That is the difference entanglement makes: correlation that holds in complementary measurements. (A full Bell test needs more angles; this is the two-question version you can hear.)',
+      outro: 'Agreement in both the usual and the sideways question is a standard entanglement witness (it assumes the measurements are what they say they are). It is not a Bell test of nonlocality, which needs more angles; it is the two-question version you can hear.',
     },
     bloomShots: 16,
     moments: 10,
@@ -186,7 +188,7 @@ export const CHALLENGES: Challenge[] = [
       intro: 'A dephased twin is the same garden where, half the time, an extra half-turn twist scrambles the phase between the two paths before they meet. That is what noise on a real device does to coherence.',
       runs: [
         { id: 'coherent', label: 'Your garden', basis: 'z', useCircuit: true, explain: 'Coherent paths: the twist decides where they add and where they cancel.' },
-        { id: 'dephased', label: 'Dephased twin', basis: 'z', twins: [[{ op: 'split', q: 0 }, { op: 'twist', q: 0, turns: 0.5 }, { op: 'twist', q: 0, turns: 0.5 }, { op: 'split', q: 0 }], [{ op: 'split', q: 0 }, { op: 'twist', q: 0, turns: 0.5 }, { op: 'split', q: 0 }]], explain: 'Half the shots carry a scrambled phase. The silence is gone: footsteps return, 50/50, however you twist. Interference needs the paths to remember each other.' },
+        { id: 'dephased', label: 'Dephased twin', basis: 'z', dephaseLearner: true, explain: 'Your garden, except that half the shots carry a scrambled phase right before the paths meet. The silence is gone: footsteps return, 50/50, however you twist. Interference needs the paths to remember each other.' },
       ],
       outro: 'No classical mixture of the two paths can cancel the footsteps. Only a coherent superposition can, and that is the behavior this whole garden is built on.',
     },
@@ -228,7 +230,7 @@ export const CHALLENGES: Challenge[] = [
       title: 'What you did: circuit optimization',
       body: [
         'H·H = I and CX·CX = I, so the six-action garden meant exactly the same state as the two-action one. The ideal probabilities never changed. The measured ones did, because every gate on a noisy device is a chance for an error.',
-        'The noise here is a stochastic Pauli model (after each action, with a small probability, a random X, Y or Z; plus readout flips), exaggerated so you can hear it. It is simulated in-app unless you picked a noise-model backend, and real IonQ systems are far quieter. In this model, and often on hardware, a shorter circuit with the same meaning measures closer to its intention. Real devices add their own twists: native gates, idle time, calibration.',
+        'The noise here is a stochastic Pauli model: after each one-seed action a random X, Y or Z with probability 2%, after each Link 6% on each seed, and a 2% readout flip. Those rates are chosen to be audible; real IonQ systems are far quieter. It is simulated in-app unless you picked a noise-model backend. In this model, and often on hardware, a shorter circuit with the same meaning measures closer to its intention. Real devices add their own twists: native gates, idle time, calibration.',
       ],
     },
     bloomShots: 48,
