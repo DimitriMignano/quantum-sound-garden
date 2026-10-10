@@ -14,6 +14,7 @@ export default defineConfig({
   build: qollab
     ? {
         outDir: process.env.QOLLAB_OUT ?? '../qollab',
+        assetsInlineLimit: 1_500_000, // the four recordings ride inside main.js as data URLs: one self-contained bundle
         emptyOutDir: false,
         copyPublicDir: false,
         cssCodeSplit: false,
@@ -22,5 +23,5 @@ export default defineConfig({
         lib: { entry: 'src/qollab-entry.ts', formats: ['es'], fileName: () => 'main.js', cssFileName: 'main' },
         rollupOptions: { external: ['qsg.circuit'], output: { inlineDynamicImports: true } },
       }
-    : { outDir: 'dist', sourcemap: false, target: 'es2022' },
+    : { outDir: 'dist', sourcemap: false, target: 'es2022', assetsInlineLimit: 1_500_000 },
 });

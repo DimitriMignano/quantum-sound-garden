@@ -65,7 +65,7 @@ export function App({ engine }: Props) {
       {scene === 'studio' && !info && <main><p className="help">Loading the quantum engine…</p></main>}
       <footer className="footer">
         <span>This effort is supported by Qollab &amp; IonQ.</span>
-        <span>MIT licensed. Sounds are procedural (no recordings). {APP.honesty}</span>
+        <span>MIT licensed. Four public-domain field recordings (credited in the repository), the rest synthesized. {APP.honesty}</span>
       </footer>
     </div>
   );

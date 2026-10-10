@@ -230,3 +230,31 @@ corrections go in a new entry. Newest at the bottom. Fill every field (`n/a` if 
   listening pass; keyboard; phone width.
 - Risks: identifiability of the procedural sounds is the open problem; the single-sound level (RMS ≈ 0.13–0.2) may read as
   quiet on laptop speakers; Chrome's audio service on this Mac keeps hanging.
+
+### 2026-10-10 21:50 — Real recordings, plus a marker note so the ear is never guessing
+- Branch / worktree: `main`
+- Task: the founder chose real recordings and asked to combine them with easier sounds to differentiate.
+- Files changed: `web/src/audio/samples/{rain,thunder,traffic,crowd}.mp3` (new; cut from CC0/public-domain Wikimedia Commons
+  recordings with ffmpeg: rain 0:55–1:01 and thunder 1:17.8–1:22.8 of kvgarlic's "Light Rain Distant Thunder July 5th 2016",
+  crowd 0:46–0:52 of eguobyte's large crowd, traffic 3:09–3:15 of cori's "Sunday in the city street noise1"; loudnorm −18
+  LUFS, thunder −14; fades; mono 44.1 kHz MP3 96k), `web/src/audio/samples/mp3.d.ts`, `web/src/audio/sounds.ts` (Sample
+  layer: fetch + decodeAudioData once per context, looping textures, one-shot thunder; Tone and Ticks simple sounds;
+  synthetic versions kept as "(synth)"), `web/src/audio/mixer.ts` (Marker: per track, A2 note for the first sound, a bell
+  for the second, at the start of each Play), `web/vite.config.ts` (assetsInlineLimit 1.5 MB in both builds so the
+  recordings ride inside main.js as data URLs: Qollab serves one bundle, no asset paths to guess), `web/src/content/content.ts`
+  (intro and lesson copy name the notes), `web/src/app/App.tsx` (footer), `docs/ATTRIBUTIONS.md`, `docs/QOLLAB_PAGE.md`,
+  `qollab/` (rebuilt, 763 KB), `WORKLOG.md`
+- Verification run: tsc clean; `npm run check` green (pytest 27 + 1 skipped, vitest 69, bundle 8 files, main.js 763 KB, four
+  data:audio/mpeg URLs inside). Live in Chrome with the meter: Tracks "Try it" → "Traffic going by and a crowd murmuring"
+  peak 0.287; "Turn, then Shuffle" → "Rain falling and a crowd murmuring" 0.125; "Sync" → "Rain falling and thunder rolling"
+  0.156; no console errors. Sources were downloaded with the founder's go ("I like the real recordings idea"), 55 MB in a
+  scratch folder, never run, read only by ffmpeg.
+- Commit hash: this commit (parent ae71a11)
+- Seams (§22): unchanged
+- Decisions: recordings inlined as data URLs rather than files next to main.js, because the Qollab runtime's asset path is
+  undocumented and a self-contained bundle cannot 404; the marker note is a musical interval (A2 vs a bell on E5), not a
+  drum and not a sweep, so it reads as "which one" and never as a laser; the synthetic sounds stay in the studio under
+  "(synth)" names so nothing already built is lost.
+- Deferred work: a human listening pass (now the thing that matters); keyboard; phone width.
+- Risks: a distant thunder cut may still read as rumble rather than a clap; the clips are 5–6 s, so a studio Play (4 s)
+  never loops but a longer one would; MP3 decoding in Firefox/Safari was not tested here.

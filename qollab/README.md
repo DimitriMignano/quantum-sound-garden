@@ -51,5 +51,5 @@ provider's noise applies. Each result names its engine.
 ## Disclosure
 Built during the hackathon window (2026-10-10 → 10-11) with AI assistance (Claude Code by Anthropic wrote code and
 docs under human direction; a second model reviewed drafts). Libraries: Qiskit, qiskit-aer, qiskit-ionq, FastAPI
-(standalone server only), React, Vite, vitest. No templates. All sounds are procedural Web Audio (no recordings,
-no third-party assets). License: MIT.
+(standalone server only), React, Vite, vitest. No templates. Rain, thunder, traffic and crowd are short cuts of public-domain (CC0) field recordings from
+Wikimedia Commons, credited in `docs/ATTRIBUTIONS.md`; every other sound is procedural Web Audio. License: MIT.

@@ -73,3 +73,9 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
   a few times" where the point is randomness. Open: the sounds themselves. Procedural rain/thunder/traffic/crowd are not
   recognizable to the founder; proposed CC0 recordings from Wikimedia Commons (needs the founder's go to download ~70 MB of
   sources, trimmed to a few seconds each) or simpler abstract sounds.
+- 10-10 21:50 founder: "I like the real recordings idea… but I think we can also combine it with easier sounds to differentiate".
+  Pulled three public-domain recordings from Wikimedia Commons (kvgarlic's rain with distant thunder, eguobyte's large crowd,
+  cori's Sunday street), cut 5–6 s clips with ffmpeg (loudness-normalized, faded, mono MP3 96k, 61–73 KB each), shipped them
+  inside main.js as data URLs (bundle 763 KB). Each Play now opens with a marker note per track: a low note for the first sound,
+  a bell for the second, then the recording. Simple sounds (low tone, high tone, ticks) and the synthetic versions stay in the
+  studio library. Credits in docs/ATTRIBUTIONS.md; disclosure on the Qollab page and in the footer.

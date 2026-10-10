@@ -4,6 +4,11 @@
  * (thunder, bells, chirps) fire from an internal clock while their level is up, so a layer never sounds like a
  * sample being triggered at random: textures breathe, events are spaced.
  */
+import rainUrl from './samples/rain.mp3';
+import thunderUrl from './samples/thunder.mp3';
+import trafficUrl from './samples/traffic.mp3';
+import crowdUrl from './samples/crowd.mp3';
+
 export type SoundKind = 'texture' | 'event';
 
 export interface SoundInstance {
@@ -437,14 +442,90 @@ class Bells extends Layer {
   protected teardown(): void { this.level.disconnect(); }
 }
 
+// ---- recordings --------------------------------------------------------------------------------------------
+/**
+ * A field recording (public domain, see docs/ATTRIBUTIONS.md), shipped inside the bundle as a data URL and decoded once
+ * per AudioContext. Textures loop with their ends faded; one-shots (thunder) play from the top on trigger.
+ */
+const sampleCache = new WeakMap<AudioContext, Map<string, Promise<AudioBuffer>>>();
+function decodeSample(ctx: AudioContext, id: string, url: string): Promise<AudioBuffer> {
+  let m = sampleCache.get(ctx);
+  if (!m) { m = new Map(); sampleCache.set(ctx, m); }
+  let p = m.get(id);
+  if (!p) {
+    p = fetch(url).then((r) => r.arrayBuffer()).then((buf) => ctx.decodeAudioData(buf));
+    m.set(id, p);
+  }
+  return p;
+}
+
+class Sample extends Layer {
+  private src: AudioBufferSourceNode | null = null;
+  private buffer: AudioBuffer | null = null;
+  private wanted = false;
+  constructor(ctx: AudioContext, out: AudioNode, weight: number, id: string, url: string, private loop: boolean) {
+    super(ctx, out, weight);
+    decodeSample(ctx, id, url).then((b) => { this.buffer = b; if (this.wanted && !this.stopped) this.play(); }).catch(() => { /* stays silent; the engine label is still honest */ });
+  }
+  private play(): void {
+    if (!this.buffer || this.src) return;
+    const s = this.ctx.createBufferSource(); s.buffer = this.buffer; s.loop = this.loop;
+    if (this.loop) { s.loopStart = 0.05; s.loopEnd = Math.max(0.1, this.buffer.duration - 0.05); }
+    s.connect(this.level);
+    s.start(0, this.loop ? Math.random() * Math.max(0, this.buffer.duration - 1) : 0);
+    s.onended = () => { if (this.src === s) this.src = null; };
+    this.src = s;
+  }
+  protected override onLevel(): void {
+    this.wanted = this.currentLevel > 0.001;
+    if (this.wanted) this.play();
+    else if (this.src) { const s = this.src; this.src = null; try { s.stop(this.ctx.currentTime + 1.0); } catch { /* */ } }
+  }
+  override trigger(): void {
+    if (this.loop || !this.buffer || this.stopped) return;
+    if (this.src) { try { this.src.stop(); } catch { /* */ } this.src = null; }
+    this.play();
+  }
+  protected teardown(): void { if (this.src) { try { this.src.stop(); } catch { /* */ } } this.level.disconnect(); }
+}
+
+// ---- simple sounds: easy to tell apart, for the studio and for ears that want certainty ----------------------
+class Tone extends Layer {
+  private osc: OscillatorNode;
+  constructor(ctx: AudioContext, out: AudioNode, weight: number, freq: number, type: OscillatorType = 'sine') {
+    super(ctx, out, weight);
+    this.osc = ctx.createOscillator(); this.osc.type = type; this.osc.frequency.value = freq;
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = freq * 4;
+    const shape = gain(ctx, 0.6);
+    this.osc.connect(lp).connect(shape).connect(this.level); this.osc.start();
+  }
+  protected teardown(): void { try { this.osc.stop(); } catch { /* */ } this.level.disconnect(); }
+}
+
+class Ticks extends Layer {
+  constructor(ctx: AudioContext, out: AudioNode, weight: number) { super(ctx, out, weight); }
+  protected override onLevel(): void { this.clock(() => this.trigger(), () => 250); }
+  override trigger(): void {
+    const t = this.ctx.currentTime; const o = this.ctx.createOscillator(); o.type = 'square'; o.frequency.value = 1800;
+    const g = gain(this.ctx, 0); o.connect(g).connect(this.level);
+    g.gain.setValueAtTime(0.5, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
+    o.start(t); o.stop(t + 0.04);
+  }
+  protected teardown(): void { this.level.disconnect(); }
+}
+
 // ---- the library ----------------------------------------------------------------------------------------------
 const mk = (id: string, name: string, kind: SoundKind, caption: string, weight: number, create: (ctx: AudioContext, out: AudioNode) => SoundInstance): SoundAsset =>
   ({ id, name, kind, caption, weight, create });
 
 export const SOUND_LIBRARY: SoundAsset[] = [
+  mk('rain-synth', 'Rain (synth)', 'texture', 'synthetic rain', 1.0, (c, o) => new Rain(c, o, 1.0)),
+  mk('thunder-synth', 'Thunder (synth)', 'event', 'synthetic thunder', 1.0, (c, o) => new Thunder(c, o, 1.0)),
+  mk('traffic-synth', 'Traffic (synth)', 'texture', 'synthetic traffic', 1.0, (c, o) => new Traffic(c, o, 1.0)),
+  mk('crowd-synth', 'Crowd (synth)', 'texture', 'synthetic crowd', 1.0, (c, o) => new Crowd(c, o, 1.0)),
   mk('hush', 'Night hush', 'texture', 'a soft night hush', 0.35, (c, o) => new Wind(c, o, 0.35, 260, 0.06)),
-  mk('rain', 'Rain', 'texture', 'rain falling', 1.0, (c, o) => new Rain(c, o, 1.0)),
-  mk('thunder', 'Thunder', 'event', 'thunder rolling', 1.0, (c, o) => new Thunder(c, o, 1.0)),
+  mk('rain', 'Rain', 'texture', 'rain falling', 1.0, (c, o) => new Sample(c, o, 1.0, 'rain', rainUrl, true)),
+  mk('thunder', 'Thunder', 'event', 'thunder rolling', 1.0, (c, o) => new Sample(c, o, 1.0, 'thunder', thunderUrl, false)),
   mk('wind', 'Wind', 'texture', 'wind moving through', 0.6, (c, o) => new Wind(c, o, 0.6)),
   mk('waves', 'Waves', 'texture', 'waves on a shore', 0.6, (c, o) => new Waves(c, o, 0.6)),
   mk('birds', 'Birds', 'event', 'birds calling', 0.5, (c, o) => new Birds(c, o, 0.5)),
@@ -452,8 +533,11 @@ export const SOUND_LIBRARY: SoundAsset[] = [
   mk('heartbeat', 'Heartbeat', 'event', 'a heartbeat', 0.8, (c, o) => new Heartbeat(c, o, 0.8)),
   mk('bells', 'Bells', 'event', 'bells ringing', 0.45, (c, o) => new Bells(c, o, 0.45)),
   mk('crickets', 'Crickets', 'texture', 'crickets in the grass', 0.14, (c, o) => new Crickets(c, o, 0.14)),
-  mk('traffic', 'Traffic', 'texture', 'traffic going by', 1.0, (c, o) => new Traffic(c, o, 1.0)),
-  mk('crowd', 'Crowd', 'texture', 'a crowd murmuring', 1.0, (c, o) => new Crowd(c, o, 1.0)),
+  mk('traffic', 'Traffic', 'texture', 'traffic going by', 1.0, (c, o) => new Sample(c, o, 1.0, 'traffic', trafficUrl, true)),
+  mk('crowd', 'Crowd', 'texture', 'a crowd murmuring', 1.0, (c, o) => new Sample(c, o, 1.0, 'crowd', crowdUrl, true)),
+  mk('low', 'Low tone', 'texture', 'a low tone', 0.7, (c, o) => new Tone(c, o, 0.7, 110)),
+  mk('high', 'High tone', 'texture', 'a high tone', 0.45, (c, o) => new Tone(c, o, 0.45, 880)),
+  mk('ticks', 'Ticks', 'event', 'ticking', 0.6, (c, o) => new Ticks(c, o, 0.6)),
   mk('glitch', 'Glitch', 'event', 'a soft electronic glitch', 0.4, (c, o) => new Glitch(c, o, 0.4)),
 ];
 

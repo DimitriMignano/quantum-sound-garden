@@ -77,9 +77,32 @@ class GoalHum {
   dispose(): void { try { this.root.stop(); this.upper.stop(); } catch { /* already stopped */ } this.out.disconnect(); }
 }
 
+/**
+ * The marker: one short musical note per track at the start of a Play, so the ear knows which sound landed even
+ * before the recording is recognizable. First sound: a low note (A2). Second sound: a bell an octave and a fifth up.
+ * Track 0 sits a little left, track 1 a little right.
+ */
+class Marker {
+  private out: GainNode;
+  constructor(private ctx: AudioContext, bus: AudioNode) { this.out = ctx.createGain(); this.out.gain.value = 0.5; this.out.connect(bus); }
+  note(q: number, n: number, hit: boolean, when = this.ctx.currentTime): void {
+    let dest: AudioNode = this.out;
+    if (n > 1 && typeof this.ctx.createStereoPanner === 'function') { const p = this.ctx.createStereoPanner(); p.pan.value = (q / (n - 1)) * 1.0 - 0.5; p.connect(this.out); dest = p; }
+    const g = this.ctx.createGain(); g.connect(dest);
+    const partials = hit ? [[660, 1], [1320, 0.35], [1980, 0.12]] : [[110, 1], [220, 0.4]];
+    const dur = hit ? 0.7 : 0.45;
+    for (const [f, a] of partials) {
+      const o = this.ctx.createOscillator(); o.type = 'sine'; o.frequency.value = f;
+      const og = this.ctx.createGain(); og.gain.value = a; o.connect(og).connect(g); o.start(when); o.stop(when + dur + 0.05);
+    }
+    g.gain.setValueAtTime(0, when); g.gain.linearRampToValueAtTime(hit ? 0.5 : 0.7, when + 0.01); g.gain.exponentialRampToValueAtTime(0.001, when + dur);
+  }
+}
+
 export class GardenMixer {
   private layers = new Map<string, SoundInstance>();
   private goal: GoalHum | null = null;
+  private marker: Marker | null = null;
   private current: PlaybackHandle | null = null;
   private blendScale = 0.7; // "hearing the odds" sits under a full Play
 
@@ -149,10 +172,14 @@ export class GardenMixer {
     for (const ids of Object.values(assignment)) for (const id of ids) allIds.add(id);
     for (const id of allIds) this.ensure(id);
 
+    if (audio.ctx && audio.bus && !this.marker) this.marker = new Marker(audio.ctx, audio.bus);
+    const n = sequence[0]?.length ?? 1;
     const moment = (i: number) => {
       if (stopped) return;
       const outcome = sequence[i];
       const active = new Set(assignment[outcome] ?? []);
+      // the marker notes first (qubit 0 is the rightmost bit), then the sounds
+      for (let q = 0; q < n; q++) this.marker?.note(q, n, outcome[outcome.length - 1 - q] === '1');
       for (const id of allIds) {
         const inst = this.layers.get(id);
         if (!inst) continue;
