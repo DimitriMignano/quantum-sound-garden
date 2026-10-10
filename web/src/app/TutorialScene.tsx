@@ -12,11 +12,14 @@ const sameOps = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify
 
 /** Learn: one page per idea. Each page has one or two sentences, the moves it is about, Try it, Play and Next. */
 export function TutorialScene({ engine, details, onDone }: Props) {
-  const trackNames = useMemo(() => LESSON_TRACKS.map((t) => t.name), []);
   const ONE = { moments: 1, step: 3.0 };
-  const assignment = useMemo(() => assignmentFor(LESSON_TRACKS), []);
-  const garden = useGarden(engine, LESSON_TRACKS.length, assignment, []);
   const [step, setStep] = useState(0);
+  // one track until Sync: the early pages have nothing to select and nothing to confuse
+  const count = LESSONS[step].tracks ?? 2;
+  const tracks = useMemo(() => LESSON_TRACKS.slice(0, count), [count]);
+  const trackNames = useMemo(() => tracks.map((t) => t.name), [tracks]);
+  const assignment = useMemo(() => assignmentFor(tracks), [tracks]);
+  const garden = useGarden(engine, count, assignment, []);
   const [pending, setPending] = useState<Lesson | null>(null);
   const [played, setPlayed] = useState<string | null>(null); // the lesson whose Play finished
   const lesson = LESSONS[step];
@@ -65,7 +68,7 @@ export function TutorialScene({ engine, details, onDone }: Props) {
         <p className="lesson__text">{lesson.text}</p>
       </header>
 
-      <GardenView garden={garden} tracks={LESSON_TRACKS} assignment={assignment} details={details} caption={caption} />
+      <GardenView garden={garden} tracks={tracks} assignment={assignment} details={details} caption={caption} />
 
       <div className="lesson__actions">
         <button type="button" className="primary" onClick={tryIt} disabled={garden.busy}>Try it</button>

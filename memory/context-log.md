@@ -258,3 +258,23 @@ corrections go in a new entry. Newest at the bottom. Fill every field (`n/a` if 
 - Deferred work: a human listening pass (now the thing that matters); keyboard; phone width.
 - Risks: a distant thunder cut may still read as rumble rather than a clap; the clips are 5–6 s, so a studio Play (4 s)
   never loops but a longer one would; MP3 decoding in Firefox/Safari was not tested here.
+
+### 2026-10-10 22:20 — Steadier sounds, one track until Sync, "Moves apply to"
+- Branch / worktree: `main`
+- Task: the founder: the per-track marker note confuses; "easier sounds" = steadier ones (bell instead of crowd, a car driving
+  by instead of traffic); Play always plays both tracks, explain or fix.
+- Files changed: `web/src/audio/mixer.ts` (Marker removed; no explicit event trigger: the layer's clock fires once when the
+  level rises, which also ends the double thunder), `web/src/audio/sounds.ts` (Car and Bell one-shots; clocks at 7 s and 6 s so
+  one Play is one pass or one strike), `web/src/content/content.ts` (Track A car/rain, Track B bell/thunder; lesson `tracks`
+  count, 1 until Sync; copy says Play plays every track at once), `web/src/app/TutorialScene.tsx` (per-page track count),
+  `web/src/app/Board.tsx` ("Moves apply to"), docs, `qollab/`, `WORKLOG.md`
+- Verification run: tsc clean; `npm run check` green (pytest 27 + 1 skipped, vitest 69, bundle). Live in Chrome: "A track" page
+  shows one tile and no selector, Try it → "A car driving by" peak 0.141; Sync page shows two tiles, selector "Moves apply to",
+  Try it → "Rain falling and thunder rolling" peak 0.121; no console errors.
+- Commit hash: this commit (parent e2a3cd4)
+- Seams (§22): unchanged
+- Decisions: Play plays all tracks at once by design (the pair puzzle needs it); the fix is to introduce the second track only
+  when Sync needs it and to label the selector by what it does; the car and bell are synthesized because they must be steady
+  and short, while rain and thunder stay recordings because textures are what synthesis does worst.
+- Deferred work: a human listening pass; keyboard; phone width.
+- Risks: the car and bell are judged by design, not by ear; thunder is a distant rumble.

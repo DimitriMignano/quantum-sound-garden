@@ -46,8 +46,8 @@ export function Board({ seedNames, allowed, ops, disabled, showGates, turns = [0
   return (
     <div className="board">
       {n > 1 && (
-        <div className="board__seeds" role="group" aria-label="Which track">
-          <span className="label">Track</span>
+        <div className="board__seeds" role="group" aria-label="Which track the next move applies to">
+          <span className="label">Moves apply to</span>
           {seedNames.map((name, i) => (
             <button key={i} type="button" className={`chip${seed === i ? ' is-on' : ''}`} aria-pressed={seed === i} disabled={disabled} onClick={() => setSeed(i)}>{name}</button>
           ))}

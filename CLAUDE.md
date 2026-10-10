@@ -7,7 +7,7 @@
 Quantum Beats Studio (repository: quantum-sound-garden; the in-app title is one constant, `APP.title`) is for
 people who have never touched an instrument or a qubit, and it is audio-first: you can play it with your eyes
 closed. Each track is a qubit that plays one of two sounds; the person Swaps (X), Shuffles (H), Turns (phase) and
-Syncs (CX) the tracks and Plays (measures) them, and hears crickets, rain, wind, thunder, footsteps or birds for what
+Syncs (CX) the tracks and Plays (measures) them, and hears a car, rain, a bell or thunder for what
 a real Qiskit circuit read on each Play (one Play, one sound). A nine-page tutorial teaches each move by ear with no quantum words; four
 puzzles make the moves necessary, with a closeness hum as the progress bar; a two-track studio lets them build any
 mix; the Circuit toggle and the Why? reveals carry the gates, the bits and the Qiskit code. It deliberately is not

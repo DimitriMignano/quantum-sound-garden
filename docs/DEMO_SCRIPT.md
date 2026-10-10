@@ -3,7 +3,7 @@
 **0:00 – 0:12 · Hook.** The front door: "Quantum Beats Studio. Make beats with the rules of quantum physics." Press
 *Start* (sound starts). "Everything you hear is a real Qiskit circuit being measured."
 
-**0:12 – 0:45 · Learn.** Page 2 *Tracks*: Try it, traffic. Page 4 *Shuffle*: Try it three times, traffic or rain.
+**0:12 – 0:45 · Learn.** Page 2 *A track*: Try it, a car drives by. Page 4 *Shuffle*: Try it three times, the car or rain.
 Page 5 *Shuffle, again*: "two Shuffles cancel; dice never do that." Page 7 *Turn, then Shuffle*: rain, every time.
 "You just heard interference, and nobody said the word." Press *Skip to the puzzles*.
 
@@ -12,7 +12,7 @@ Play: rain, "Solved." Press *Why?*: "Swap is the X gate" and the Qiskit code. "Y
 your eyes closed: the hum is the progress bar."
 
 **1:05 – 1:45 · Perfect Pair (puzzle 2).** Shuffle Sky, Sync Sky to Storm, Play: rain with thunder or crickets with
-the crowd, never thunder over traffic. *Why?* → *Go deeper*: "Classical twins, sideways" scatter into thunder over traffic; "Your
+the bell, never thunder with the car. *Why?* → *Go deeper*: "Classical twins, sideways" scatter into thunder with the car; "Your
 pair, sideways" still agrees. "That is entanglement: agreement that survives a different question."
 
 **1:45 – 2:15 · Silence the Footsteps (puzzle 3).** Turn: the hum does not move. Shuffle: footsteps, every time. Turn

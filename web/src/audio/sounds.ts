@@ -514,6 +514,54 @@ class Ticks extends Layer {
   protected teardown(): void { this.level.disconnect(); }
 }
 
+// ---- simple one-shots: a car driving by, a bell ----------------------------------------------------------------
+/** One car passing: an engine note that drops in pitch as it passes, tire noise that swells and fades, panned left to right. */
+class Car extends Layer {
+  constructor(ctx: AudioContext, out: AudioNode, weight: number) { super(ctx, out, weight); }
+  protected override onLevel(): void { this.clock(() => this.trigger(), () => 7000); }
+  override trigger(): void {
+    if (this.stopped) return;
+    const t = this.ctx.currentTime, d = 2.6;
+    let dest: AudioNode = this.level;
+    if (typeof this.ctx.createStereoPanner === 'function') {
+      const p = this.ctx.createStereoPanner(); p.pan.setValueAtTime(-0.9, t); p.pan.linearRampToValueAtTime(0.9, t + d); p.connect(this.level); dest = p;
+    }
+    // engine: a low sawtooth, pitch falls as the car passes (Doppler)
+    const eng = this.ctx.createOscillator(); eng.type = 'sawtooth';
+    eng.frequency.setValueAtTime(105, t); eng.frequency.setValueAtTime(105, t + d * 0.45); eng.frequency.exponentialRampToValueAtTime(72, t + d * 0.6);
+    const elp = this.ctx.createBiquadFilter(); elp.type = 'lowpass'; elp.frequency.value = 520;
+    const eg = gain(this.ctx, 0);
+    eg.gain.setValueAtTime(0, t); eg.gain.linearRampToValueAtTime(0.5, t + d * 0.45); eg.gain.linearRampToValueAtTime(0.0, t + d);
+    eng.connect(elp).connect(eg).connect(dest); eng.start(t); eng.stop(t + d + 0.05);
+    // tires on the road: noise that swells to the pass and fades
+    const { pink } = noiseBuffers(this.ctx);
+    const n = this.ctx.createBufferSource(); n.buffer = pink;
+    const bp = this.ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 0.8;
+    bp.frequency.setValueAtTime(700, t); bp.frequency.linearRampToValueAtTime(1800, t + d * 0.45); bp.frequency.linearRampToValueAtTime(500, t + d);
+    const ng = gain(this.ctx, 0);
+    ng.gain.setValueAtTime(0, t); ng.gain.linearRampToValueAtTime(0.9, t + d * 0.45); ng.gain.linearRampToValueAtTime(0, t + d);
+    n.connect(bp).connect(ng).connect(dest); n.start(t, Math.random() * 2, d + 0.1);
+  }
+  protected teardown(): void { this.level.disconnect(); }
+}
+
+/** One bell strike: inharmonic partials with staggered decays, like a small church bell. */
+class Bell extends Layer {
+  constructor(ctx: AudioContext, out: AudioNode, weight: number) { super(ctx, out, weight); }
+  protected override onLevel(): void { this.clock(() => this.trigger(), () => 6000); }
+  override trigger(): void {
+    if (this.stopped) return;
+    const t = this.ctx.currentTime, f0 = 523;
+    for (const [ratio, amp, decay] of [[1, 1, 2.4], [2.0, 0.5, 1.6], [2.76, 0.35, 1.1], [4.07, 0.2, 0.7], [0.5, 0.3, 2.8]] as const) {
+      const o = this.ctx.createOscillator(); o.type = 'sine'; o.frequency.value = f0 * ratio;
+      const g = gain(this.ctx, 0); o.connect(g).connect(this.level);
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(amp * 0.6, t + 0.005); g.gain.exponentialRampToValueAtTime(0.001, t + decay);
+      o.start(t); o.stop(t + decay + 0.05);
+    }
+  }
+  protected teardown(): void { this.level.disconnect(); }
+}
+
 // ---- the library ----------------------------------------------------------------------------------------------
 const mk = (id: string, name: string, kind: SoundKind, caption: string, weight: number, create: (ctx: AudioContext, out: AudioNode) => SoundInstance): SoundAsset =>
   ({ id, name, kind, caption, weight, create });
@@ -535,6 +583,8 @@ export const SOUND_LIBRARY: SoundAsset[] = [
   mk('crickets', 'Crickets', 'texture', 'crickets in the grass', 0.14, (c, o) => new Crickets(c, o, 0.14)),
   mk('traffic', 'Traffic', 'texture', 'traffic going by', 1.0, (c, o) => new Sample(c, o, 1.0, 'traffic', trafficUrl, true)),
   mk('crowd', 'Crowd', 'texture', 'a crowd murmuring', 1.0, (c, o) => new Sample(c, o, 1.0, 'crowd', crowdUrl, true)),
+  mk('car', 'Car', 'event', 'a car driving by', 0.9, (c, o) => new Car(c, o, 0.9)),
+  mk('bell', 'Bell', 'event', 'a bell', 0.7, (c, o) => new Bell(c, o, 0.7)),
   mk('low', 'Low tone', 'texture', 'a low tone', 0.7, (c, o) => new Tone(c, o, 0.7, 110)),
   mk('high', 'High tone', 'texture', 'a high tone', 0.45, (c, o) => new Tone(c, o, 0.45, 880)),
   mk('ticks', 'Ticks', 'event', 'ticking', 0.6, (c, o) => new Ticks(c, o, 0.6)),

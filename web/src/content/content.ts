@@ -85,8 +85,8 @@ export interface Challenge {
 
 const near = (a: number, b: number, eps = 0.02) => Math.abs(a - b) <= eps;
 const p1 = (ideal: Ideal, q = 0) => marginalOne(ideal.probabilities, q);
-const TRACK_A: Track = { name: 'Track A', base: 'traffic', hit: 'rain' };
-const TRACK_B: Track = { name: 'Track B', base: 'crowd', hit: 'thunder' };
+const TRACK_A: Track = { name: 'Track A', base: 'car', hit: 'rain' };
+const TRACK_B: Track = { name: 'Track B', base: 'bell', hit: 'thunder' };
 const BELL = { '00': 0.5, '01': 0, '10': 0, '11': 0.5 };
 
 export const CHALLENGES: Challenge[] = [
@@ -95,7 +95,7 @@ export const CHALLENGES: Challenge[] = [
     index: 1,
     title: 'Make It Rain',
     goal: 'Make Track A play rain every time.',
-    story: 'Track A is playing traffic. Make it rain, every Play, no misses. This puzzle also shows the name of each move’s gate.',
+    story: 'Track A is playing a car. Make it rain, every Play, no misses. This puzzle also shows the name of each move’s gate.',
     tracks: [TRACK_A],
     start: [],
     allowed: ['flip', 'split', 'twist'],
@@ -103,8 +103,8 @@ export const CHALLENGES: Challenge[] = [
     exposure: 1,
     success: (i) => p1(i) > 0.99,
     hints: [
-      'Press Play with no moves first. Traffic. Which move switches a track to its other sound?',
-      'Swap switches the track: traffic becomes rain. Swap, then Play.',
+      'Press Play with no moves first. A car. Which move switches a track to its other sound?',
+      'Swap switches the track: the car becomes rain. Swap, then Play.',
       'A second route: Shuffle, Turn halfway, Shuffle. Two Shuffles with a half Turn between them also switch the track. Same rain, different path.',
     ],
     reveal: {
@@ -122,8 +122,8 @@ export const CHALLENGES: Challenge[] = [
     id: 'pair',
     index: 2,
     title: 'Perfect Pair',
-    goal: 'Rain always with thunder, traffic always with the crowd, while each track on its own stays a coin toss.',
-    story: 'Track A plays traffic or rain. Track B plays a crowd or thunder. Two separate coin tosses would give thunder over traffic half the time. Make them agree, then Play a few times to check. This puzzle also shows what each track read, as bits and odds.',
+    goal: 'Rain always with thunder, the car always with the bell, while each track on its own stays a coin toss.',
+    story: 'Track A plays a car or rain. Track B plays a bell or thunder. Two separate coin tosses would give thunder with the car half the time. Make them agree, then Play a few times to check. This puzzle also shows what each track read, as bits and odds.',
     tracks: [TRACK_A, TRACK_B],
     start: [],
     allowed: ['flip', 'split', 'twist', 'link'],
@@ -131,9 +131,9 @@ export const CHALLENGES: Challenge[] = [
     exposure: 2,
     success: (i) => p1(i, 0) > 0.35 && p1(i, 0) < 0.65 && p1(i, 1) > 0.35 && p1(i, 1) < 0.65 && agreement(i.probabilities, 0, 1) > 0.99,
     hints: [
-      'Shuffle Track A so rain is a coin toss. Play and listen: thunder never comes, because Track B is still on the crowd.',
+      'Shuffle Track A so rain is a coin toss. Play and listen: thunder never comes, because Track B is still on the bell.',
       'Now Sync Track A to Track B. Track B hits thunder only when Track A hits rain.',
-      'Try Shuffle on both tracks instead of a Sync and compare: thunder over traffic. Two coin tosses are not a pair.',
+      'Try Shuffle on both tracks instead of a Sync and compare: thunder with the car. Two coin tosses are not a pair.',
     ],
     reveal: {
       title: 'What you did: a Bell pair',
@@ -148,7 +148,7 @@ export const CHALLENGES: Challenge[] = [
       runs: [
         { id: 'pair-x', label: 'Your pair, sideways', basis: 'x', useCircuit: true, explain: 'Still only together-or-neither. The Bell pair agrees in the sideways question too.' },
         { id: 'twins-z', label: 'Classical twins', basis: 'z', twins: [[], [{ op: 'flip', q: 0 }, { op: 'flip', q: 1 }]], explain: 'In the usual question the twins agree just like your pair: together or neither.' },
-        { id: 'twins-x', label: 'Classical twins, sideways', basis: 'x', twins: [[], [{ op: 'flip', q: 0 }, { op: 'flip', q: 1 }]], explain: 'Sideways, this classical copy falls apart: all four combinations, thunder over traffic. Its agreement lived in one question only. The Bell pair agrees in both.' },
+        { id: 'twins-x', label: 'Classical twins, sideways', basis: 'x', twins: [[], [{ op: 'flip', q: 0 }, { op: 'flip', q: 1 }]], explain: 'Sideways, this classical copy falls apart: all four combinations, thunder with the car. Its agreement lived in one question only. The Bell pair agrees in both.' },
       ],
       outro: 'Agreement in both the usual and the sideways question is a standard entanglement witness (it assumes the measurements are what they say they are). It is not a Bell test of nonlocality, which needs more angles; it is the two-question version you can hear.',
     },
@@ -197,7 +197,7 @@ export const CHALLENGES: Challenge[] = [
     id: 'repair',
     index: 4,
     title: 'Clean the Mix',
-    goal: 'This pair came back noisy: thunder over traffic. Keep what it means, drop the extra moves, and hear it clean up.',
+    goal: 'This pair came back noisy: thunder with the car. Keep what it means, drop the extra moves, and hear it clean up.',
     story: 'Someone built the Perfect Pair with six moves where two would do. Every move lets a little noise in. Noise is turned up here so your ear can catch it. This puzzle shows the whole circuit view.',
     tracks: [TRACK_A, TRACK_B],
     start: [
@@ -242,28 +242,30 @@ export interface Lesson {
   hear: string;                  // what they just heard, shown when the Play ends
   /** an intro page: these lines instead of a board, and a single "Learn the moves" button */
   intro?: string[];
+  /** how many tracks this page uses (1 until Sync) */
+  tracks?: 1 | 2;
 }
 export const LESSON_TRACKS: Track[] = [TRACK_A, TRACK_B];
 const SYNC: Op = { op: 'link', control: 0, target: 1 };
 export const LESSONS: Lesson[] = [
   { id: 'intro', title: 'What’s going on', text: 'Thirty seconds of context before the first sound.', show: [], ops: [], beats: 0, hear: '', intro: [
-    'This is a sound studio with two tracks. Each track has two sounds. Track A plays traffic or rain. Track B plays a crowd or thunder. Press Play and each track plays one of its two sounds, once.',
+    'This is a sound studio with two tracks. Each track has two sounds. Track A plays a car driving by, or rain. Track B plays a bell, or thunder. Press Play and every track plays one of its two sounds, once, all at the same time.',
     'The twist: a track does not have to decide which sound until you press Play. It can be truly undecided. And two tracks can be tied together so they always decide the same way.',
-    'You get four moves to shape a track: Swap, Shuffle, Turn, Sync. The tile for each track shows how likely each of its sounds is right now. Play tells you what it actually landed on: a low note means the first sound, a bell means the second, and then the sound itself.',
+    'You get four moves to shape a track: Swap, Shuffle, Turn, Sync. A move applies to the track you have selected. The tile for each track shows how likely each of its sounds is right now. Play tells you what every track actually landed on.',
     'First, learn the moves by ear, one page each. Then solve four puzzles: after each move, a short chord tells you how close you are. Then build your own.',
     'Everything you hear comes from a real quantum circuit being measured. That is the whole trick, and you do not need to know what that means yet.',
   ] },
-  { id: 'tracks', title: 'Tracks', text: 'A track has two sounds. Track A plays traffic, or it plays rain. Press Try it: a low note, then traffic. The note tells you which sound landed: low for the first, a bell for the second. Press it again: same answer, because nothing has changed the track.', show: [], ops: [], beats: 6, hear: 'Traffic. Nothing changed the track, so it is traffic every time you press Play.' },
-  { id: 'swap', title: 'Swap', text: 'Swap switches a track to its other sound.', show: ['flip'], ops: [{ op: 'flip', q: 0 }], beats: 6, hear: 'A bell, then rain. Swap moved Track A to its other sound, and it stays there: press Play again and it is rain again.' },
-  { id: 'shuffle', title: 'Shuffle', text: 'Shuffle makes the track a coin toss: each Play lands on traffic or rain, and you never know which. Press Play several times.', show: ['flip', 'split'], ops: [{ op: 'split', q: 0 }], beats: 8, hear: 'That was one landing. Press Play a few more times: sometimes traffic, sometimes rain, in no pattern.' },
-  { id: 'shuffle2', title: 'Shuffle, again', text: 'Shuffle a shuffled track and it goes steady again. Two Shuffles cancel. Dice never do that.', show: ['flip', 'split'], ops: [{ op: 'split', q: 0 }, { op: 'split', q: 0 }], beats: 6, hear: 'Traffic, and it will be traffic every time. The two Shuffles undid each other.' },
-  { id: 'turn', title: 'Turn', text: 'Turn moves a hidden dial on a shuffled track. On its own you hear no change at all: still a coin toss.', show: ['split', 'twist'], ops: [{ op: 'split', q: 0 }, { op: 'twist', q: 0, turns: 0.5 }], beats: 8, hear: 'One landing of a coin toss, as before. The dial moved, and a dial makes no sound. Play a few times: still traffic or rain.' },
-  { id: 'turn2', title: 'Turn, then Shuffle', text: 'The next Shuffle hears the dial. Turn halfway, then Shuffle: every Play is rain.', show: ['split', 'twist'], ops: [{ op: 'split', q: 0 }, { op: 'twist', q: 0, turns: 0.5 }, { op: 'split', q: 0 }], beats: 6, hear: 'Rain, every time. Without the Turn, two Shuffles would have given traffic every time.' },
-  { id: 'sync', title: 'Sync', text: 'Sync makes Track B follow Track A: when A is on rain, B is on thunder.', show: ['flip', 'link'], ops: [{ op: 'flip', q: 0 }, SYNC], beats: 6, hear: 'Rain with thunder. B followed A.' },
-  { id: 'sync2', title: 'Sync a shuffled track', text: 'Shuffle Track A, then Sync it to Track B: two coin tosses that always agree. Rain with thunder, or traffic with the crowd. Press Play several times.', show: ['flip', 'split', 'link'], ops: [{ op: 'split', q: 0 }, SYNC], beats: 8, hear: 'One landing. Press Play more: sometimes traffic with the crowd, sometimes rain with thunder. Never rain with the crowd, never thunder over traffic.' },
-  { id: 'hum', title: 'The cue', text: 'The studio stays silent until you press Play. Each move gives you one second of the odds: the likelier a sound, the louder it is in that second. In a puzzle a short chord follows it: rough when far from the goal, smooth when you are there. Eyes closed works.', show: ['flip', 'split', 'twist', 'link'], ops: [{ op: 'split', q: 0 }, SYNC], beats: 8, hear: 'That was the pair again. Make a move and listen for the one-second cue. Then try a puzzle.' },
+  { id: 'tracks', title: 'A track', tracks: 1, text: 'A track has two sounds. Track A plays a car driving by, or it plays rain. Press Try it: you hear one of them, once. Press it again: same answer, because nothing has changed the track.', show: [], ops: [], beats: 6, hear: 'A car. Nothing changed the track, so it is the car every time you press Play.' },
+  { id: 'swap', title: 'Swap', tracks: 1, text: 'Swap switches a track to its other sound.', show: ['flip'], ops: [{ op: 'flip', q: 0 }], beats: 6, hear: 'Rain. Swap moved Track A to its other sound, and it stays there: press Play again and it is rain again.' },
+  { id: 'shuffle', title: 'Shuffle', tracks: 1, text: 'Shuffle makes the track a coin toss: each Play lands on the car or on rain, and you never know which. Press Play several times.', show: ['flip', 'split'], ops: [{ op: 'split', q: 0 }], beats: 8, hear: 'That was one landing. Press Play a few more times: sometimes the car, sometimes rain, in no pattern.' },
+  { id: 'shuffle2', title: 'Shuffle, again', tracks: 1, text: 'Shuffle a shuffled track and it goes steady again. Two Shuffles cancel. Dice never do that.', show: ['flip', 'split'], ops: [{ op: 'split', q: 0 }, { op: 'split', q: 0 }], beats: 6, hear: 'The car, and it will be the car every time. The two Shuffles undid each other.' },
+  { id: 'turn', title: 'Turn', tracks: 1, text: 'Turn moves a hidden dial on a shuffled track. On its own you hear no change at all: still a coin toss.', show: ['split', 'twist'], ops: [{ op: 'split', q: 0 }, { op: 'twist', q: 0, turns: 0.5 }], beats: 8, hear: 'One landing of a coin toss, as before. The dial moved, and a dial makes no sound. Play a few times: still the car or rain.' },
+  { id: 'turn2', title: 'Turn, then Shuffle', tracks: 1, text: 'The next Shuffle hears the dial. Turn halfway, then Shuffle: every Play is rain.', show: ['split', 'twist'], ops: [{ op: 'split', q: 0 }, { op: 'twist', q: 0, turns: 0.5 }, { op: 'split', q: 0 }], beats: 6, hear: 'Rain, every time. Without the Turn, two Shuffles would have given the car every time.' },
+  { id: 'sync', title: 'Sync', tracks: 2, text: 'A second track: Track B plays a bell, or thunder. Play always plays every track at once, one sound each. Sync makes Track B follow Track A: when A is on rain, B is on thunder.', show: ['flip', 'link'], ops: [{ op: 'flip', q: 0 }, SYNC], beats: 6, hear: 'Rain with thunder, together. B followed A.' },
+  { id: 'sync2', title: 'Sync a shuffled track', tracks: 2, text: 'Shuffle Track A, then Sync it to Track B: two coin tosses that always agree. Rain with thunder, or the car with the bell. Press Play several times.', show: ['flip', 'split', 'link'], ops: [{ op: 'split', q: 0 }, SYNC], beats: 8, hear: 'One landing. Press Play more: sometimes the car with the bell, sometimes rain with thunder. Never rain with the bell, never thunder with the car.' },
+  { id: 'hum', title: 'The cue', tracks: 2, text: 'The studio stays silent until you press Play. Each move gives you one second of the odds: the likelier a sound, the louder it is in that second. In a puzzle a short chord follows it: rough when far from the goal, smooth when you are there. Eyes closed works.', show: ['flip', 'split', 'twist', 'link'], ops: [{ op: 'split', q: 0 }, SYNC], beats: 8, hear: 'That was the pair again. Make a move and listen for the one-second cue. Then try a puzzle.' },
 ];
 
 export const DEFAULT_STUDIO_ASSIGNMENT: Record<string, string[]> = {
-  '00': ['traffic'], '01': ['rain'], '10': ['crowd'], '11': ['thunder'],
+  '00': ['car'], '01': ['rain'], '10': ['bell'], '11': ['thunder'],
 };

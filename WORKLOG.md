@@ -79,3 +79,9 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
   inside main.js as data URLs (bundle 763 KB). Each Play now opens with a marker note per track: a low note for the first sound,
   a bell for the second, then the recording. Simple sounds (low tone, high tone, ticks) and the synthetic versions stay in the
   studio library. Credits in docs/ATTRIBUTIONS.md; disclosure on the Qollab page and in the footer.
+- 10-10 22:20 founder: the marker note "just confuses it"; "easier sounds" meant steadier ones (a bell instead of a crowd, a car
+  driving by instead of traffic); and Play always plays both tracks, which needs explaining or fixing. Done: marker removed; new
+  one-shot Car (engine note dropping in pitch, tire noise swelling, panned left to right) and Bell (inharmonic partials); tracks are
+  Track A = car/rain, Track B = bell/thunder (rain and thunder are the recordings); the tutorial is single-track until Sync, so the
+  first six pages have one tile and no track selector; the selector reads "Moves apply to"; the intro and the Sync page say Play
+  plays every track at once, one sound each. Events no longer double-trigger (the level's clock fires once; no explicit trigger).
