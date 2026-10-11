@@ -31,6 +31,8 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
   "Loop: one job, 8 bars" there).
 - Record the 2–3 minute video (`docs/DEMO_SCRIPT.md`) and host it at a public link with no sign-in (YouTube, Loom, Vimeo
   or Drive); put the link on the project page.
+- Confirm https://beats.quantumnuggets.com answers (it is deployed by a teammate from a clean clone of `main`) before submitting; if it does
+  not, remove the hosted line from the Qollab page text, JUDGES.md and README.md so no link is dead.
 - Declare the theme at submission: Quantum Playground. The team captain submits before 19:00 ET.
 - Optional: an IonQ API key in `server/.env` (`IONQ_API_KEY=...`) proves the standalone IonQ path (the live test skips without it).
 

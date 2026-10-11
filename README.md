@@ -25,6 +25,8 @@ Entry for the Qollab + IonQ Quantum Hackathon (theme: Quantum Playground). _This
 **On Qollab (the judged path).** Upload `dist/quantum-sound-garden-qollab.zip` (or the `qollab/` folder) as a new
 project ("Upload your own files"), press Run Project → Run, pick a backend in Select QPU, then press *Start*. See `docs/QOLLAB_PAGE.md` for the project page text.
 
+**Hosted.** https://beats.quantumnuggets.com (the same app behind a FastAPI + Qiskit server, deployed from `Dockerfile`; see `docs/DEPLOY.md`).
+
 **Locally (one command).**
 ```bash
 # once
