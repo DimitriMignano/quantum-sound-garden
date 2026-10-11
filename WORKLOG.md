@@ -23,7 +23,7 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
 - [ ] Live test at phone width after the redesign (the Chrome resize did not take; earlier 390px check predates it); keyboard pass
 
 ## Needs a human (the rules, re-read 2026-10-11 12:15 ET; submissions close 2026-10-11 19:00 ET)
-- Make the GitHub repository PUBLIC (the rules: public, runnable without sign-in, MIT, dependencies listed, no secrets).
+- [x] Make the GitHub repository PUBLIC (the rules: public, runnable without sign-in, MIT, dependencies listed, no secrets). Done 10-11 16:50.
   `server/.env` is gitignored; `requirements.txt` and `package.json` list the dependencies; LICENSE is MIT.
 - Upload `dist/quantum-sound-garden-qollab.zip` to Qollab (New Project → Upload your own files), paste `docs/QOLLAB_PAGE.md`
   as the project page, publish under MIT. Press Run on the built-in simulator AND on the IonQ simulator before submitting
@@ -245,3 +245,8 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
   "IonQ via Qollab (ionq_simulator) answered: 64 shots in one job. This Run can end now." and "Done." (57.6 s).
   Built-in simulator: "Done." in 1.7 s; the studio's Play once after it: "Qollab simulator (basic_simulator) · 64 shots
   in 74 ms", no fallback.
+- 10-11 16:50 the repository is public (the founder's go). Checked first: no secrets or `.env` in any of the 39 commits on
+  any ref, no issues, PRs, releases or Actions runs, MIT detected by GitHub; the repo page and raw LICENSE answer 200 signed
+  out. The founder joined @liambergerson's team on Qollab (the captain submits; the project must be owned by a teammate).
+  Still open: the Qollab page text (the dead beats.quantumnuggets.com line, the IonQ "Running…" sentence, the video link),
+  the video, Publish, and the captain's submission before 19:00 ET.
