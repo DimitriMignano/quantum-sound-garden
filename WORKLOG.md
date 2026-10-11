@@ -232,3 +232,10 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
   for the release, and the bundle tests now watch main.js return (they failed on the old build before the fix: on IonQ
   main.js returned at once). Gate green. Needs: the new main.js and README.md uploaded to the Qollab project, then the
   studio's IonQ Loop pressed once on the real site.
+- 10-11 16:05 the held Run worked on the real site: the studio's Loop reached IonQ (13.6 s instead of a 315 ms fallback)
+  but still fell back, "backend returned an empty distribution". Probe 2 printed the real result: `get_counts()` is a
+  PyProxy of Qiskit's `Counts`; its `toJs()` is a plain object, not a Map; `JSON.stringify` of it is `{}`; handed back to
+  Python (`json.dumps`) it is `{"00": 4, "11": 4}`. The JavaScript conversion assumed a Map (as the fake returned), fell
+  through to stringifying the proxy and sent `{}`. Fixed: the Counts object goes straight to `normalize_counts_json`,
+  which now takes the object (or JSON). The fakes now return the proxy Qollab returns; against the old conversion the
+  engine tests fail. Gate green. Needs: the new bundle uploaded again, then the Loop pressed on IonQ.

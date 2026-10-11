@@ -295,9 +295,16 @@ def build_circuit_for_run(n_qubits: int, ops_json: str, basis: str = "z"):
     return build_circuit(int(n_qubits), ops_json, measure=True, basis=basis)
 
 
-def normalize_counts_json(counts_json: str, n_qubits: int, shots: int) -> str:
-    """Qollab entry point: the counts a JavaScript-submitted job returned, normalized like run_json's."""
-    raw = json.loads(counts_json)
+def normalize_counts_json(counts: Any, n_qubits: int, shots: int) -> str:
+    """Qollab entry point: the counts a JavaScript-submitted job returned, normalized like run_json's.
+
+    JavaScript hands `job.result().get_counts()` straight back, so this receives Qiskit's Counts object itself: on
+    Qollab its toJs() is a plain object, not a Map, and JSON.stringify of the proxy is "{}" (measured 2026-10-11).
+    A JSON string is accepted too.
+    """
+    raw = json.loads(counts) if isinstance(counts, str) else counts
+    if hasattr(raw, "to_py"):  # a JavaScript object reaches Python as a JsProxy
+        raw = raw.to_py()
     shots = max(1, min(int(shots), 10000))
     counts, kind = normalize_counts(raw, int(n_qubits), shots)
     return json.dumps({"counts": counts, "shots": shots, "counts_kind": kind})

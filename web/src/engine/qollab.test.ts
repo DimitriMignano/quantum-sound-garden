@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { QollabEngine, OneJobLimitError, shortReason, type QollabRuntime } from './qollab';
 import { amplitudes, probabilities, simulate } from './statevector';
 import type { Op } from './types';
+import { normalize_counts_json, pyCounts } from '../test/fake-qsg-circuit';
 
 /** A Qollab-shaped runtime whose device is an IonQ simulator; `backend.run` is the JavaScript-side call the runtime proxies. */
 function ionqRuntime(runBehavior: 'blocked' | 'ok', kind = 'ionq-simulator'): QollabRuntime & { runs: number; releases: number } {
@@ -14,7 +15,7 @@ function ionqRuntime(runBehavior: 'blocked' | 'ok', kind = 'ionq-simulator'): Qo
         rt.runs += 1;
         if (runBehavior === 'blocked') throw new Error('PythonError: Traceback (most recent call last):\n  ...\nrequests.exceptions.ConnectionError: (\'Connection aborted.\', HTTPException(\'Failed to fetch\'))');
         const half = Math.floor(opts.shots / 2);
-        return { result: async () => ({ get_counts: () => ({ toJs: () => new Map([['00', half], ['11', opts.shots - half]]) }) }) };
+        return { result: async () => ({ get_counts: () => pyCounts({ '00': half, '11': opts.shots - half }) }) };
       },
     },
     py: {
@@ -26,7 +27,7 @@ function ionqRuntime(runBehavior: 'blocked' | 'ok', kind = 'ionq-simulator'): Qo
       } },
       qiskit_code: { callPromising: async () => '# code' },
       build_circuit_for_run: { callPromising: async (n: number, opsJson: string, basis: string) => ({ n, ops: JSON.parse(opsJson), basis }) },
-      normalize_counts_json: { callPromising: async (countsJson: string, _n: number, shots: number) => JSON.stringify({ counts: { '00': 0, '01': 0, '10': 0, '11': 0, ...JSON.parse(countsJson) }, shots, counts_kind: 'counts' }) },
+      normalize_counts_json,
       run_json: { callPromising: async () => { throw new Error('the Python path is never used for a remote job'); } },
     },
   };

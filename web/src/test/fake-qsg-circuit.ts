@@ -35,10 +35,24 @@ export const run_json = withPromising('run_json', (backend: { name: string; run:
 export const build_circuit_for_run = withPromising('build_circuit_for_run', (n: number, opsJson: string, basis = 'z') =>
   ({ n, ops: JSON.parse(opsJson) as Op[], basis }));
 
-export const normalize_counts_json = withPromising('normalize_counts_json', (countsJson: string, n: number, shots: number) => {
-  const raw = JSON.parse(countsJson) as Record<string, number>;
+const PY_VALUE = Symbol('the Python object behind a proxy');
+
+/** What JavaScript holds for Qiskit's Counts on Qollab (measured 2026-10-11): a proxy whose toJs() is a plain object,
+ *  not a Map (its contents were not inspected), and which JSON.stringify turns into "{}". Handed back to Python, it is
+ *  the real dict again. */
+export function pyCounts(counts: Record<string, number>) {
+  const proxy = { toJs: () => ({}), toString: () => JSON.stringify(counts) };
+  Object.defineProperty(proxy, PY_VALUE, { value: counts, enumerable: false });
+  return proxy;
+}
+
+/** Like the Python one: takes the Counts object (or a JSON string) and refuses an empty distribution. */
+export const normalize_counts_json = withPromising('normalize_counts_json', (given: unknown, n: number, shots: number) => {
+  const raw = (typeof given === 'string' ? JSON.parse(given) : (given as { [PY_VALUE]?: Record<string, number> })?.[PY_VALUE]) as Record<string, number> | undefined;
+  if (!raw) throw new Error('CircuitError: backend returned counts in an unknown shape');
   const counts: Record<string, number> = {};
   for (let i = 0; i < 2 ** n; i++) { const k = i.toString(2).padStart(n, '0'); counts[k] = raw[k] ?? 0; }
+  if (Object.values(counts).every((v) => v === 0)) throw new Error('CircuitError: backend returned an empty distribution');
   return JSON.stringify({ counts, shots, counts_kind: 'counts' });
 });
 
@@ -47,7 +61,7 @@ export const describe_backend_json = withPromising('describe_backend_json', (bac
 
 /** A backend that samples from the statevector, like Qollab's built-in simulator would. Its `run` takes the circuit
  *  object from build_circuit_for_run and `{ shots }`, like the real PyProxy does from JavaScript, and returns a job
- *  whose result's get_counts gives a Map (what a Pyodide dict's toJs gives). */
+ *  whose result's get_counts gives the Counts proxy Qollab gives (see pyCounts). */
 export function makeFakeBackend(name: string) {
   const random = rng(7);
   return {
@@ -56,7 +70,7 @@ export function makeFakeBackend(name: string) {
     run(qc: { n: number; ops: Op[]; basis: string }, opts: { shots: number }) {
       this.jobs++;
       const counts = sampleCounts(probabilities(simulate({ nQubits: qc.n, ops: qc.ops, basis: qc.basis as 'z' | 'x' })), opts.shots, random);
-      const job = { result: async () => ({ get_counts: () => ({ toJs: () => new Map(Object.entries(counts)) }) }) };
+      const job = { result: async () => ({ get_counts: () => pyCounts(counts) }) };
       return Promise.resolve(job);
     },
   };

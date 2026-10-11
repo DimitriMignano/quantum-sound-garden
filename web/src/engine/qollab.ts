@@ -97,10 +97,9 @@ export class QollabEngine implements QuantumEngine {
     const qc = await build.callPromising(circuit.nQubits, JSON.stringify(circuit.ops), basis);
     const job = (await backend.run(qc, { shots })) as { result: () => unknown };
     const res = (await job.result()) as { get_counts: () => unknown };
-    const got = res.get_counts();
-    const asJs = (got as { toJs?: () => unknown })?.toJs?.();
-    const obj: Record<string, number> = asJs instanceof Map ? Object.fromEntries(asJs as Map<string, number>) : typeof got === 'object' && got !== null ? (got as Record<string, number>) : {};
-    const raw = await call(normalize, JSON.stringify(obj), circuit.nQubits, shots);
+    // Qiskit's Counts go straight back to Python, which receives the object itself. On Qollab its toJs() is a plain
+    // object, not a Map, and JSON.stringify of the proxy is "{}" (measured 2026-10-11): converting here lost every count.
+    const raw = await call(normalize, res.get_counts(), circuit.nQubits, shots);
     return JSON.parse(raw) as { counts: Record<string, number>; shots: number; counts_kind: 'counts' | 'probabilities' };
   }
 

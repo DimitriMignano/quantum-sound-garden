@@ -136,6 +136,11 @@ def test_build_circuit_for_run_and_normalize_counts_json_serve_the_javascript_su
     assert out == {"counts": {"00": 5, "01": 0, "10": 0, "11": 3}, "shots": 8, "counts_kind": "counts"}
     probs = json.loads(C.normalize_counts_json(json.dumps({"00": 0.5, "11": 0.5}), 2, 8))
     assert probs["counts_kind"] == "probabilities" and sum(probs["counts"].values()) == 8
+    # what Qollab's JavaScript actually hands back: the Counts object from get_counts(), unconverted
+    from qiskit.result import Counts
+
+    direct = json.loads(C.normalize_counts_json(Counts({"00": 4, "11": 4}), 2, 8))
+    assert direct == {"counts": {"00": 4, "01": 0, "10": 0, "11": 4}, "shots": 8, "counts_kind": "counts"}
 
 
 def test_run_json_with_a_fake_backend_returns_normalized_counts():

@@ -568,3 +568,20 @@ corrections go in a new entry. Newest at the bottom. Fill every field (`n/a` if 
   could go to the shared lessons store.
 - Risks: on IonQ the Qollab console reads "Running…" until the person spends the job or presses Stop; a judge who never
   opens the studio sees a Run that never says "Done." (the console line explains why).
+
+### 2026-10-11 16:05 — IonQ counts go back to Python unconverted
+- Branch / worktree: `main`
+- Task: the first real run of the held-Run build reached IonQ and fell back on "empty distribution".
+- Files changed: `server/qsg/circuit.py` (`normalize_counts_json` takes the Counts object or JSON), `server/tests/test_circuit.py`,
+  `web/src/engine/qollab.ts` (no JavaScript conversion), `web/src/test/fake-qsg-circuit.ts` (`pyCounts`, a normalize that
+  refuses an empty distribution like Python), `web/src/engine/qollab.test.ts`, `web/src/test/qollab-bundle.test.ts`
+  (the IonQ Loop's note must not be a fallback), `docs/ARCHITECTURE.md`, `CLAUDE.md` (§8 lesson), `WORKLOG.md`, `qollab/`
+- Verification run: on qollab.xyz: the uploaded `ada1ff8` bundle held the Run on IonQ (console line shown), the Loop's job
+  reached IonQ in 13.6 s; probe 2 printed the real Counts proxy (`toJs()` not a Map, `JSON.stringify` `{}`, Python
+  `json.dumps` correct). Engine tests failed against the old conversion with the new fakes. `npm run check` green
+  (pytest 28 + 1 skipped, tsc, bundle 792 KB, vitest 86).
+- Commit hash: this commit (parent ada1ff8)
+- Seams (§22): hosted PARTIAL on Qollab (draft; this bundle not uploaded yet)
+- Decisions: convert in Python, where the object is real, rather than guess at Pyodide's conversion of a dict subclass.
+- Deferred work: upload; one IonQ Loop on the real site; delete the probe drafts (human).
+- Risks: none new; the fake now models only what the probe printed (toJs contents were not inspected).

@@ -83,3 +83,7 @@ npm install && (cd web && npm install)
   to JavaScript, but the real variable was WHEN (the probe ran inside the Run, the app after "Done") · check: list every
   difference between the passing probe and the failing app (when, from where, with what) and vary one at a time on the
   real platform before shipping a fix · 2026-10-11
+- A fake that returns what we guessed the platform returns proves nothing about the platform: the fake Counts had a
+  Map-returning `toJs()`, Qollab's does not, and every count was lost on the real site with the gate green · check:
+  build each fake from one probe of the real object (print its type, `toJs()`, `JSON.stringify`) and cite the probe in
+  the fake's comment · 2026-10-11

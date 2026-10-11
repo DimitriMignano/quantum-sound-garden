@@ -128,6 +128,9 @@ describe('the built Qollab bundle', { timeout: 20000 }, () => {
     expect(builds.length).toBe(1);
     expect(fake.calls.find((c) => c.fn === 'normalize_counts_json.callPromising')?.args[2]).toBe(64);
     expect(((globalThis as { backend?: { jobs: number } }).backend as { jobs: number }).jobs).toBe(1);
+    const note = document.querySelector('.scene--studio .resultnote')?.textContent ?? '';
+    expect(note).toContain('IonQ via Qollab');
+    expect(note, 'the beat came from the IonQ job, not a fallback').not.toContain('could not run');
     await waitFor(() => runEnded);
     expect(runEnded, 'the job is back, so main.js returns and the Run ends').toBe(true);
   });

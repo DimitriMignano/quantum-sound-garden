@@ -9468,8 +9468,8 @@ var xe, Se, Ce, D = n((() => {
 			if (!r?.callPromising || !i) throw Error("the Python module has no build_circuit_for_run");
 			let a = this.rt.backend;
 			if (typeof a?.run != "function") throw Error("backend.run is not a function");
-			let o = await r.callPromising(e.nQubits, JSON.stringify(e.ops), n), s = (await (await a.run(o, { shots: t })).result()).get_counts(), c = s?.toJs?.(), l = c instanceof Map ? Object.fromEntries(c) : typeof s == "object" && s ? s : {}, u = await be(i, JSON.stringify(l), e.nQubits, t);
-			return JSON.parse(u);
+			let o = await r.callPromising(e.nQubits, JSON.stringify(e.ops), n), s = await be(i, (await (await a.run(o, { shots: t })).result()).get_counts(), e.nQubits, t);
+			return JSON.parse(s);
 		}
 		describe() {
 			return this.device ??= this.describeOnce();

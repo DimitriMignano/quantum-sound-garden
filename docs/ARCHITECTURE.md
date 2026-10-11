@@ -67,8 +67,11 @@ counts (`shotSequence`), identical on Replay.
 ## How a job is submitted on Qollab (measured 2026-10-11)
 JavaScript calls `await backend.run(qc, { shots })` and then `await job.result()`, the call Qollab's runtime docs give
 for a JS project: the engine asks Python for the measured circuit object (`build_circuit_for_run`), submits it from
-JavaScript, and hands the counts back to Python to normalize (`normalize_counts_json`). A local simulator also accepts
-the Python path (`run_json`), kept as the second try.
+JavaScript, and hands the counts back to Python to normalize (`normalize_counts_json`). The counts go back as the
+object `get_counts()` returned, unconverted: on Qollab it is a proxy of Qiskit's `Counts` whose `toJs()` is a plain object,
+not a Map, and `JSON.stringify` of it is `{}` (measured 2026-10-11; converting in JavaScript lost every count and the
+Loop fell back with "empty distribution"); Python receives the real object. A local simulator also accepts the Python
+path (`run_json`), kept as the second try.
 
 **A remote job goes through only while the Run is open.** A JS project's Run ends ("Done.") when main.js returns, and
 after that IonQ's request fails in the browser with `TypeError: Failed to fetch`. Probes on qollab.xyz, IonQ Aria 1
