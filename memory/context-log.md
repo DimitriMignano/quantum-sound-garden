@@ -585,3 +585,16 @@ corrections go in a new entry. Newest at the bottom. Fill every field (`n/a` if 
 - Decisions: convert in Python, where the object is real, rather than guess at Pyodide's conversion of a dict subclass.
 - Deferred work: upload; one IonQ Loop on the real site; delete the probe drafts (human).
 - Risks: none new; the fake now models only what the probe printed (toJs contents were not inspected).
+
+### 2026-10-11 16:25 — Live on qollab.xyz: the IonQ Loop runs from one real job
+- Branch / worktree: `main`
+- Task: verify `e0dfc46` on the real site after the founder's upload.
+- Files changed: `WORKLOG.md`, `memory/context-log.md`
+- Verification run: IonQ Aria 1: Loop answered by "IonQ via Qollab (ionq_simulator) · 64 shots in 13677 ms" (00/11 only),
+  console "answered … This Run can end now." then "Done." at 57.6 s. Built-in simulator: "Done." in 1.7 s, then a studio
+  Play once "Qollab simulator (basic_simulator) · 64 shots in 74 ms". Both without a fallback note.
+- Commit hash: this commit (parent e0dfc46)
+- Seams (§22): hosted on Qollab: the draft runs the current build (not published; publishing and submitting are human)
+- Decisions: none.
+- Deferred work: Publish and Submit (human); delete the two probe drafts (human); listening pass not run here.
+- Risks: on IonQ a Run stays "Running…" until the job is spent or Stop is pressed (the console says so).

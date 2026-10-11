@@ -239,3 +239,9 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
   through to stringifying the proxy and sent `{}`. Fixed: the Counts object goes straight to `normalize_counts_json`,
   which now takes the object (or JSON). The fakes now return the proxy Qollab returns; against the old conversion the
   engine tests fail. Gate green. Needs: the new bundle uploaded again, then the Loop pressed on IonQ.
+- 10-11 16:25 verified live on qollab.xyz with `e0dfc46` uploaded (founder pressed Keep and add). IonQ Aria 1: the console
+  held the Run with its one line; studio, Bell pair, IonQ via Qollab, Loop: "IonQ via Qollab (ionq_simulator) · 64 shots
+  in 13677 ms", no fallback, measured 00 38% / 11 63%, 01 and 10 at 0%, "8 bars from one job"; the console then printed
+  "IonQ via Qollab (ionq_simulator) answered: 64 shots in one job. This Run can end now." and "Done." (57.6 s).
+  Built-in simulator: "Done." in 1.7 s; the studio's Play once after it: "Qollab simulator (basic_simulator) · 64 shots
+  in 74 ms", no fallback.
