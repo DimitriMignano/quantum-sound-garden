@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 interface Props { load(): Promise<string>; title?: string; }
 
 /** The equivalent Qiskit code, straight from the engine (Python on Qiskit engines, the parity-tested mirror otherwise). */
-export function CodePanel({ load, title = 'The same garden, in Qiskit' }: Props) {
+export function CodePanel({ load, title = 'The same mix, in Qiskit' }: Props) {
   const [code, setCode] = useState<string>('');
   const [copied, setCopied] = useState(false);
   useEffect(() => { let on = true; load().then((c) => { if (on) setCode(c); }).catch(() => { if (on) setCode('# code unavailable'); }); return () => { on = false; }; }, [load]);

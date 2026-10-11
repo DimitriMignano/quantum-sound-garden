@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { QuantumEngine } from '../engine/types';
-import { ACTIONS, assignmentFor, type Challenge } from '../content/content';
-import { fidelity } from '../engine/outcomes';
+import { ACTIONS, assignmentFor, closenessOf, closenessWord, type Challenge } from '../content/content';
 import { mixer } from '../audio/mixer';
 import { useGarden } from './useGarden';
 import { marginalOne } from '../engine/outcomes';
@@ -22,17 +21,6 @@ interface Props {
 }
 
 type Phase = 'build' | 'playing' | 'result';
-
-/** How close the current mix is to the goal, 0..1. The clean-up puzzle also counts the extra moves. */
-export function closenessOf(challenge: Challenge, probabilities: Record<string, number>, ops: number): number {
-  const fid = fidelity(probabilities, challenge.target);
-  if (!challenge.noisy || !challenge.intended) return fid;
-  const extra = Math.max(0, ops - challenge.intended.length);
-  const room = Math.max(1, challenge.start.length - challenge.intended.length);
-  return fid * Math.max(0, 1 - extra / room);
-}
-
-const closenessWord = (c: number) => (c >= 0.995 ? 'there' : c >= 0.9 ? 'almost' : c >= 0.7 ? 'closer' : c >= 0.4 ? 'warmer' : 'far');
 
 export function ChallengeScene({ engine, challenge, details, onNext, onSolved, isLast }: Props) {
   const trackNames = useMemo(() => challenge.tracks.map((t) => t.name), [challenge]);
@@ -85,8 +73,11 @@ export function ChallengeScene({ engine, challenge, details, onNext, onSolved, i
       caption += baseline && garden.circuit.ops.length < baseline.ops ? ` (it was ${pct(baseline.fidelity)} with ${baseline.ops} moves; yours has ${garden.circuit.ops.length}).` : '.';
     }
   } else {
-    caption = `${challenge.goal} Closeness: ${closenessWord(closeness)}.`;
+    caption = garden.circuit.ops.length === 0 && challenge.start.length === 0
+      ? 'Press Play to hear where this mix lands. Every Play plays every track once.'
+      : 'Press Play to hear where this mix lands. Change the moves, Play again.';
   }
+  const closenessLabel = solved && goalMet ? 'Solved' : closenessWord(closeness);
 
   return (
     <div className="scene scene--puzzle">
@@ -94,6 +85,15 @@ export function ChallengeScene({ engine, challenge, details, onNext, onSolved, i
         <p className="eyebrow">Puzzle {challenge.index} of 4</p>
         <h2>{challenge.title}</h2>
         <p className="story">{challenge.story}</p>
+        <div className={`goal${solved && goalMet ? ' is-met' : ''}`}>
+          <div className="goal__row">
+            <span className="goal__label">Goal</span>
+            <span className={`goal__closeness goal__closeness--${closenessLabel.toLowerCase()}`} aria-live="polite">{closenessLabel === 'Solved' ? 'Solved' : `Closeness: ${closenessLabel}`}</span>
+          </div>
+          <p className="goal__text">{challenge.goal}</p>
+          <p className="goal__done"><span className="goal__label">Done when</span>{challenge.done}</p>
+        </div>
+        {challenge.shows && <p className="shows">{challenge.shows}</p>}
       </header>
 
       <GardenView garden={garden} tracks={challenge.tracks} assignment={assignment} details={readings} caption={caption} />

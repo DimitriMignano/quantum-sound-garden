@@ -8,7 +8,7 @@ Each track is a qubit that plays one of two sounds. You **Swap** (X), **Shuffle*
 **Sync** (CNOT) the tracks, then **Play** (measure): each Play is one measurement of a real Qiskit circuit, and the
 studio plays a car, rain, a bell or thunder for what was read. A five-page tutorial teaches each move by ear (Swap = X, Shuffle = H, Turn =
 phase, Sync = CX, Play = measure); four puzzles make you use them (superposition, entanglement, interference, noise)
-with a closeness hum as the eyes-closed progress bar; a two-track studio with four sound pads then lets you build any
+each with a goal panel that says what to do, when it is done, and how close the mix is (far, warmer, closer, almost, there); a two-track studio with four sound pads then lets you build any
 mix and hear what it lands on. The **Circuit** button shows gate names, bits, percentages and the Qiskit code behind any mix.
 
 Entry for the Qollab + IonQ Quantum Hackathon (theme: Quantum Playground). _This effort is supported by Qollab & IonQ._

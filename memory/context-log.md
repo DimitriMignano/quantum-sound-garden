@@ -384,3 +384,27 @@ corrections go in a new entry. Newest at the bottom. Fill every field (`n/a` if 
   from the front door via the puzzles; pages were merged rather than dropped so every rule is still stated once.
 - Deferred work: a human listening pass; keyboard; phone width; the deploy (human).
 - Risks: merged pages carry more text each; a judge who skips Learn meets the moves fold on the puzzle instead.
+
+### 2026-10-10 21:15 — The goal, stated as a goal; the Turn amounts inside the Turn card
+- Branch / worktree: `main`
+- Task: the founder's screenshot of puzzle 2: the page is much better "up to here" but the goal is unclear; hints, design and
+  buttons are liked; the Turn degrees belong inside the Turn button.
+- Cause: `Challenge.goal` existed but the header rendered only `story`; the goal appeared in the caption before the first Play
+  and was replaced by "You heard…" afterwards.
+- Files changed: `web/src/content/content.ts` (Challenge gains `done`, `shows`, optional `closeness`; goals, done-when and
+  stories rewritten; `closenessOf` and `closenessWord` moved here), `web/src/content/closeness.test.ts` (new, 4 tests),
+  `web/src/app/ChallengeScene.tsx` (goal panel with the closeness chip; neutral pre-Play caption), `web/src/app/Board.tsx`
+  (the Turn card: `.move--dial` with a `.move__face` button and the amounts inside), `web/src/styles.css`, `CLAUDE.md`,
+  `README.md`, `docs/JUDGES.md`, `docs/QOLLAB_PAGE.md` (no more "closeness hum"), `qollab/` (rebuilt), `WORKLOG.md`
+- Verification run: `npm run check` green (pytest 27 + 1 skipped, vitest 73, bundle 769 KB) before the last CSS tweak; rerun
+  before the commit. Live in Chrome (localhost:5173, Qiskit server engine): puzzle 2 reads far on an untouched board, warmer
+  after Shuffle A, there after Sync; a Play turns the panel green with "Solved" and the Great job! banner; the Turn card holds
+  2 amounts on the puzzle, 3 on the tutorial's Turn page, 4 in the studio; move cards share one height.
+- Commit hash: this commit (parent 8a76a8a)
+- Seams (§22): unchanged
+- Decisions: closeness is a per-puzzle hook with fidelity as the default, because a generic distance punished the first hinted
+  move on the pair puzzle; the labels Goal and Done when are functional labels, kept despite the eyebrow rule; the Turn card
+  is a div holding a button and a chip group (a button cannot contain buttons), styled as one card.
+- Deferred work: phone-width pass of the goal panel and the Turn card; keyboard pass; the deploy (human).
+- Risks: with Circuit on, the studio's four amounts with their math need the wider card; below ~600px they wrap to two rows
+  (not verified live).

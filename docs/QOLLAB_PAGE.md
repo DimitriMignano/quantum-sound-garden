@@ -7,8 +7,8 @@ Each track is a qubit that plays one of two sounds. You **Swap** (X), **Shuffle*
 **Sync** (CNOT) the tracks, then **Play** (measure): each Play is one measurement of a real Qiskit circuit, and the
 studio plays a car, rain, a bell or thunder for what was read. A five-page tutorial teaches each
 move by ear, with the two rules dice can never follow (two Shuffles cancel; a Turn is silent until the next
-Shuffle). Four puzzles make you use them (superposition, entanglement, interference, noise), and a closeness hum
-tells you how near the goal you are, so you can solve them without looking. A two-track studio with four sound pads
+Shuffle). Four puzzles make you use them (superposition, entanglement, interference, noise), and a live closeness word
+(far, warmer, closer, almost, there) tells you how near the goal you are. A two-track studio with four sound pads
 lets you build any mix and hear what it lands on. The **Circuit** button in the top bar shows gate names, bits, percentages and the
 Qiskit code behind any mix. (Repository name: quantum-sound-garden.)
 
@@ -32,7 +32,7 @@ Use Chrome, Edge, Brave, Opera or Firefox; Qollab does not run projects in Safar
   each track is a fair coin, yet 01 and 10 never appear); Play draws definite outcomes from the prepared state;
   noise (a simple stochastic Pauli model, exaggerated on purpose) adds unintended outcomes, and a shorter circuit
   with the same meaning measures closer to the intention.
-- The live preview and the closeness hum use a small in-browser statevector; the circuit, its ideal probabilities,
+- The live odds and the closeness word use a small in-browser statevector; the circuit, its ideal probabilities,
   the code and every Play come from Qiskit (`qsg/circuit.py`, called from `main.js` through Pyodide). The two are parity-tested.
 
 ## Project files

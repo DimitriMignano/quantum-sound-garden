@@ -115,3 +115,15 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
   under two minutes. Tutorial cut from ten pages to five (intro · a track and Swap · Shuffle, with the second Shuffle · Turn: the
   dial · Sync, which loads the pair); the front door gained "Jump to the puzzles" and "Open the studio"; JUDGES.md has a 90-second
   path; the demo script follows the new pages.
+- 10-10 21:15 founder's screenshot of puzzle 2: "the goal on this page is a lot less clear"; hints, design and buttons liked;
+  "the turn degrees for the turn button should be inside the button not out". Cause: the puzzle header showed only the story;
+  the goal lived in the pre-Play caption and vanished after the first Play. Now every puzzle has a goal panel under its title:
+  Goal (the biggest text on the page), Done when (what you will see and hear), and a live closeness chip (far, warmer, closer,
+  almost, there; Solved after the Play). Each puzzle's goal, done-when and story were rewritten in plain words; what the puzzle
+  newly exposes of the circuit is one faint line under the panel. The Turn card now holds its amounts inside the card (the move
+  on top, ½ ¼ ⅛ chips below, one lit; the studio's −¼ too). Closeness moved into the content module with a per-puzzle hook: the
+  pair puzzle measures the weaker of its two halves (agreement, and each track a coin toss) so the hinted path reads far,
+  warmer, there instead of warmer, far, there. Four new tests pin the ladder. Docs no longer claim a closeness hum (it was
+  removed on 10-10; the word in the goal panel is the readout). Live in Chrome on puzzle 2: far → Shuffle A: warmer → Sync:
+  there → Play: panel turns green, "Solved", the Great job! banner. Turn amounts render inside the card on the puzzle (2),
+  the tutorial's Turn page (3) and the studio (4, one row at desktop width with Circuit on).

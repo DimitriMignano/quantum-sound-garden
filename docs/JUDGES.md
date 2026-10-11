@@ -15,8 +15,8 @@ point first. The Circuit button shows the gates, the bits and the Qiskit code at
 A sound board, not a dashboard: the picture, four big moves (Swap, Shuffle, Turn, Sync), Play, and the mix as beads,
 which is the circuit. No quantum words on the first-run path. First a five-page tutorial you can hear (including the
 two rules dice can never follow: two Shuffles cancel, and a Turn is silent until the next Shuffle), then four puzzles
-solved with any mix that meets the goal, with a closeness hum (tritone when far, octave when there) so they can be
-solved with eyes closed, then an open studio. The **Circuit** toggle shows gate names, bits, percentages and the
+solved with any mix that meets the goal, each with a goal panel (the goal, when it is done, and a live closeness word:
+far, warmer, closer, almost, there, read aloud by screen readers), then an open studio. The **Circuit** toggle shows gate names, bits, percentages and the
 Qiskit code for whatever mix is on screen; the **Why?** reveal names the gate and the physics after each puzzle.
 
 ## Why quantum is essential, not decorative

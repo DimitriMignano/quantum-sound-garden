@@ -46,9 +46,33 @@ export function Board({ seedNames, allowed, ops, disabled, showGates, turns = [0
       <button key={kind} type="button" className={`move move--${kind}`} disabled={disabled} onClick={() => onAdd(op)} title={a.what} aria-label={`${a.verb}${showGates ? `, the ${a.gate} gate` : ''}: ${a.what}`}>
         <span className="move__verb">{a.verb}</span>
         {kind === 'link' && n > 1 && <span className="move__sub">to {seedNames[other]}</span>}
-        {kind === 'twist' && <span className={`move__sub${steady?.[seed] ? ' move__sub--warn' : ''}`}>{steady?.[seed] ? 'no effect: track is steady' : `${TURN[String(turn)]?.label ?? turn} turn`}</span>}
         {showGates && <span className="move__gate">{a.gate}</span>}
       </button>
+    );
+  };
+
+  // Turn is one card: the move on top, its amounts inside it. Tapping an amount sets the next Turn, or retunes the last one.
+  const dialCard = () => {
+    const a = ACTIONS.twist;
+    const warn = Boolean(steady?.[seed]);
+    const label = TURN[String(turn)]?.label ?? String(turn);
+    return (
+      <div className={`move move--twist move--dial${disabled ? ' is-disabled' : ''}`} style={{ flexGrow: 1 + 0.7 * Math.max(0, turns.length - 2) }}>
+        <button type="button" className="move__face" disabled={disabled} onClick={() => onAdd({ op: 'twist', q: seed, turns: turn })} title={a.what}
+          aria-label={`${a.verb} by ${label}${showGates ? `, the ${a.gate} gate` : ''}: ${a.what}`}>
+          <span className="move__verb">{a.verb}</span>
+          {warn && <span className="move__sub move__sub--warn">no effect: track is steady</span>}
+          {showGates && <span className="move__gate">{a.gate}</span>}
+        </button>
+        <div className="move__amounts" role="group" aria-label={lastTurn >= 0 && onRetune ? 'Turn amount (changes the Turn on this track)' : 'Turn amount'}>
+          {turns.map((t) => (
+            <button key={t} type="button" className={`chip chip--small${dial === t ? ' is-on' : ''}`} aria-pressed={dial === t} disabled={disabled} onClick={() => pick(t)}
+              title={`${TURN[String(t)]?.label ?? t} turn${lastTurn >= 0 && onRetune ? ' (turns the dial already on this track)' : ''}${showGates ? ` (${TURN[String(t)]?.math})` : ''}`}>
+              {TURN[String(t)]?.label ?? t}{showGates && <small> {TURN[String(t)]?.math}</small>}
+            </button>
+          ))}
+        </div>
+      </div>
     );
   };
 
@@ -65,19 +89,7 @@ export function Board({ seedNames, allowed, ops, disabled, showGates, turns = [0
       <div className="board__moves">
         {move('flip', { op: 'flip', q: seed })}
         {move('split', { op: 'split', q: seed })}
-        {allowed.includes('twist') && (
-          <div className="move-group">
-            {move('twist', { op: 'twist', q: seed, turns: turn })}
-            <div className="move-group__amounts" role="group" aria-label={lastTurn >= 0 && onRetune ? 'Turn amount (changes the Turn on this track)' : 'Turn amount'}>
-              {turns.map((t) => (
-                <button key={t} type="button" className={`chip chip--small${dial === t ? ' is-on' : ''}`} aria-pressed={dial === t} disabled={disabled} onClick={() => pick(t)}
-                  title={`${TURN[String(t)]?.label ?? t} turn${lastTurn >= 0 && onRetune ? ' (turns the dial already on this track)' : ''}${showGates ? ` (${TURN[String(t)]?.math})` : ''}`}>
-                  {TURN[String(t)]?.label ?? t}{showGates && <small> {TURN[String(t)]?.math}</small>}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
+        {allowed.includes('twist') && dialCard()}
         {n > 1 && move('link', { op: 'link', control: seed, target: other })}
         <div className="board__bloom">
           <button type="button" className="primary bloom" onClick={bloom.onClick} disabled={disabled || bloom.disabled}>{bloom.label}</button>

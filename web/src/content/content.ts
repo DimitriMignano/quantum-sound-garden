@@ -5,7 +5,7 @@
  * web/src/engine/statevector.test.ts.
  */
 import type { Circuit, Ideal, Op } from '../engine/types';
-import { agreement, marginalOne, bitstrings, bitOf } from '../engine/outcomes';
+import { agreement, fidelity, marginalOne, bitstrings, bitOf } from '../engine/outcomes';
 
 export const APP = {
   title: 'Quantum Beats Studio',
@@ -62,13 +62,18 @@ export interface Challenge {
   id: string;
   index: number;
   title: string;
-  goal: string;          // the goal, in sound words, one sentence
-  story: string;         // one or two sentences of scene-setting
+  goal: string;          // the goal, in sound words, one or two short sentences; the biggest text on the page
+  done: string;          // how the learner knows it is done, in what they can see and hear
+  story: string;         // one or two sentences of scene-setting, before the goal
+  shows?: string;        // what this puzzle newly exposes of the circuit (one line, under the goal)
   tracks: Track[];
   start: Op[];
   allowed: Array<Op['op']>;
-  /** the ideal distribution of a solved mix; the closeness hum compares the current odds to it */
+  /** the ideal distribution of a solved mix; the closeness word compares the current odds to it */
   target: Record<string, number>;
+  /** how close the odds are to the goal, 0..1; default: fidelity to `target`. A puzzle whose goal has parts sets its own,
+   *  so the closeness word never drops when the learner takes the first hinted step. */
+  closeness?: (probabilities: Record<string, number>) => number;
   /** how much of the quantum circuit this puzzle shows: 1 gate names · 2 + the readings as bits and odds · 3 + the Qiskit
    *  code once solved · 4 the full Circuit view. Each puzzle shows one step more than the last. */
   exposure: 1 | 2 | 3 | 4;
@@ -94,8 +99,10 @@ export const CHALLENGES: Challenge[] = [
     id: 'rain',
     index: 1,
     title: 'Make It Rain',
-    goal: 'Make Track A play rain every time.',
-    story: 'Track A is playing a car. Make it rain, every Play, no misses. This puzzle also shows the name of each move’s gate.',
+    goal: 'Make Track A play rain, every Play.',
+    done: 'Track A’s bar reads rain 100%, and every Play is rain.',
+    story: 'Track A plays a car right now.',
+    shows: 'New on this page: the name of each move’s gate, under the move.',
     tracks: [TRACK_A],
     start: [],
     allowed: ['flip', 'split', 'twist'],
@@ -122,13 +129,18 @@ export const CHALLENGES: Challenge[] = [
     id: 'pair',
     index: 2,
     title: 'Perfect Pair',
-    goal: 'Rain always with thunder, the car always with the bell, while each track on its own stays a coin toss.',
-    story: 'Track A plays a car or rain. Track B plays a bell or thunder. Two separate coin tosses would give thunder with the car half the time. Make them agree, then Play a few times to check. This puzzle also shows what each track read, as bits and odds.',
+    goal: 'Make the two tracks agree, every Play: rain with thunder, the car with the bell. Each track on its own stays a coin toss.',
+    done: 'Play a few times. You never hear thunder with the car or rain with the bell, and each track still reads 50/50.',
+    story: 'Track A plays a car or rain. Track B plays a bell or thunder. Two separate coin tosses would give thunder with the car half the time.',
+    shows: 'New on this page: what each track read on the last Play, as bits and odds.',
     tracks: [TRACK_A, TRACK_B],
     start: [],
     allowed: ['flip', 'split', 'twist', 'link'],
     target: BELL,
     exposure: 2,
+    // the weaker half of the goal: the tracks agree, and each one is a coin toss. Plain fidelity to the Bell odds would
+    // call the untouched board "warmer" and the first hinted move, Shuffle A, "far"; this reads far, warmer, there.
+    closeness: (p) => { const toss = (q: number) => 1 - Math.abs(2 * marginalOne(p, q) - 1); return Math.min(agreement(p, 0, 1), (toss(0) + toss(1)) / 2); },
     success: (i) => p1(i, 0) > 0.35 && p1(i, 0) < 0.65 && p1(i, 1) > 0.35 && p1(i, 1) < 0.65 && agreement(i.probabilities, 0, 1) > 0.99,
     hints: [
       'Shuffle Track A so rain is a coin toss. Play and listen: thunder never comes, because Track B is still on the bell.',
@@ -160,8 +172,10 @@ export const CHALLENGES: Challenge[] = [
     id: 'footsteps',
     index: 3,
     title: 'Silence the Footsteps',
-    goal: 'Make the footsteps vanish, using only Turn and Shuffle.',
-    story: 'The Path track was shuffled, then turned halfway. Right now it is 50/50 footsteps. Turning more changes nothing you can hear. Or does it? This puzzle also shows the Qiskit code once you solve it.',
+    goal: 'Make the footsteps vanish: crickets only, every Play.',
+    done: 'The Path bar reads crickets 100%, and every Play is crickets.',
+    story: 'The Path track was shuffled, then turned halfway. Right now it is 50/50 footsteps, and turning more changes nothing you can hear. Or does it?',
+    shows: 'New on this page: the Qiskit code of your mix, once you solve it.',
     tracks: [{ name: 'Path', base: 'crickets', hit: 'footsteps' }],
     start: [{ op: 'split', q: 0 }, { op: 'twist', q: 0, turns: 0.5 }],
     allowed: ['split', 'twist', 'flip'],
@@ -197,8 +211,10 @@ export const CHALLENGES: Challenge[] = [
     id: 'repair',
     index: 4,
     title: 'Clean the Mix',
-    goal: 'This pair came back noisy: thunder with the car. Keep what it means, drop the extra moves, and hear it clean up.',
-    story: 'Someone built the Perfect Pair with six moves where two would do. Every move lets a little noise in. Noise is turned up here so your ear can catch it. This puzzle shows the whole circuit view.',
+    goal: 'Make the same pair with two moves instead of six. Take moves off the path until two are left and rain still comes only with thunder.',
+    done: 'Two moves on the path, rain still only with thunder, and the measured bars sit close to the predicted ones.',
+    story: 'Someone built the Perfect Pair with six moves where two would do. Every move lets a little noise in, and noise is turned up here so your ear can catch it.',
+    shows: 'New on this page: the whole circuit view.',
     tracks: [TRACK_A, TRACK_B],
     start: [
       { op: 'split', q: 0 }, { op: 'split', q: 1 }, { op: 'split', q: 1 },
@@ -230,6 +246,18 @@ export const CHALLENGES: Challenge[] = [
     step: 0.6,
   },
 ];
+
+/** How close a mix is to a puzzle's goal, 0..1: the puzzle's own measure or fidelity to its target odds. The clean-up
+ *  puzzle also counts the extra moves. The page shows it as a word: far, warmer, closer, almost, there. */
+export function closenessOf(challenge: Challenge, probabilities: Record<string, number>, ops: number): number {
+  const base = challenge.closeness ? challenge.closeness(probabilities) : fidelity(probabilities, challenge.target);
+  if (!challenge.noisy || !challenge.intended) return base;
+  const extra = Math.max(0, ops - challenge.intended.length);
+  const room = Math.max(1, challenge.start.length - challenge.intended.length);
+  return base * Math.max(0, 1 - extra / room);
+}
+
+export const closenessWord = (c: number) => (c >= 0.995 ? 'there' : c >= 0.9 ? 'almost' : c >= 0.7 ? 'closer' : c >= 0.4 ? 'warmer' : 'far');
 
 /** The tutorial: one page per idea, each with a mix the learner can load and Play, or build by hand. */
 export interface Lesson {

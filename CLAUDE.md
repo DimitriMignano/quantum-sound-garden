@@ -9,7 +9,7 @@ people who have never touched an instrument or a qubit, and it is audio-first: y
 closed. Each track is a qubit that plays one of two sounds; the person Swaps (X), Shuffles (H), Turns (phase) and
 Syncs (CX) the tracks and Plays (measures) them, and hears a car, rain, a bell or thunder for what
 a real Qiskit circuit read on each Play (one Play, one sound). A five-page tutorial teaches each move by ear with no quantum words; four
-puzzles make the moves necessary, with a closeness hum as the progress bar; a two-track studio lets them build any
+puzzles make the moves necessary, each with a goal panel (the goal, when it is done, and a live closeness word); a two-track studio lets them build any
 mix; the Circuit toggle and the Why? reveals carry the gates, the bits and the Qiskit code. It deliberately is not
 a synthesizer, a DAW or a step sequencer, and it never claims the person is "hearing a quantum state": the sound is
 classical audio driven by probabilities and shots.
