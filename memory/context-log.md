@@ -408,3 +408,13 @@ corrections go in a new entry. Newest at the bottom. Fill every field (`n/a` if 
 - Deferred work: phone-width pass of the goal panel and the Turn card; keyboard pass; the deploy (human).
 - Risks: with Circuit on, the studio's four amounts with their math need the wider card; below ~600px they wrap to two rows
   (not verified live).
+
+### 2026-10-10 22:10 — The odds bar read backwards
+- Branch / worktree: `main`
+- Task: founder's screenshot: with Shuffle, Turn ⅛, Shuffle the tile said 85% · 15% but the amber fill (15%) sat under Car.
+- Files changed: `web/src/styles.css` (`.tile__fill` anchored right: `inset: 0 0 0 auto`), `web/src/app/GardenView.tsx` (aria-label
+  order base, hit), `qollab/` (rebuilt), `WORKLOG.md`
+- Verification run: live in Chrome on the Turn page: fill measured at 832–975 of a 975 px bar (the right 15%) with "85% · 15%";
+  `npm run check` before the commit.
+- Commit hash: this commit (parent 4c9eee6)
+- Seams (§22): unchanged · Decisions: amber stays the hit color (the 1 lobe); only its anchor moved · Deferred: none · Risks: none known.

@@ -11295,7 +11295,7 @@ function qt({ garden: e, tracks: t, assignment: n, details: r, caption: i }) {
 							/* @__PURE__ */ (0, M.jsxs)("div", {
 								className: "tile__bar",
 								role: "img",
-								"aria-label": u ? `${t.name}: odds hidden` : `${t.name}: ${s} ${Zt(i)}, ${o} ${Zt(1 - i)}`,
+								"aria-label": u ? `${t.name}: odds hidden` : `${t.name}: ${o} ${Zt(1 - i)}, ${s} ${Zt(i)}`,
 								children: [
 									/* @__PURE__ */ (0, M.jsx)("span", {
 										className: "tile__fill",

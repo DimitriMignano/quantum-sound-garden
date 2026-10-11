@@ -127,3 +127,7 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
   removed on 10-10; the word in the goal panel is the readout). Live in Chrome on puzzle 2: far → Shuffle A: warmer → Sync:
   there → Play: panel turns green, "Solved", the Great job! banner. Turn amounts render inside the card on the puzzle (2),
   the tutorial's Turn page (3) and the studio (4, one row at desktop width with Circuit on).
+- 10-10 22:10 founder's screenshot of the Turn page: "i think the bar is backwards now". The odds fill (the hit sound's share,
+  amber) was anchored at the left end, under the base sound's chip, so 85% · 15% showed a short amber bar under Car. The fill
+  now sits at the right end, under the hit chip; the dark remainder on the left is the base share. The spoken label reads in
+  the same order as the visible one (base, then hit). Verified live on the Turn page with Shuffle, Turn ⅛, Shuffle.

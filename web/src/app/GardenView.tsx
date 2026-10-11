@@ -44,7 +44,7 @@ export function GardenView({ garden, tracks, assignment, details, caption }: Pro
                 <span className={`tile__sound tile__sound--base${now === 0 ? ' is-on' : ''}`}>{base}</span>
                 <span className={`tile__sound tile__sound--hit${now === 1 ? ' is-on' : ''}`}>{hit}</span>
               </div>
-              <div className="tile__bar" role="img" aria-label={hidden ? `${t.name}: odds hidden` : `${t.name}: ${hit} ${pct(pHit)}, ${base} ${pct(1 - pHit)}`}>
+              <div className="tile__bar" role="img" aria-label={hidden ? `${t.name}: odds hidden` : `${t.name}: ${base} ${pct(1 - pHit)}, ${hit} ${pct(pHit)}`}>
                 <span className="tile__fill" style={{ width: hidden ? '0%' : `${pHit * 100}%` }} />
                 {!hidden && <span className="tile__pct">{state === 'base' ? `always ${base}` : state === 'hit' ? `always ${hit}` : `${pct(1 - pHit)} · ${pct(pHit)}`}</span>}
                 {hidden && <span className="tile__pct">?</span>}
