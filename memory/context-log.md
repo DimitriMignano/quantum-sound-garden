@@ -362,3 +362,25 @@ corrections go in a new entry. Newest at the bottom. Fill every field (`n/a` if 
 - Deferred work: the deploy and DNS (human); after it is live, the URL goes on the Qollab page and in JUDGES.md.
 - Risks: Railway pricing not verified here ("a few dollars a month" is from memory); the apex domain needs ALIAS/ANAME or A
   records depending on the registrar; the image is 651 MB, so the first deploy takes a few minutes.
+
+### 2026-10-11 00:20 — Shorter path to the point, grounded in the judging page
+- Branch / worktree: `main`
+- Task: a tester told the founder it takes a long time to get to the point; the founder asked for criteria research before
+  changing anything.
+- Research: qollab.xyz/programs/hackathon/how-it-works lists four traits with no weights (novelty & creativity, technical
+  execution, impact potential, documentation quality); judges "open the project page, read the description and the code, and
+  press Run on a free simulator"; a 2–3 minute demo video is required; hardware vs simulator is not scored; the Playground theme's
+  bar is that superposition, interference, entanglement or measurement is essential. No time-per-project is stated.
+- Files changed: `web/src/content/content.ts` (LESSONS: five pages; intro four lines; Start button names the time),
+  `web/src/app/Welcome.tsx` + `web/src/app/App.tsx` (Start takes a target: learn, c1 or studio; two shortcut links),
+  `web/src/app/TutorialScene.tsx` (neutral "You heard" caption), `web/src/styles.css`, `docs/JUDGES.md` (the 90-second
+  path), `docs/DEMO_SCRIPT.md`, `docs/QOLLAB_PAGE.md`, `README.md`, `CLAUDE.md`, `qollab/`, `WORKLOG.md`
+- Verification run: tsc clean; `npm run check` green (pytest 27 + 1 skipped, vitest 69, bundle 767 KB). Live in Chrome: the
+  front door shows "Jump to the puzzles" and "Open the studio"; "Jump to the puzzles" opens puzzle 1 with audio running; the
+  tutorial reads "Learn · 5 of 5 Sync" with Try it / Back / Start the puzzles on the last page.
+- Commit hash: this commit (parent 76b0812)
+- Seams (§22): unchanged
+- Decisions: the judge's path, not a tester's patience, sets the length: the pair (entanglement) is on page 5 and one click away
+  from the front door via the puzzles; pages were merged rather than dropped so every rule is still stated once.
+- Deferred work: a human listening pass; keyboard; phone width; the deploy (human).
+- Risks: merged pages carry more text each; a judge who skips Learn meets the moves fold on the puzzle instead.

@@ -9628,7 +9628,7 @@ var O, k, ke, Ae, je, Me, Ne, Pe, Fe, Ie, Le, Re, ze, Be = n((() => {
 		pitch: "Make sounds with the rules of quantum physics.",
 		lead: "Learn four moves by ear. Solve four puzzles. Then build your own. Eyes closed works.",
 		honesty: "You are not hearing a quantum state. The sound is ordinary audio driven by the probabilities and the measured shots of a circuit: a real Qiskit circuit whenever a Qiskit engine is available, and every result names the engine that produced it.",
-		startButton: "Start",
+		startButton: "Start: learn the moves (3 minutes)",
 		startHint: "Sound starts when you press this. Headphones help.",
 		studioTitle: "Studio",
 		studioTagline: "Two tracks, four pads, your sound."
@@ -9914,93 +9914,54 @@ var O, k, ke, Ae, je, Me, Ne, Pe, Fe, Ie, Le, Re, ze, Be = n((() => {
 		{
 			id: "intro",
 			title: "What’s going on",
-			text: "Thirty seconds of context before the first sound.",
+			text: "Twenty seconds of context before the first sound.",
 			show: [],
 			ops: [],
 			beats: 0,
 			hear: "",
 			intro: [
-				"This is a sound studio with two tracks. Each track has two sounds. Track A plays a car driving by, or rain. Track B plays a bell, or thunder. Press Play and every track plays one of its two sounds, once, all at the same time.",
+				"A sound studio with two tracks. Each track has two sounds: Track A plays a car driving by, or rain; Track B plays a bell, or thunder. Press Play and every track plays one of its two sounds, once, all at the same time.",
 				"The twist: a track does not have to decide which sound until you press Play. It can be truly undecided. And two tracks can be tied together so they always decide the same way.",
-				"You get four moves to shape a track: Swap, Shuffle, Turn, Sync. A move applies to the track you have selected. The tile for each track shows how likely each of its sounds is right now. Play tells you what every track actually landed on.",
-				"Nothing plays until you press Play. First, learn the moves by ear, one page each. Then solve four puzzles: the page tells you how close you are. Then build your own.",
-				"Everything you hear comes from a real quantum circuit being measured. That is the whole trick, and you do not need to know what that means yet."
+				"Four moves shape a track: Swap, Shuffle, Turn, Sync. The tile shows how likely each sound is right now; Play tells you what it landed on. Nothing plays until you press Play.",
+				"Four short pages, then four puzzles, then your own studio. Everything you hear comes from a real quantum circuit being measured. You do not need to know what that means yet."
 			]
 		},
 		{
 			id: "tracks",
-			title: "A track",
+			title: "A track, and Swap",
 			tracks: 1,
-			text: "A track has two sounds. Track A plays a car driving by, or it plays rain. Press Try it: you hear one of them, once. Press it again: same answer, because nothing has changed the track.",
-			show: [],
-			ops: [],
-			beats: 6,
-			hear: "A car. Nothing changed the track, so it is the car every time you press Play."
-		},
-		{
-			id: "swap",
-			title: "Swap",
-			tracks: 1,
-			text: "Swap switches a track to its other sound.",
+			text: "Track A plays a car, or it plays rain. Press Play: a car, and a car again, because nothing has changed the track. Swap switches it to its other sound: press Swap, then Play, and it is rain. Try it does the Swap for you.",
 			show: ["flip"],
 			ops: [{
 				op: "flip",
 				q: 0
 			}],
 			beats: 6,
-			hear: "Rain. Swap moved Track A to its other sound, and it stays there: press Play again and it is rain again."
+			hear: "Rain. Swap moved Track A to its other sound, and it stays there until you change the mix."
 		},
 		{
 			id: "shuffle",
 			title: "Shuffle",
 			tracks: 1,
-			text: "Shuffle makes the track a coin toss: each Play lands on the car or on rain, and you never know which. Press Play several times.",
+			text: "Shuffle makes the track a coin toss: each Play lands on the car or on rain, and you never know which. Press Play several times. Then Shuffle once more: a shuffled track that is shuffled again goes steady. Two Shuffles cancel. Dice never do that.",
 			show: ["flip", "split"],
 			ops: [{
 				op: "split",
 				q: 0
 			}],
 			beats: 8,
-			hear: "That was one landing. Press Play a few more times: sometimes the car, sometimes rain, in no pattern."
-		},
-		{
-			id: "shuffle2",
-			title: "Shuffle, again",
-			tracks: 1,
-			text: "Shuffle a shuffled track and it goes steady again. Two Shuffles cancel. Dice never do that.",
-			show: ["flip", "split"],
-			ops: [{
-				op: "split",
-				q: 0
-			}, {
-				op: "split",
-				q: 0
-			}],
-			beats: 6,
-			hear: "The car, and it will be the car every time. The two Shuffles undid each other."
+			hear: "One landing of a coin toss. Press Play a few more times: sometimes the car, sometimes rain. Then add a second Shuffle and watch the odds snap back to always the car."
 		},
 		{
 			id: "turn",
-			title: "Turn",
+			title: "Turn: the dial",
 			tracks: 1,
-			text: "Turn moves a hidden dial, and the dial only exists on a shuffled track: on a steady track a Turn does nothing. Shuffle, then Turn halfway. You hear no change at all: still a coin toss. Silent now, decisive on the next two pages.",
-			show: ["split", "twist"],
-			ops: [{
-				op: "split",
-				q: 0
-			}, {
-				op: "twist",
-				q: 0,
-				turns: .5
-			}],
-			beats: 8,
-			hear: "One landing of a coin toss, as before. The dial moved, and a dial makes no sound. Play a few times: still the car or rain."
-		},
-		{
-			id: "turn2",
-			title: "Shuffle, Turn, Shuffle",
-			tracks: 1,
-			text: "The next Shuffle hears the dial. All three moves, in this order: Shuffle, Turn halfway, Shuffle again. Every Play is rain. Skip the first Shuffle and the Turn has nothing to turn.",
+			turns: [
+				.5,
+				.25,
+				.125
+			],
+			text: "Turn moves a hidden dial, and the dial only exists on a shuffled track. On its own you hear nothing change; the next Shuffle hears it. Shuffle, Turn, Shuffle is on the board: tap ½, ¼ or ⅛ on the Turn and watch the odds. Half a turn is rain every time, a quarter is a coin toss, an eighth is rain about one time in seven. Turn is the only move that can set the odds anywhere in between.",
 			show: ["split", "twist"],
 			ops: [
 				{
@@ -10018,55 +9979,13 @@ var O, k, ke, Ae, je, Me, Ne, Pe, Fe, Ie, Le, Re, ze, Be = n((() => {
 				}
 			],
 			beats: 6,
-			hear: "Rain, every time. Without the Turn in the middle, two Shuffles would have given the car every time."
-		},
-		{
-			id: "dial",
-			title: "The dial sets the odds",
-			tracks: 1,
-			turns: [
-				.5,
-				.25,
-				.125
-			],
-			text: "Shuffle, Turn, Shuffle is on the board. Now tap ½, ¼ or ⅛ on the Turn and watch the bar: half a turn is rain every time, a quarter is a coin toss, an eighth is rain about one time in seven. Turn is the only move that can set the odds anywhere in between. Play a few times at each setting.",
-			show: ["split", "twist"],
-			ops: [
-				{
-					op: "split",
-					q: 0
-				},
-				{
-					op: "twist",
-					q: 0,
-					turns: .125
-				},
-				{
-					op: "split",
-					q: 0
-				}
-			],
-			beats: 8,
-			hear: "One landing at this setting. The bar already told you the odds. Tap another amount on the Turn and Play again."
+			hear: "Rain, every time, from two Shuffles with a half Turn between them. Tap ¼ or ⅛ on the Turn, then Play again."
 		},
 		{
 			id: "sync",
 			title: "Sync",
 			tracks: 2,
-			text: "A second track: Track B plays a bell, or thunder. Play always plays every track at once, one sound each. Sync makes Track B follow Track A: when A is on rain, B is on thunder.",
-			show: ["flip", "link"],
-			ops: [{
-				op: "flip",
-				q: 0
-			}, Le],
-			beats: 6,
-			hear: "Rain with thunder, together. B followed A."
-		},
-		{
-			id: "sync2",
-			title: "Sync a shuffled track",
-			tracks: 2,
-			text: "Shuffle Track A, then Sync it to Track B: two coin tosses that always agree. Rain with thunder, or the car with the bell. Press Play several times.",
+			text: "A second track: Track B plays a bell, or thunder. Play always plays every track at once, one sound each. Sync makes B follow A. Shuffle A, then Sync A to B, and you get two coin tosses that always agree: rain with thunder, or the car with the bell, never crossed. Press Play several times.",
 			show: [
 				"flip",
 				"split",
@@ -10077,7 +9996,7 @@ var O, k, ke, Ae, je, Me, Ne, Pe, Fe, Ie, Le, Re, ze, Be = n((() => {
 				q: 0
 			}, Le],
 			beats: 8,
-			hear: "One landing. Press Play more: sometimes the car with the bell, sometimes rain with thunder. Never rain with the bell, never thunder with the car."
+			hear: "One landing. Press Play more: sometimes the car with the bell, sometimes rain with thunder. Never rain with the bell, never thunder with the car. That pair is the heart of every puzzle."
 		}
 	], ze = {
 		"00": ["car"],
@@ -10268,12 +10187,33 @@ function qe({ info: e, reducedMotion: t, audioOk: n, stuck: r, onStart: i }) {
 				/* @__PURE__ */ (0, A.jsx)("button", {
 					type: "button",
 					className: "primary primary--big",
-					onClick: i,
+					onClick: () => i("learn"),
 					children: O.startButton
 				}),
 				/* @__PURE__ */ (0, A.jsx)("p", {
 					className: "help",
 					children: O.startHint
+				}),
+				/* @__PURE__ */ (0, A.jsxs)("p", {
+					className: "welcome__alt",
+					children: [
+						/* @__PURE__ */ (0, A.jsx)("button", {
+							type: "button",
+							className: "linklike",
+							onClick: () => i("c1"),
+							children: "Jump to the puzzles"
+						}),
+						/* @__PURE__ */ (0, A.jsx)("span", {
+							"aria-hidden": "true",
+							children: " · "
+						}),
+						/* @__PURE__ */ (0, A.jsx)("button", {
+							type: "button",
+							className: "linklike",
+							onClick: () => i("studio"),
+							children: "Open the studio"
+						})
+					]
 				}),
 				n === !1 && /* @__PURE__ */ (0, A.jsx)("p", {
 					className: "error",
@@ -11758,7 +11698,7 @@ function ln({ engine: e, details: t, onDone: n }) {
 	let ee = (e) => JSON.stringify(e.map((e) => e && typeof e == "object" && e.op === "twist" ? {
 		...e,
 		turns: 0
-	} : e)), x = g.turns ? ee(u.circuit.ops) === ee(g.ops) : dn(u.circuit.ops, g.ops), te = !!u.playback && !u.playback.finished, ne = u.busy || te, S = u.playback?.finished && u.result?.memory?.[0] ? Ft(l, u.result.memory[0]) : null, re = u.playback?.finished && p === g.id && x ? g.hear : S ? `You heard: ${S}. This is your own mix, not the page’s: the tile shows its odds. Try it loads the page’s mix again.` : ne ? void 0 : g.show.length === 0 ? "Press Try it." : `Press Try it, or build it yourself with ${g.show.length === 1 ? "the move" : "the moves"} below and press Play.`;
+	} : e)), x = g.turns ? ee(u.circuit.ops) === ee(g.ops) : dn(u.circuit.ops, g.ops), te = !!u.playback && !u.playback.finished, ne = u.busy || te, S = u.playback?.finished && u.result?.memory?.[0] ? Ft(l, u.result.memory[0]) : null, re = u.playback?.finished && p === g.id && x ? g.hear : S ? `You heard: ${S}. The tile shows this mix’s odds. Try it loads the page’s mix.` : ne ? void 0 : g.show.length === 0 ? "Press Try it." : `Press Try it, or build it yourself with ${g.show.length === 1 ? "the move" : "the moves"} below and press Play.`;
 	return /* @__PURE__ */ (0, I.jsxs)("div", {
 		className: "scene scene--learn",
 		children: [
@@ -12420,11 +12360,11 @@ function jn({ engine: e }) {
 		let t = (e) => u(e.matches);
 		return e.addEventListener("change", t), () => e.removeEventListener("change", t);
 	}, []);
-	let p = async () => {
-		let e = await D.start();
-		if (f(e), !e && D.stuck) return;
-		let t = window.location.hash.replace("#", "");
-		/^c[1-4]$/.test(t) || t === "studio" || t === "learn" ? (o(Fe.length), i(t)) : i("learn");
+	let p = async (e = "learn") => {
+		let t = await D.start();
+		if (f(t), !t && D.stuck) return;
+		let n = window.location.hash.replace("#", "");
+		/^c[1-4]$/.test(n) || n === "studio" || n === "learn" ? (o(Fe.length), i(n)) : i(e);
 	}, m = (e) => {
 		let t = e + 1;
 		o((e) => Math.max(e, t)), i(t > Fe.length ? "studio" : `c${t}`);

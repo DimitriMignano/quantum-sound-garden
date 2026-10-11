@@ -108,3 +108,10 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
   variables, other hosts), host-neutral labels ("Qiskit simulator (Aer, ideal)", "Qiskit server… on the server"). Built the image
   locally (651 MB) and ran it: /api/health ok, the site served, two real Aer runs returned the right counts. Needs a human:
   `railway login`, then `railway init` + `railway up`, the custom domain, and the DNS records at the registrar.
+- 10-11 00:20 feedback via the founder: "it feels like it takes a long time to get to the point". Criteria research (qollab.xyz
+  how-it-works): four traits (novelty & creativity, technical execution, impact potential, documentation quality), no usability
+  score; "judges open the project page, read the description and the code, and press Run on a free simulator"; the Playground bar
+  is that superposition, interference, entanglement or measurement is essential. Decision: the entangled pair must be reachable in
+  under two minutes. Tutorial cut from ten pages to five (intro · a track and Swap · Shuffle, with the second Shuffle · Turn: the
+  dial · Sync, which loads the pair); the front door gained "Jump to the puzzles" and "Open the studio"; JUDGES.md has a 90-second
+  path; the demo script follows the new pages.

@@ -6,7 +6,7 @@ puzzles → build your own → read the Qiskit code. Eyes closed works.
 An audio-first learning and creation experience for people who have never played an instrument or touched a qubit.
 Each track is a qubit that plays one of two sounds. You **Swap** (X), **Shuffle** (Hadamard), **Turn** (phase) and
 **Sync** (CNOT) the tracks, then **Play** (measure): each Play is one measurement of a real Qiskit circuit, and the
-studio plays a car, rain, a bell or thunder for what was read. A nine-page tutorial teaches each move by ear (Swap = X, Shuffle = H, Turn =
+studio plays a car, rain, a bell or thunder for what was read. A five-page tutorial teaches each move by ear (Swap = X, Shuffle = H, Turn =
 phase, Sync = CX, Play = measure); four puzzles make you use them (superposition, entanglement, interference, noise)
 with a closeness hum as the eyes-closed progress bar; a two-track studio with four sound pads then lets you build any
 mix and hear what it lands on. The **Circuit** button shows gate names, bits, percentages and the Qiskit code behind any mix.

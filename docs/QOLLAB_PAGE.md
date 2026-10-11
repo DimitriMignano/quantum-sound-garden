@@ -5,7 +5,7 @@
 
 Each track is a qubit that plays one of two sounds. You **Swap** (X), **Shuffle** (Hadamard), **Turn** (phase) and
 **Sync** (CNOT) the tracks, then **Play** (measure): each Play is one measurement of a real Qiskit circuit, and the
-studio plays a car, rain, a bell or thunder for what was read. A nine-page tutorial teaches each
+studio plays a car, rain, a bell or thunder for what was read. A five-page tutorial teaches each
 move by ear, with the two rules dice can never follow (two Shuffles cancel; a Turn is silent until the next
 Shuffle). Four puzzles make you use them (superposition, entanglement, interference, noise), and a closeness hum
 tells you how near the goal you are, so you can solve them without looking. A two-track studio with four sound pads

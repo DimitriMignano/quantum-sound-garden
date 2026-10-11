@@ -292,3 +292,5 @@
 .success__body { margin: 0; color: var(--ink); }
 
 .move__sub--warn { color: var(--phase); }
+
+.welcome__alt { display: flex; gap: 0.5rem; justify-content: center; align-items: center; color: var(--ink-faint); margin-top: 0.4rem; }

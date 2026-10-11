@@ -64,7 +64,7 @@ export function TutorialScene({ engine, details, onDone }: Props) {
   const locked = garden.busy || playing;
   const heard = garden.playback?.finished && garden.result?.memory?.[0] ? nameFor(assignment, garden.result.memory[0]) : null;
   const caption = garden.playback?.finished && played === lesson.id && onLessonMix ? lesson.hear
-    : heard ? `You heard: ${heard}. This is your own mix, not the page’s: the tile shows its odds. Try it loads the page’s mix again.`
+    : heard ? `You heard: ${heard}. The tile shows this mix’s odds. Try it loads the page’s mix.`
     : locked ? undefined
     : lesson.show.length === 0 ? 'Press Try it.'
     : `Press Try it, or build it yourself with ${lesson.show.length === 1 ? 'the move' : 'the moves'} below and press Play.`;

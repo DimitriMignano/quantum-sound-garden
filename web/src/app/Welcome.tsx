@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import type { EngineInfo } from '../engine/types';
 import { APP } from '../content/content';
 
-interface Props { info: EngineInfo | null; reducedMotion: boolean; audioOk: boolean | null; stuck: boolean; onStart(): void }
+interface Props { info: EngineInfo | null; reducedMotion: boolean; audioOk: boolean | null; stuck: boolean; onStart(target?: 'learn' | 'c1' | 'studio'): void }
 
 const GLYPHS = ['♪', '♫', '♩', '♬', '♪', '♫'];
 
@@ -59,8 +59,13 @@ export function Welcome({ info, reducedMotion, audioOk, stuck, onStart }: Props)
         <h2 className="welcome__title">{APP.title}</h2>
         <p className="welcome__pitch">{APP.pitch}</p>
         <p className="welcome__lead">{APP.lead}</p>
-        <button type="button" className="primary primary--big" onClick={onStart}>{APP.startButton}</button>
+        <button type="button" className="primary primary--big" onClick={() => onStart('learn')}>{APP.startButton}</button>
         <p className="help">{APP.startHint}</p>
+        <p className="welcome__alt">
+          <button type="button" className="linklike" onClick={() => onStart('c1')}>Jump to the puzzles</button>
+          <span aria-hidden="true"> · </span>
+          <button type="button" className="linklike" onClick={() => onStart('studio')}>Open the studio</button>
+        </p>
         {audioOk === false && <p className="error" role="alert">{stuck ? 'Your browser’s audio engine is not responding (Chrome does this sometimes). Quit the browser completely and reopen it, then come back here.' : 'Audio could not start in this browser. The studio still works visually.'}</p>}
         <details className="howto">
           <summary>What you are actually hearing</summary>

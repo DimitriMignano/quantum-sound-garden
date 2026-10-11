@@ -29,14 +29,14 @@ export function App({ engine }: Props) {
     return () => mq.removeEventListener('change', fn);
   }, []);
 
-  const start = async () => {
+  const start = async (target: 'learn' | 'c1' | 'studio' = 'learn') => {
     const ok = await audio.start();
     setAudioOk(ok);
     if (!ok && audio.stuck) return; // say so on the welcome screen instead of opening a silent tutorial
     // #learn, #c3 or #studio in the URL opens that scene directly (for demos and testing); the gesture is still required.
     const hash = window.location.hash.replace('#', '');
     if (/^c[1-4]$/.test(hash) || hash === 'studio' || hash === 'learn') { setUnlocked(CHALLENGES.length); setScene(hash); return; }
-    setScene('learn');
+    setScene(target);
   };
 
   const goNext = (index: number) => {

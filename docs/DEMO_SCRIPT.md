@@ -3,9 +3,10 @@
 **0:00 – 0:12 · Hook.** The front door: "Quantum Beats Studio. Make beats with the rules of quantum physics." Press
 *Start* (sound starts). "Everything you hear is a real Qiskit circuit being measured."
 
-**0:12 – 0:45 · Learn.** Page 2 *A track*: Try it, a car drives by. Page 4 *Shuffle*: Try it three times, the car or rain.
-Page 5 *Shuffle, again*: "two Shuffles cancel; dice never do that." Page 7 *Shuffle, Turn, Shuffle*: rain, every time.
-"You just heard interference, and nobody said the word." Press *Skip to the puzzles*.
+**0:12 – 0:45 · Learn.** Page 2 *A track, and Swap*: Try it, rain. Page 3 *Shuffle*: Play three times, the car or rain,
+then a second Shuffle: "two Shuffles cancel; dice never do that." Page 4 *Turn: the dial*: tap ½ ¼ ⅛ and watch the
+odds. "You just heard interference, and nobody said the word." Page 5 *Sync*: the pair that always agrees. Press
+*Start the puzzles*.
 
 **0:45 – 1:05 · Make It Rain (puzzle 1).** "The hum says: far." Press Swap: the hum locks smooth, "there". Press
 Play: rain, "Solved." Press *Why?*: "Swap is the X gate" and the Qiskit code. "You can play this with
