@@ -20,7 +20,7 @@ export function TopBar({ info, scene, onScene, reducedMotion, onReducedMotion, d
   useEffect(() => audio.onChange(() => force((n) => n + 1)), []);
   const b = info?.backends.find((x) => x.id === info.defaultBackendId) ?? info?.backends[0];
   const nav = (id: string, label: string, locked = false, title?: string) => (
-    <button key={id} type="button" className={`navbtn${id === 'learn' || id === 'studio' ? ' navbtn--wide' : ''}${scene === id ? ' is-on' : ''}`} aria-current={scene === id ? 'page' : undefined}
+    <button key={id} type="button" className={`navbtn${id === 'learn' || id === 'studio' || id === 'recap' ? ' navbtn--wide' : ''}${scene === id || (id === 'recap' && /^q[1-4]$/.test(scene)) ? ' is-on' : ''}`} aria-current={scene === id ? 'page' : undefined}
       disabled={!entered || locked} onClick={() => onScene(id)} title={title}>{label}</button>
   );
   return (
@@ -32,7 +32,7 @@ export function TopBar({ info, scene, onScene, reducedMotion, onReducedMotion, d
       <nav className="topbar__nav" aria-label="Scenes">
         {nav('learn', 'Learn')}
         {[1, 2, 3, 4].map((i) => nav(`c${i}`, String(i), i > unlocked, i > unlocked ? 'Solve the previous puzzle first' : `Puzzle ${i}`))}
-        {nav('recap', 'Quantum', unlocked < 5, unlocked < 5 ? 'Solve the four puzzles first' : 'The quantum you used')}
+        {nav('recap', 'Qubits', unlocked < 5, unlocked < 5 ? 'Solve the four sound puzzles first' : 'The same puzzles, as qubits')}
         {nav('studio', 'Studio')}
       </nav>
       <div className="topbar__tools">

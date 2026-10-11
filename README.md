@@ -1,7 +1,7 @@
 # Quantum Sound Garden
 
 **Quantum Beats Studio: make sounds with the rules of quantum physics.** Learn four moves by ear → solve four
-puzzles → read the quantum you used → make a beat.
+puzzles → play the same four again as qubits → make a beat.
 
 An audio-first way to learn quantum computing and then make something with it, for people who have never played an
 instrument or touched a qubit. Each track is a qubit that plays one of two sounds. You **Swap** (X), **Shuffle**
@@ -10,7 +10,7 @@ a real Qiskit circuit, and you hear a car, rain, a bell or thunder for what was 
 move by ear, with no quantum words. Four puzzles make you use them; each has a goal panel (the goal, when it is done,
 a live closeness word), hints that are the steps of the solution, a **Show solution** button so nobody gets stuck, and,
 once solved, the same thing **in quantum terms** (qubit and X, superposition and entanglement, interference, noise and
-depth). A recap page puts the four moves and Play in quantum words next to the Qiskit code. Then the studio: four sound
+depth). Then the same four puzzles again as qubits: the tracks become qubit 0 and qubit 1, the sounds become |0⟩ and |1⟩, the moves become X, H, P(θ) and CX, Play becomes Measure, and a state line draws the ket so the phase a Turn sets is visible; the sound names stay under the gate names for two puzzles, then go. The hands already know the board; only the words change. Then the studio: four sound
 pads and **Loop**, a beat machine whose every bar is eight fresh readings of your mix. The **Circuit** button shows gate
 names, bits, percentages and the Qiskit code behind any mix.
 

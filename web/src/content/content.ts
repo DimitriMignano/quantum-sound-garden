@@ -1,7 +1,8 @@
 /**
  * Every user-visible word in one place (American English), plus the tutorial, the puzzles, the recap and the studio.
  * The first-run path (welcome → Learn → puzzles) uses studio words only: tracks, sounds, Play, the four moves. Quantum
- * words arrive when a puzzle is solved ("In quantum terms"), on the recap page, and in the Circuit view. Every claim here
+ * words arrive when a puzzle is solved ("In quantum terms"), in the qubit puzzles (the same board, relabeled), and in the
+ * Circuit view. Every claim here
  * was checked against the tests in server/tests and web/src/engine/statevector.test.ts.
  */
 import type { Circuit, Ideal, Op } from '../engine/types';
@@ -28,6 +29,66 @@ export const ACTIONS: Record<Op['op'] | 'bloom', ActionCopy> = {
   bloom: { verb: 'Play', gate: 'measure', what: 'Every track lands on one of its sounds and plays it once.' },
 };
 
+/**
+ * The vocabulary a scene speaks. The sound puzzles speak in tracks, sounds and moves; the qubit puzzles replay the same
+ * board in quantum words (qubit, |0⟩, |1⟩, X, H, P(θ), CX, Measure). Level 1 keeps the sound names underneath; level 2
+ * drops them. Nothing else changes: the hands already know the board.
+ */
+export interface Lingo {
+  mode: 'sound' | 'quantum';
+  level: 1 | 2;
+  verbs: Record<Op['op'] | 'bloom', string>;
+  subs: Record<Op['op'] | 'bloom', string> | null;   // the other vocabulary, shown under the verbs
+  whats: Record<Op['op'] | 'bloom', string>;         // one line per move, for the rules fold
+  trackName(q: number, name: string): string;
+  sideName(bit: 0 | 1, soundName: string): string;
+  sideSub(bit: 0 | 1, soundName: string): string | null; // the sound name under |0⟩ / |1⟩ at level 1
+  sync: string;
+  applyTo: string;
+  pathHint: string;
+  pathEmpty: string;
+  pressToPlay: string;
+  playing: string;
+  lessonLabel: string;
+  /** the caption after a Play: the outcome (Qiskit order: qubit 0 is the rightmost bit) and the sounds */
+  measured(outcome: string, sounds: string): string;
+}
+export const SOUND_LINGO: Lingo = {
+  mode: 'sound', level: 1,
+  verbs: { flip: 'Swap', split: 'Shuffle', twist: 'Turn', link: 'Sync', bloom: 'Play' },
+  subs: null,
+  whats: { flip: ACTIONS.flip.what, split: ACTIONS.split.what, twist: ACTIONS.twist.what, link: ACTIONS.link.what, bloom: ACTIONS.bloom.what },
+  trackName: (_q, name) => name,
+  sideName: (_bit, soundName) => soundName,
+  sideSub: () => null,
+  sync: 'Sync', applyTo: 'Moves apply to',
+  pathHint: 'The mix, in order. Tap a move to remove it.', pathEmpty: 'No moves yet. Every track is on its first sound.',
+  pressToPlay: 'Press Play to hear where this mix lands.', playing: 'Playing…', lessonLabel: 'In quantum terms',
+  measured: (_o, sounds) => `You heard ${sounds}`,
+};
+export const quantumLingo = (level: 1 | 2): Lingo => ({
+  mode: 'quantum', level,
+  verbs: { flip: 'X', split: 'H', twist: 'P(θ)', link: 'CX', bloom: 'Measure' },
+  subs: level === 1 ? { flip: 'Swap', split: 'Shuffle', twist: 'Turn', link: 'Sync', bloom: 'Play' } : null,
+  whats: {
+    flip: 'Flips |0⟩ and |1⟩.',
+    split: 'Puts the qubit in an equal superposition of 0 and 1. H twice is the identity.',
+    twist: 'Multiplies the |1⟩ part by a phase. The odds do not move until an H makes the paths meet.',
+    link: 'Flips the target qubit when the control qubit is |1⟩.',
+    bloom: 'Reads every qubit as 0 or 1, and plays that sound.',
+  },
+  trackName: (q) => `qubit ${q}`,
+  sideName: (bit) => (bit ? '|1⟩' : '|0⟩'),
+  sideSub: (_bit, soundName) => (level === 1 ? soundName : null),
+  sync: 'CX', applyTo: 'Gates apply to',
+  pathHint: 'The circuit, in order. Tap a gate to remove it.', pathEmpty: 'No gates yet. Every qubit is |0⟩.',
+  pressToPlay: 'Press Measure to read every qubit.', playing: 'Measuring…', lessonLabel: 'What you did',
+  measured: (o, sounds) => {
+    const bits = o.split('').reverse().map((b, q) => `qubit ${q} → ${b}`).join(', ');
+    return level === 1 ? `Measured ${bits} (${sounds})` : `Measured ${bits}`;
+  },
+});
+
 export const WHY_BEATS_VARY =
   'Each Play is one measurement: one definite answer, drawn with the odds the mix set. The same mix, played again, gives the same odds, not the same answer.';
 
@@ -49,13 +110,16 @@ export function assignmentFor(tracks: Track[]): Record<string, string[]> {
 
 const TURN_LABEL: Record<string, string> = { '0.5': '½', '0.25': '¼', '0.125': '⅛', '-0.25': '−¼' };
 
-/** A mix in words: "Shuffle Track A, then Sync Track A to Track B". Used by Show solution. */
-export function describeOps(ops: Op[], names: string[]): string {
+const TURN_MATH: Record<string, string> = { '0.5': 'π', '0.25': 'π/2', '0.125': 'π/4', '-0.25': '−π/2' };
+
+/** A mix in words: "Shuffle Track A, then Sync Track A to Track B", or "H on qubit 0, then CX from qubit 0 to qubit 1". */
+export function describeOps(ops: Op[], names: string[], lingo: Lingo = SOUND_LINGO): string {
+  const q = lingo.mode === 'quantum';
   const one = (o: Op): string => {
-    if (o.op === 'flip') return `Swap ${names[o.q]}`;
-    if (o.op === 'split') return `Shuffle ${names[o.q]}`;
-    if (o.op === 'twist') return `Turn ${TURN_LABEL[String(o.turns)] ?? o.turns} on ${names[o.q]}`;
-    return `Sync ${names[o.control]} to ${names[o.target]}`;
+    if (o.op === 'flip') return q ? `X on ${names[o.q]}` : `Swap ${names[o.q]}`;
+    if (o.op === 'split') return q ? `H on ${names[o.q]}` : `Shuffle ${names[o.q]}`;
+    if (o.op === 'twist') return q ? `P(${TURN_MATH[String(o.turns)] ?? `${o.turns}·2π`}) on ${names[o.q]}` : `Turn ${TURN_LABEL[String(o.turns)] ?? o.turns} on ${names[o.q]}`;
+    return q ? `CX from ${names[o.control]} to ${names[o.target]}` : `Sync ${names[o.control]} to ${names[o.target]}`;
   };
   return ops.map(one).join(', then ');
 }
@@ -72,7 +136,9 @@ export interface Deeper {
 
 export interface Challenge {
   id: string;
-  index: number;
+  index: number;         // 1..4 within its stage
+  stage: 'sound' | 'quantum';
+  lingo?: Lingo;         // the words the page speaks (default: sounds)
   title: string;
   goal: string;          // one sentence, in sound words; the biggest text on the page
   done: string;          // one sentence: what you will see and hear, exactly what `success` checks
@@ -115,6 +181,7 @@ export const CHALLENGES: Challenge[] = [
   {
     id: 'rain',
     index: 1,
+    stage: 'sound',
     title: 'Make It Rain',
     goal: 'Make Track A play rain, every Play.',
     done: 'The tile reads always Rain.',
@@ -144,6 +211,7 @@ export const CHALLENGES: Challenge[] = [
   {
     id: 'pair',
     index: 2,
+    stage: 'sound',
     title: 'Perfect Pair',
     goal: 'Make the two tracks always agree: rain with thunder, the car with the bell.',
     done: 'Both tiles read 50 · 50, and a Play never gives rain with the bell or thunder with the car.',
@@ -188,6 +256,7 @@ export const CHALLENGES: Challenge[] = [
   {
     id: 'footsteps',
     index: 3,
+    stage: 'sound',
     title: 'Silence the Footsteps',
     goal: 'Make the footsteps vanish: crickets, every Play.',
     done: 'The tile reads always Crickets.',
@@ -228,6 +297,7 @@ export const CHALLENGES: Challenge[] = [
   {
     id: 'repair',
     index: 4,
+    stage: 'sound',
     title: 'Clean the Mix',
     goal: 'Make the same pair with two moves.',
     done: 'Two moves on the path, the tracks still agree, and the measured bars sit close to the predicted ones.',
@@ -265,6 +335,105 @@ export const CHALLENGES: Challenge[] = [
     step: 0.6,
   },
 ];
+
+/** The same four puzzles again, in quantum words: the hands already know the board, only the names and the picture change.
+ *  Levels: the first two keep the sound names under the gate names; the last two drop them. */
+const Q1: Lingo = quantumLingo(1), Q2: Lingo = quantumLingo(2);
+const PAIR_DEEPER: Deeper = {
+  title: 'Is it really entanglement? Measure sideways.',
+  intro: 'Measure sideways reads every qubit in the X basis (an H right before the measurement). Ask it of your pair, and of two classical twins: qubits that were both left alone or both flipped by one coin toss.',
+  runs: [
+    { id: 'pair-x', label: 'Your pair, sideways', basis: 'x', useCircuit: true, explain: 'Still 00 or 11 only. The Bell pair agrees in the X basis too.' },
+    { id: 'twins-z', label: 'Classical twins', basis: 'z', twins: [[], [{ op: 'flip', q: 0 }, { op: 'flip', q: 1 }]], explain: 'In the Z basis the twins agree just like your pair.' },
+    { id: 'twins-x', label: 'Classical twins, sideways', basis: 'x', twins: [[], [{ op: 'flip', q: 0 }, { op: 'flip', q: 1 }]], explain: 'In the X basis the twins fall apart: all four results. Their agreement lived in one basis only.' },
+  ],
+  outro: 'Agreement in both bases is a standard entanglement witness (it assumes the measurements are what they say they are). It is not a Bell test of nonlocality; that needs more angles.',
+};
+export const QUANTUM_CHALLENGES: Challenge[] = [
+  {
+    id: 'q-x', index: 1, stage: 'quantum', lingo: Q1,
+    title: 'Flip the qubit',
+    goal: 'Make qubit 0 read 1, every measurement.',
+    done: 'The tile reads always |1⟩.',
+    tracks: [TRACK_A], start: [], allowed: ['flip', 'split', 'twist'],
+    target: { '0': 0, '1': 1 }, exposure: 4,
+    success: (i) => p1(i) > 0.99,
+    hints: ['X flips |0⟩ to |1⟩.', 'Press X, then Measure.'],
+    solution: [X0],
+    quantum: { concept: 'The X gate', lines: ['X is the bit flip: |0⟩ becomes |1⟩. In Qiskit: qc.x(0).', 'H · P(π) · H is the same gate, built from a superposition and a phase.'] },
+    beats: 12, moments: 8, step: 0.8,
+  },
+  {
+    id: 'q-bell', index: 2, stage: 'quantum', lingo: Q1,
+    title: 'A Bell pair',
+    goal: 'Make the two qubits always agree: 00 or 11, never 01 or 10.',
+    done: 'Both tiles read 50 · 50, and 01 and 10 sit at 0%.',
+    story: 'H on both qubits would give all four results, a quarter each.',
+    tracks: [TRACK_A, TRACK_B], start: [], allowed: ['flip', 'split', 'twist', 'link'],
+    target: BELL, exposure: 4,
+    closeness: (p) => { const toss = (q: number) => 1 - Math.abs(2 * marginalOne(p, q) - 1); return Math.min(agreement(p, 0, 1), (toss(0) + toss(1)) / 2); },
+    success: (i) => p1(i, 0) > 0.35 && p1(i, 0) < 0.65 && p1(i, 1) > 0.35 && p1(i, 1) < 0.65 && agreement(i.probabilities, 0, 1) > 0.99,
+    hints: [
+      'H on qubit 0: an equal superposition of 0 and 1. Watch the state line.',
+      'With qubit 0 selected, press CX (it reads “to qubit 1”): qubit 1 copies qubit 0, path by path.',
+      'H on both qubits is not it: 01 and 10 at 25% each.',
+    ],
+    solution: [H0, SYNC],
+    quantum: { concept: 'A Bell state', lines: ['H put qubit 0 in (|0⟩ + |1⟩)/√2. CX copied that choice onto qubit 1: (|00⟩ + |11⟩)/√2.', 'In Qiskit: qc.h(0); qc.cx(0, 1). Go deeper measures it sideways.'] },
+    deeper: PAIR_DEEPER,
+    beats: 16, moments: 10, step: 0.8,
+  },
+  {
+    id: 'q-phase', index: 3, stage: 'quantum', lingo: Q2,
+    title: 'Cancel the 1',
+    goal: 'Make qubit 0 read 0, every measurement.',
+    done: 'The tile reads always |0⟩.',
+    story: 'Qubit 0 is in (|0⟩ − |1⟩)/√2: an H, then P(π).',
+    tracks: [TRACK_A], start: [H0, HALF], allowed: ['split', 'twist', 'flip'],
+    target: { '0': 1, '1': 0 }, exposure: 4,
+    success: (i) => p1(i) < 0.01,
+    hints: [
+      'P changes the sign of |1⟩, not the odds. The state line shows it; the bar does not.',
+      'H makes the paths meet. On (|0⟩ − |1⟩)/√2 it gives |1⟩: the minus sign decided.',
+      'P(π) once more, then H: (|0⟩ + |1⟩)/√2 becomes |0⟩.',
+    ],
+    solution: [H0, HALF, HALF, H0],
+    quantum: { concept: 'Interference, on purpose', lines: ['P(π) turned (|0⟩ + |1⟩)/√2 into (|0⟩ − |1⟩)/√2: same odds, opposite sign.', 'H on the plus state gives |0⟩; on the minus state, |1⟩. The sign, not the odds, decided the answer.'] },
+    deeper: {
+      title: 'What if the paths forgot each other?',
+      intro: 'A dephased twin is your circuit with a P(π) scrambled in, half the time, right before the paths meet. That is what noise does to coherence.',
+      runs: [
+        { id: 'coherent', label: 'Your circuit', basis: 'z', useCircuit: true, explain: 'Coherent paths: the phase decides where they add and where they cancel.' },
+        { id: 'dephased', label: 'Dephased twin', basis: 'z', dephaseLearner: true, explain: 'The 1 is back, 50 · 50, whatever the phase. Interference needs the paths to stay coherent.' },
+      ],
+      outro: 'No classical mixture of the two paths can cancel the 1. Only a coherent superposition can.',
+    },
+    beats: 12, moments: 8, step: 0.8,
+  },
+  {
+    id: 'q-depth', index: 4, stage: 'quantum', lingo: Q2,
+    title: 'Two gates, not six',
+    goal: 'Prepare the same Bell state with two gates.',
+    done: 'Two gates on the circuit, 01 and 10 at 0%, and the measured bars close to the predicted ones.',
+    story: 'This Bell pair was built with six gates. Each gate lets in a little noise, turned up here.',
+    tracks: [TRACK_A, TRACK_B],
+    start: [
+      { op: 'split', q: 0 }, { op: 'split', q: 1 }, { op: 'split', q: 1 },
+      { op: 'link', control: 0, target: 1 }, { op: 'link', control: 0, target: 1 }, { op: 'link', control: 0, target: 1 },
+    ],
+    allowed: ['flip', 'split', 'twist', 'link'],
+    target: BELL, exposure: 4, noisy: true, intended: [H0, SYNC],
+    success: (i, c, fid) => {
+      const same = Object.keys(BELL).every((k) => near(i.probabilities[k] ?? 0, BELL[k as keyof typeof BELL], 1e-6));
+      return same && c.ops.length <= 2 && (fid === undefined || fid > 0.7);
+    },
+    hints: ['Tap a gate on the circuit to remove it.', 'H·H = I and CX·CX = I: pairs cancel.', 'Keep one H on qubit 0 and one CX. Remove the rest.'],
+    solution: [H0, SYNC],
+    quantum: { concept: 'Depth', lines: ['H·H = I and CX·CX = I, so six gates meant the same state as two. On a noisy device the two-gate circuit measures closer to it.', 'In Qiskit: qc.h(0); qc.cx(0, 1), and nothing else.'] },
+    beats: 48, moments: 16, step: 0.6,
+  },
+];
+export const ALL_CHALLENGES: Challenge[] = [...CHALLENGES, ...QUANTUM_CHALLENGES];
 
 /** How close a mix is to a puzzle's goal, 0..1: the puzzle's own measure or fidelity to its target odds. The clean-up
  *  puzzle also counts the extra moves. The page shows it as a word: far, warmer, closer, almost, there. */
@@ -307,10 +476,11 @@ export const LESSONS: Lesson[] = [
   { id: 'sync', title: 'Sync', tracks: 2, text: 'Track B plays a bell or thunder. Sync makes B follow A: Shuffle A, then Sync, and the two always agree.', show: ['flip', 'split', 'link'], ops: [H0, SYNC], beats: 8, hear: 'One landing. Play more: the car with the bell, or rain with thunder. Never crossed.' },
 ];
 
-/** The recap page after the last puzzle: the same four moves, in quantum words. */
-export const RECAP = {
-  title: 'The quantum you used',
-  lead: 'Every mix you built was a circuit. Here it is in quantum words.',
+/** The door into the qubit puzzles: the same board, the real names, then play. */
+export const QUBITS = {
+  title: 'Same moves, quantum names',
+  lead: 'You already know how to play this. From here the tracks are qubits, the sounds are |0⟩ and |1⟩, and the moves have their real names. The same four puzzles, in the words a quantum computer uses.',
+  start: 'Play them as qubits',
   rows: [
     { move: 'Track', gate: 'qubit', meaning: 'Reads 0 or 1 when measured: 0 plays the first sound, 1 the second.' },
     { move: 'Swap', gate: 'X', meaning: 'Flips 0 and 1.' },
@@ -319,15 +489,7 @@ export const RECAP = {
     { move: 'Sync', gate: 'CX', meaning: 'Entanglement: the target flips when the control reads 1, so the pair agrees.' },
     { move: 'Play', gate: 'measure', meaning: 'One definite reading per qubit, drawn with the odds the circuit set.' },
   ],
-  concepts: [
-    { name: 'Superposition', where: 'puzzle 2', what: 'A shuffled track is undecided until Play. Not unknown: undecided.' },
-    { name: 'Entanglement', where: 'puzzle 2', what: 'The pair agrees in the usual question and sideways. Classical twins agree in one.' },
-    { name: 'Interference', where: 'puzzle 3', what: 'Paths with the right phase cancel. Dice never do that.' },
-    { name: 'Measurement', where: 'every Play', what: 'Same mix, same odds, a fresh answer each time.' },
-    { name: 'Noise', where: 'puzzle 4', what: 'Every gate costs a little. Shorter circuits survive.' },
-  ],
-  codeTitle: 'The Perfect Pair, in Qiskit',
-  next: 'Make a beat',
+  puzzles: 'The qubit puzzles',
 };
 
 /** The studio: a beat machine. Every bar is a fresh set of readings of the mix. */

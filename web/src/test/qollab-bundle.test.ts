@@ -35,7 +35,8 @@ async function openPuzzleOne() {
   for (let i = 0; i < 50 && !document.querySelector('.scene--puzzle .move--flip'); i++) await new Promise((r) => setTimeout(r, 50));
 }
 
-describe('the built Qollab bundle', () => {
+// each test boots the built bundle in jsdom; under machine load that took more than vitest's 5 s default (2026-10-10)
+describe('the built Qollab bundle', { timeout: 20000 }, () => {
   beforeAll(() => { expect(existsSync(bundle), 'run npm run build:qollab first').toBe(true); });
 
   it('keeps qsg.circuit external and index.html script-free', () => {

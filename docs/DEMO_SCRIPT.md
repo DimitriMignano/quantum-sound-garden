@@ -20,10 +20,10 @@ different question: that is the witness."
 time. Turn ½ again, then Shuffle: crickets only. "Interference. The paths remembered each other."
 
 **2:00 – 2:15 · Clean the Mix (puzzle 4), fast.** The six-move mix plays with stray thunder; tap the redundant beads
-away, Play again: the match jumps. "Fewer gates, less noise." Press *The quantum you used*.
+away, Play again: the match jumps. "Fewer gates, less noise." Press *Play them as qubits*.
 
-**2:15 – 2:30 · Recap.** The table: Track is a qubit, Swap is X, Shuffle is H, Turn is a phase, Sync is CX, Play is a
-measurement. The Perfect Pair in Qiskit, five lines.
+**2:15 – 2:30 · As qubits.** The same board, relabeled: qubit 0, |0⟩ and |1⟩, H, CX, Measure. Build the Bell pair
+again in ten seconds; the state line reads (|00⟩ + |11⟩)/√2. "They already know how to play this."
 
 **2:30 – 3:00 · Studio + close.** Press *Make a beat*. Four pads, a sound each; Shuffle A, Sync; press *Loop*: a bar of
 eight beats, then another, never the same twice. Change the mix while it runs: the next bar follows. Press *Circuit*:

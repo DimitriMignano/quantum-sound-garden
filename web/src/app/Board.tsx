@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react';
 import type { Op } from '../engine/types';
 import { ACTIONS } from '../content/content';
 import { PathView } from './PathView';
+import { useLingo } from './lingo';
 
 interface Props {
   seedNames: string[];
@@ -29,6 +30,9 @@ const TURN: Record<string, { label: string; math: string }> = {
 
 /** The board: which track, the four moves, Play, and the mix as beads underneath. Every mix is a circuit. */
 export function Board({ seedNames, allowed, ops, disabled, showGates, turns = [0.5, 0.25], steady, onAdd, onRemove, onReset, onRetune, bloom, extra }: Props) {
+  const lingo = useLingo();
+  const quantum = lingo.mode === 'quantum';
+  const math = showGates || quantum; // the amounts carry their angle whenever the gates are in view
   const [seed, setSeed] = useState(0);
   const [turn, setTurn] = useState(turns[0]);
   const n = seedNames.length;
@@ -42,11 +46,13 @@ export function Board({ seedNames, allowed, ops, disabled, showGates, turns = [0
   const move = (kind: Op['op'], op: Op) => {
     if (!allowed.includes(kind)) return null;
     const a = ACTIONS[kind];
+    const verb = lingo.verbs[kind], what = lingo.whats[kind], sub = lingo.subs?.[kind];
     return (
-      <button key={kind} type="button" className={`move move--${kind}`} disabled={disabled} onClick={() => onAdd(op)} title={a.what} aria-label={`${a.verb}${showGates ? `, the ${a.gate} gate` : ''}: ${a.what}`}>
-        <span className="move__verb">{a.verb}</span>
+      <button key={kind} type="button" className={`move move--${kind}`} disabled={disabled} onClick={() => onAdd(op)} title={what} aria-label={`${verb}${showGates && !quantum ? `, the ${a.gate} gate` : ''}: ${what}`}>
+        <span className="move__verb">{verb}</span>
         {kind === 'link' && n > 1 && <span className="move__sub">to {seedNames[other]}</span>}
-        {showGates && <span className="move__gate">{a.gate}</span>}
+        {sub && <span className="move__sub">{sub}</span>}
+        {showGates && !quantum && <span className="move__gate">{a.gate}</span>}
       </button>
     );
   };
@@ -54,21 +60,23 @@ export function Board({ seedNames, allowed, ops, disabled, showGates, turns = [0
   // Turn is one card: the move on top, its amounts inside it. Tapping an amount sets the next Turn, or retunes the last one.
   const dialCard = () => {
     const a = ACTIONS.twist;
+    const verb = lingo.verbs.twist, what = lingo.whats.twist, sub = lingo.subs?.twist;
     const warn = Boolean(steady?.[seed]);
     const label = TURN[String(turn)]?.label ?? String(turn);
     return (
       <div className={`move move--twist move--dial${disabled ? ' is-disabled' : ''}`} style={{ flexGrow: 1 + 0.7 * Math.max(0, turns.length - 2) }}>
-        <button type="button" className="move__face" disabled={disabled} onClick={() => onAdd({ op: 'twist', q: seed, turns: turn })} title={a.what}
-          aria-label={`${a.verb} by ${label}${showGates ? `, the ${a.gate} gate` : ''}: ${a.what}`}>
-          <span className="move__verb">{a.verb}</span>
-          {warn && <span className="move__sub move__sub--warn">no effect: track is steady</span>}
-          {showGates && <span className="move__gate">{a.gate}</span>}
+        <button type="button" className="move__face" disabled={disabled} onClick={() => onAdd({ op: 'twist', q: seed, turns: turn })} title={what}
+          aria-label={`${verb} by ${label}${showGates && !quantum ? `, the ${a.gate} gate` : ''}: ${what}`}>
+          <span className="move__verb">{verb}</span>
+          {sub && <span className="move__sub">{sub}</span>}
+          {warn && <span className="move__sub move__sub--warn">{quantum ? 'no effect: the qubit is in a basis state' : 'no effect: track is steady'}</span>}
+          {showGates && !quantum && <span className="move__gate">{a.gate}</span>}
         </button>
         <div className="move__amounts" role="group" aria-label={lastTurn >= 0 && onRetune ? 'Turn amount (changes the Turn on this track)' : 'Turn amount'}>
           {turns.map((t) => (
             <button key={t} type="button" className={`chip chip--small${dial === t ? ' is-on' : ''}`} aria-pressed={dial === t} disabled={disabled} onClick={() => pick(t)}
-              title={`${TURN[String(t)]?.label ?? t} turn${lastTurn >= 0 && onRetune ? ' (turns the dial already on this track)' : ''}${showGates ? ` (${TURN[String(t)]?.math})` : ''}`}>
-              {TURN[String(t)]?.label ?? t}{showGates && <small> {TURN[String(t)]?.math}</small>}
+              title={`${TURN[String(t)]?.label ?? t} turn${lastTurn >= 0 && onRetune ? ' (turns the dial already on this track)' : ''}${math ? ` (${TURN[String(t)]?.math})` : ''}`}>
+              {TURN[String(t)]?.label ?? t}{math && <small> {TURN[String(t)]?.math}</small>}
             </button>
           ))}
         </div>
@@ -80,7 +88,7 @@ export function Board({ seedNames, allowed, ops, disabled, showGates, turns = [0
     <div className="board">
       {n > 1 && (
         <div className="board__seeds" role="group" aria-label="Which track the next move applies to">
-          <span className="label">Moves apply to</span>
+          <span className="label">{lingo.applyTo}</span>
           {seedNames.map((name, i) => (
             <button key={i} type="button" className={`chip${seed === i ? ' is-on' : ''}`} aria-pressed={seed === i} disabled={disabled} onClick={() => setSeed(i)}>{name}</button>
           ))}

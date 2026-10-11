@@ -153,3 +153,15 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
     sentence, one done-when sentence, at most one story sentence, hints of one sentence; the welcome lead and the moves'
     descriptions shortened; Great job! is now Solved; "The same garden" is gone.
   · Docs rewritten for the flow: README, JUDGES.md (90-second path), QOLLAB_PAGE.md, DEMO_SCRIPT.md, the thesis.
+- 10-10 22:55 founder: the recap page is great but not the point; keep the interactivity and let the sounds become the
+  quantum picture, so people get used to playing with quantum because they remember playing with sounds. Built: the
+  same four puzzles again as qubits. A vocabulary layer ("lingo", a React context every component reads) relabels the
+  whole board without touching the mechanics: tracks become qubit 0 and qubit 1, the sounds become |0⟩ and |1⟩, the
+  moves become X, H, P(θ) and CX, Play becomes Measure, the beads read H and CX, the Sync chip reads "CX: qubit 0 →
+  qubit 1", and a state line draws the ket (|0⟩, (|0⟩ + |1⟩)/√2, (|0⟩ − |1⟩)/√2, (|0⟩ + e^{iπ/4}|1⟩)/√2,
+  (|00⟩ + |11⟩)/√2, 0.92|0⟩ − 0.38i|1⟩), which is where the phase a Turn sets becomes visible. The first two qubit
+  puzzles keep the sound names under the gate names and in the caption ("Measured qubit 0 → 1, qubit 1 → 1 (Rain +
+  Thunder)"); the last two drop them. The recap page is now the door: the mapping table, "Play them as qubits", and the
+  four qubit puzzles unlocked in order; the nav entry is Qubits. The tests cover all eight puzzles and the ket formatter.
+  Live on puzzle 2 as qubits: the state line moved |00⟩ → (|00⟩ + |01⟩)/√2 → (|00⟩ + |11⟩)/√2 as H and CX were pressed;
+  Measure solved it with "Measured qubit 0 → 1, qubit 1 → 1 (Rain + Thunder)" and "What you did: A Bell state".

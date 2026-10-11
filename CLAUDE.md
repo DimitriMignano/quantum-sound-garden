@@ -10,8 +10,9 @@ closed. Each track is a qubit that plays one of two sounds; the person Swaps (X)
 Syncs (CX) the tracks and Plays (measures) them, and hears a car, rain, a bell or thunder for what
 a real Qiskit circuit read on each Play (one Play, one sound). A five-page tutorial teaches each move by ear with no quantum words; four
 puzzles make the moves necessary, each with a goal panel (the goal, when it is done, a live closeness word), hints that
-are the steps of the solution, a Show solution button, and the lesson in quantum terms once solved; a recap page maps
-the moves to gates beside the Qiskit code; the studio's Loop makes a beat from eight fresh readings per bar; the
+are the steps of the solution, a Show solution button, and the lesson in quantum terms once solved; the same four puzzles are then
+played again as qubits (qubit 0, |0⟩ and |1⟩, X, H, P(θ), CX, Measure, a state line that shows the phase), the sound
+names fading out over the four; the studio's Loop makes a beat from eight fresh readings per bar; the
 Circuit toggle carries the gates, the bits and the code everywhere. It deliberately is not
 a synthesizer, a DAW or a step sequencer, and it never claims the person is "hearing a quantum state": the sound is
 classical audio driven by probabilities and shots.
@@ -70,5 +71,8 @@ npm install && (cd web && npm install)
   all · check: the submission platform's "runtime environment" page · 2026-10-10
 - Never `git add -A` in a repo that holds a venv or build output: the first commit here staged 9,011 venv files ·
   check: `git diff --cached --stat | tail -1` before every commit, and `.venv/` in .gitignore on day one · 2026-10-10
+- A red gate with nothing wrong: the bundle tests boot the built bundle three times in jsdom and exceeded vitest's 5 s
+  default under machine load (one run took 72 s to time out) · check: run the file alone; it now carries a 20 s timeout ·
+  2026-10-10
 - A gate joined to its commit with `;` is not a gate: a red `npm run check` still committed and pushed once here ·
   check: `npm run check && git commit … && git push`, never `;` · 2026-10-10

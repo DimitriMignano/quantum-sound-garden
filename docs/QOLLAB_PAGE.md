@@ -1,7 +1,6 @@
 # Quantum Beats Studio
 
-**Make sounds with the rules of quantum physics.** Learn four moves by ear → solve four puzzles → read the quantum
-you used → make a beat.
+**Make sounds with the rules of quantum physics.** Learn four moves by ear → solve four puzzles → play the same four again as qubits → make a beat.
 
 Each track is a qubit that plays one of two sounds. You **Swap** (X), **Shuffle** (Hadamard), **Turn** (phase) and
 **Sync** (CNOT) the tracks, then **Play** (measure): each Play is one measurement of a real Qiskit circuit, and you hear
@@ -9,7 +8,7 @@ a car, rain, a bell or thunder for what was read. A five-page tutorial teaches e
 including the two rules dice can never follow (two Shuffles cancel; a Turn is silent until the next Shuffle). Four
 puzzles make you use them (superposition and entanglement, interference, noise); each has a goal panel with a live
 closeness word, hints that are the steps of the solution, a Show solution button, and, once solved, the lesson in
-quantum terms. A recap page maps the moves to gates next to the Qiskit code. The studio's **Loop** is a beat machine:
+quantum terms. Then the same four puzzles again as qubits: qubit 0 and qubit 1, |0⟩ and |1⟩, X, H, P(θ), CX, Measure, with a state line that shows the phase; the sound names stay for two puzzles, then go. The studio's **Loop** is a beat machine:
 every bar is eight fresh readings of your mix. The **Circuit** button shows gate names, bits, percentages and the Qiskit
 code behind any mix. (Repository name: quantum-sound-garden.)
 
@@ -21,7 +20,7 @@ _This effort is supported by Qollab & IonQ._
    the puzzles play on Qiskit's Statevector (computed in your browser, readings sampled locally) and the studio offers the
    single IonQ job (with IonQ's noise model of a real QPU) when you choose it; press Run again for another.
 2. Press **Start**. Sound starts only after that press (browser autoplay rules). Headphones help.
-3. Learn the moves, press **Start the puzzles**, solve the four, read the recap, then open **Studio** and press **Loop**.
+3. Learn the moves, press **Start the puzzles**, solve the four, play them again as qubits, then open **Studio** and press **Loop**.
 
 Use Chrome, Edge, Brave, Opera or Firefox; Qollab does not run projects in Safari yet.
 

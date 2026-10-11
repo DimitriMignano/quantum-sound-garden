@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { QuantumEngine } from '../engine/types';
-import { ACTIONS, assignmentFor, closenessOf, closenessWord, describeOps, type Challenge } from '../content/content';
+import { ACTIONS, assignmentFor, closenessOf, closenessWord, describeOps, SOUND_LINGO, type Challenge } from '../content/content';
+import { LingoProvider } from './lingo';
 import { mixer } from '../audio/mixer';
 import { useGarden } from './useGarden';
 import { marginalOne } from '../engine/outcomes';
@@ -25,7 +26,9 @@ const sameOps = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify
 
 /** One puzzle: the goal panel, the tiles, Play, hints that lead to the solution, Show solution, and the quantum lesson once solved. */
 export function ChallengeScene({ engine, challenge, details, onNext, onSolved, isLast }: Props) {
-  const trackNames = useMemo(() => challenge.tracks.map((t) => t.name), [challenge]);
+  const lingo = challenge.lingo ?? SOUND_LINGO;
+  const quantum = lingo.mode === 'quantum';
+  const trackNames = useMemo(() => challenge.tracks.map((t, q) => lingo.trackName(q, t.name)), [challenge, lingo]);
   const assignment = useMemo(() => assignmentFor(challenge.tracks), [challenge]);
   const garden = useGarden(engine, challenge.tracks.length, assignment, challenge.start);
   const [hintsShown, setHintsShown] = useState(0);
@@ -76,28 +79,31 @@ export function ChallengeScene({ engine, challenge, details, onNext, onSolved, i
   const busy = garden.busy || phase === 'playing';
   // progressive exposure: gate names from puzzle 1, bits and odds from 2; the circuit and the code wait under Go deeper
   const gates = details || challenge.exposure >= 1;
-  const readings = details || challenge.exposure >= 2;
+  const readings = details || challenge.exposure >= 2 || quantum;
 
   let caption: string;
   if (resultIsCurrent && garden.measured) {
-    const heard = describeHeard(garden.measured, assignment, garden.result?.memory?.[0] ?? null);
-    caption = goalMet ? `Solved. You heard ${heard}.` : `You heard ${heard}.`;
+    const played = garden.result?.memory?.[0] ?? null;
+    const heard = describeHeard(garden.measured, assignment, played);
+    const said = played ? lingo.measured(played, heard) : `You heard ${heard}`;
+    caption = goalMet ? `Solved. ${said}.` : `${said}.`;
     if (challenge.noisy && garden.measuredFidelity !== null) {
       caption += ` Match to the clean mix: ${pct(garden.measuredFidelity)}`;
       caption += baseline && garden.circuit.ops.length < baseline.ops ? ` (it was ${pct(baseline.fidelity)} with ${baseline.ops} moves; yours has ${garden.circuit.ops.length}).` : '.';
     }
   } else if (onSolution) {
-    caption = `Solution loaded: ${describeOps(challenge.solution, trackNames)}. Press Play.`;
+    caption = `Solution loaded: ${describeOps(challenge.solution, trackNames, lingo)}. Press ${lingo.verbs.bloom}.`;
   } else {
-    caption = 'Press Play to hear where this mix lands.';
+    caption = lingo.pressToPlay;
   }
   const closenessLabel = solved && goalMet ? 'Solved' : closenessWord(closeness);
-  const nextLabel = isLast ? 'The quantum you used' : 'Next puzzle';
+  const nextLabel = isLast ? (quantum ? 'Make a beat' : 'Play them as qubits') : 'Next puzzle';
 
   return (
+    <LingoProvider value={lingo}>
     <div className="scene scene--puzzle">
       <header className="puzzle__head">
-        <p className="eyebrow">Puzzle {challenge.index} of 4</p>
+        <p className="eyebrow">{quantum ? 'Qubits · puzzle' : 'Puzzle'} {challenge.index} of 4</p>
         <h2>{challenge.title}</h2>
         {challenge.story && <p className="story">{challenge.story}</p>}
         <div className={`goal${solved && goalMet ? ' is-met' : ''}`}>
@@ -116,7 +122,7 @@ export function ChallengeScene({ engine, challenge, details, onNext, onSolved, i
         <div className="success" role="status">
           <div className="success__text">
             <p className="success__title">Solved</p>
-            <p className="success__body">{isLast ? 'That was the last puzzle. The quantum you used is one page away.' : 'Next puzzle, or keep playing with this mix.'}</p>
+            <p className="success__body">{isLast ? (quantum ? 'That was the last puzzle. The studio is yours.' : 'That was the last sound puzzle. Next, the same four as qubits.') : 'Next puzzle, or keep playing with this mix.'}</p>
           </div>
           <div className="row">
             <button type="button" className="primary" onClick={onNext}>{nextLabel}</button>
@@ -142,12 +148,12 @@ export function ChallengeScene({ engine, challenge, details, onNext, onSolved, i
       )}
       <Board steady={Array.from({ length: challenge.tracks.length }, (_, q) => { const p = marginalOne(garden.ideal.probabilities, q); return p < 1e-6 || p > 1 - 1e-6; })} seedNames={trackNames} allowed={challenge.allowed} ops={garden.circuit.ops} disabled={busy} showGates={gates}
         onRetune={(i, t) => garden.setOps(garden.circuit.ops.map((o, k) => (k === i && o.op === 'twist' ? { ...o, turns: t } : o)))} onAdd={garden.addOp} onRemove={garden.removeOp} onReset={() => garden.reset()}
-        bloom={{ label: phase === 'playing' ? 'Playing…' : 'Play', onClick: play }}
+        bloom={{ label: phase === 'playing' ? lingo.playing : lingo.verbs.bloom, onClick: play }}
         extra={phase === 'playing' && garden.playback && !garden.playback.finished ? <button type="button" className="ghost" onClick={garden.skip}>Skip</button> : null} />
       {garden.error && <p className="error" role="alert">{garden.error}</p>}
       {solved && (
         <section className="quantum" aria-label="In quantum terms">
-          <p className="quantum__label">In quantum terms</p>
+          <p className="quantum__label">{lingo.lessonLabel}</p>
           <h3 className="quantum__concept">{challenge.quantum.concept}</h3>
           {challenge.quantum.lines.map((l, i) => <p key={i}>{l}</p>)}
           <div className="row">
@@ -163,13 +169,14 @@ export function ChallengeScene({ engine, challenge, details, onNext, onSolved, i
         </section>
       )}
       <details className="rulesfold">
-        <summary>The moves</summary>
+        <summary>{quantum ? 'The gates' : 'The moves'}</summary>
         <ul>
           {(['flip', 'split', 'twist', 'link', 'bloom'] as const).filter((k) => k === 'bloom' || challenge.allowed.includes(k)).map((k) => (
-            <li key={k}><b className={`rule__title rule__title--${k}`}>{ACTIONS[k].verb}</b> {ACTIONS[k].what}{gates && <code> {ACTIONS[k].gate}</code>}</li>
+            <li key={k}><b className={`rule__title rule__title--${k}`}>{lingo.verbs[k]}</b> {lingo.whats[k]}{gates && !quantum && <code> {ACTIONS[k].gate}</code>}</li>
           ))}
         </ul>
       </details>
     </div>
+    </LingoProvider>
   );
 }

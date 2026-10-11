@@ -8,8 +8,8 @@ Quantum Playground. _This effort is supported by Qollab & IonQ._
 Run → Start → "Learn the moves", then Try it on each page: a car becomes rain (Swap), a coin toss (Shuffle), the dial that
 sets the odds (Turn: tap ½ ¼ ⅛), the pair that always agrees (Sync). "Start the puzzles": puzzle 1 is one Swap. Puzzle 2:
 Shuffle, Sync, Play; the page turns green and says, in quantum terms, what a Bell state is; "Go deeper" plays the pair
-and two classical twins sideways (the entanglement witness). The front door also has "Jump to the puzzles" and "Open
-the studio". In the studio press Loop: a beat whose every bar is eight fresh readings of the mix. The Circuit button
+and two classical twins sideways (the entanglement witness). After puzzle 4, "Play them as qubits": the same board relabeled (qubit 0, |0⟩, |1⟩, X, H, P(θ), CX, Measure) with a
+state line that shows the sign a phase sets. The front door also has "Jump to the puzzles" and "Open the studio". In the studio press Loop: a beat whose every bar is eight fresh readings of the mix. The Circuit button
 shows the gates, the bits and the Qiskit code at any moment.
 
 ## How it plays
@@ -17,8 +17,9 @@ A sound board, not a dashboard: a tile per track, four big moves (Swap, Shuffle,
 beads, which is the circuit. No quantum words on the first-run path. A five-page tutorial you can hear (including the
 two rules dice can never follow: two Shuffles cancel, and a Turn is silent until the next Shuffle), then four puzzles,
 each with a goal panel (the goal, when it is done, a live closeness word), hints that are the steps of the solution, a
-Show solution button so nobody gets stuck, and, once solved, the lesson in quantum words. A recap page maps every move
-to its gate next to the Qiskit code. Then the studio and its Loop. The **Circuit** toggle shows gate names, bits,
+Show solution button so nobody gets stuck, and, once solved, the lesson in quantum words. Then the same four puzzles as qubits, the
+sound names fading out over the four, so the learner ends up operating a circuit in its own vocabulary. Then the studio
+and its Loop. The **Circuit** toggle shows gate names, bits,
 percentages and the Qiskit code for whatever mix is on screen.
 
 ## Why quantum is essential, not decorative

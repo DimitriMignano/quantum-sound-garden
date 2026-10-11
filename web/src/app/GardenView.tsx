@@ -4,6 +4,8 @@ import { bitstrings, bitOf, marginalOne } from '../engine/outcomes';
 import { captionFor, nameFor, type Assignment } from '../audio/mixer';
 import { soundById } from '../audio/sounds';
 import type { Track } from '../content/content';
+import { ketString } from '../engine/ket';
+import { useLingo } from './lingo';
 
 interface Props {
   garden: GardenApi;
@@ -17,14 +19,17 @@ interface Props {
 
 /** One tile per track: its two sounds, how likely each is right now, and which one just played. */
 export function GardenView({ garden, tracks, assignment, details, caption }: Props) {
+  const lingo = useLingo();
+  const quantum = lingo.mode === 'quantum';
   const labels = useMemo(() => bitstrings(garden.circuit.nQubits), [garden.circuit.nQubits]);
   const synced = useMemo(() => garden.circuit.ops.filter((o) => o.op === 'link').map((o) => (o.op === 'link' ? o : null)!), [garden.circuit.ops]);
   const playing = garden.playback && !garden.playback.finished && garden.playback.outcome;
   const outcome = garden.playback?.outcome ?? null;
   const lastOutcome = garden.playback?.finished ? garden.result?.memory?.[0] ?? null : null;
   const hidden = garden.oddsHidden;
-  const live = playing ? (garden.playback!.total > 1 ? `${garden.playback!.index + 1} of ${garden.playback!.total}: ${garden.playback!.caption}` : cap(garden.playback!.caption)) : null;
-  const fallback = hidden ? 'Press Play to find out.' : `Right now: ${describeOdds(garden.ideal.probabilities, assignment)}`;
+  const liveText = playing ? (quantum ? lingo.measured(garden.playback!.outcome!, garden.playback!.caption) : cap(garden.playback!.caption)) : '';
+  const live = playing ? (garden.playback!.total > 1 ? `${garden.playback!.index + 1} of ${garden.playback!.total}: ${liveText}` : liveText) : null;
+  const fallback = hidden ? `Press ${lingo.verbs.bloom} to find out.` : `Right now: ${describeOdds(garden.ideal.probabilities, assignment, quantum)}`;
 
   return (
     <div className="garden">
@@ -32,17 +37,20 @@ export function GardenView({ garden, tracks, assignment, details, caption }: Pro
         {tracks.map((t, q) => {
           const pHit = marginalOne(garden.ideal.probabilities, q);
           const now = outcome ? bitOf(outcome, q) : lastOutcome ? bitOf(lastOutcome, q) : null;
-          const base = soundById(t.base).name, hit = soundById(t.hit).name;
+          const baseSound = soundById(t.base).name, hitSound = soundById(t.hit).name;
+          const base = lingo.sideName(0, baseSound), hit = lingo.sideName(1, hitSound);
+          const baseSub = lingo.sideSub(0, baseSound), hitSub = lingo.sideSub(1, hitSound);
           const state = hidden ? 'hidden' : pHit < 0.01 ? 'base' : pHit > 0.99 ? 'hit' : 'mixed';
           return (
             <div key={q} className={`tile tile--${state}${outcome ? ' is-playing' : ''}`}>
               <div className="tile__head">
-                <span className="tile__name">{t.name}</span>
-                {details && <small className="tile__qubit">qubit {q}</small>}
+                <span className="tile__name">{lingo.trackName(q, t.name)}</span>
+                {details && !quantum && <small className="tile__qubit">qubit {q}</small>}
+                {quantum && lingo.level === 1 && <small className="tile__qubit">{t.name}</small>}
               </div>
               <div className="tile__sounds">
-                <span className={`tile__sound tile__sound--base${now === 0 ? ' is-on' : ''}`}>{base}</span>
-                <span className={`tile__sound tile__sound--hit${now === 1 ? ' is-on' : ''}`}>{hit}</span>
+                <span className={`tile__sound tile__sound--base${now === 0 ? ' is-on' : ''}`}>{base}{baseSub && <small> {baseSub}</small>}</span>
+                <span className={`tile__sound tile__sound--hit${now === 1 ? ' is-on' : ''}`}>{hit}{hitSub && <small> {hitSub}</small>}</span>
               </div>
               <div className="tile__bar" role="img" aria-label={hidden ? `${t.name}: odds hidden` : `${t.name}: ${base} ${pct(1 - pHit)}, ${hit} ${pct(pHit)}`}>
                 <span className="tile__fill" style={{ width: hidden ? '0%' : `${pHit * 100}%` }} />
@@ -54,7 +62,10 @@ export function GardenView({ garden, tracks, assignment, details, caption }: Pro
         })}
       </div>
       {synced.length > 0 && (
-        <p className="synced">{synced.map((l, i) => <span key={i} className="synced__chip">Sync: {tracks[l.control]?.name} → {tracks[l.target]?.name}</span>)}</p>
+        <p className="synced">{synced.map((l, i) => <span key={i} className="synced__chip">{lingo.sync}: {lingo.trackName(l.control, tracks[l.control]?.name ?? '')} → {lingo.trackName(l.target, tracks[l.target]?.name ?? '')}</span>)}</p>
+      )}
+      {quantum && !hidden && (
+        <p className="state" aria-live="polite"><span className="label">State</span><code>{ketString(garden.ideal.amplitudes)}</code></p>
       )}
       <p className={`caption${playing ? ' is-live' : ''}`} role="status" aria-live="polite">{live ?? caption ?? fallback}</p>
       {details && (
@@ -67,9 +78,9 @@ export function GardenView({ garden, tracks, assignment, details, caption }: Pro
               <li key={b} className={`outcome${active ? ' is-active' : ''}`}>
                 <div className="outcome__head">
                   <code className="outcome__bits" title={`measurement result ${b} (qubit 0 is the rightmost bit)`}>{b}</code>
-                  <span className="outcome__name">{captionFor(assignment, b)}</span>
+                  {(!quantum || lingo.level === 1) && <span className="outcome__name">{captionFor(assignment, b)}</span>}
                 </div>
-                {tracks.length > 1 && <div className="outcome__seeds">{tracks.map((t, q) => <span key={q}>{t.name} {bitOf(b, q)}</span>)}</div>}
+                {tracks.length > 1 && <div className="outcome__seeds">{tracks.map((t, q) => <span key={q}>{lingo.trackName(q, t.name)} {bitOf(b, q)}</span>)}</div>}
                 <div className="outcome__bars">
                   <div className="bar bar--predicted" title={hidden ? 'predicted: hidden' : `predicted ${pct(p)}`}><span style={{ width: hidden ? '0%' : `${p * 100}%` }} /></div>
                   {m !== undefined && <div className="bar bar--measured" title={`measured ${pct(m)}`}><span style={{ width: `${m * 100}%` }} /></div>}
@@ -90,8 +101,8 @@ export function GardenView({ garden, tracks, assignment, details, caption }: Pro
 export const pct = (p: number) => `${Math.round(p * 100)}%`;
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
-function describeOdds(probs: Record<string, number>, assignment: Assignment): string {
-  const parts = Object.entries(probs).filter(([, p]) => p > 0.005).sort((a, b) => b[1] - a[1]).map(([k, p]) => `${nameFor(assignment, k)} ${pct(p)}`);
+function describeOdds(probs: Record<string, number>, assignment: Assignment, quantum = false): string {
+  const parts = Object.entries(probs).filter(([, p]) => p > 0.005).sort((a, b) => b[1] - a[1]).map(([k, p]) => `${quantum ? k : nameFor(assignment, k)} ${pct(p)}`);
   return parts.join(' · ');
 }
 

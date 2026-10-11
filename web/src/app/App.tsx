@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { EngineInfo, QuantumEngine } from '../engine/types';
 import { audio } from '../audio/engine';
-import { APP, CHALLENGES } from '../content/content';
+import { APP, CHALLENGES, QUANTUM_CHALLENGES } from '../content/content';
 import { TopBar } from './TopBar';
 import { Welcome } from './Welcome';
 import { TutorialScene } from './TutorialScene';
@@ -36,14 +36,20 @@ export function App({ engine }: Props) {
     if (!ok && audio.stuck) return; // say so on the welcome screen instead of opening a silent tutorial
     // #learn, #c3 or #studio in the URL opens that scene directly (for demos and testing); the gesture is still required.
     const hash = window.location.hash.replace('#', '');
-    if (/^c[1-4]$/.test(hash) || hash === 'studio' || hash === 'learn' || hash === 'recap') { setUnlocked(CHALLENGES.length + 1); setScene(hash); return; }
+    if (/^[cq][1-4]$/.test(hash) || hash === 'studio' || hash === 'learn' || hash === 'recap') { setUnlocked(CHALLENGES.length + QUANTUM_CHALLENGES.length + 1); setScene(hash); return; }
     setScene(target);
   };
 
+  // puzzles are numbered 1..4 (sounds) then 5..8 (qubits) for unlocking; the door to the qubits sits between them
   const goNext = (index: number) => {
     const next = index + 1;
     setUnlocked((u) => Math.max(u, next));
     setScene(next > CHALLENGES.length ? 'recap' : `c${next}`);
+  };
+  const goNextQubit = (index: number) => {
+    const next = CHALLENGES.length + index + 1;
+    setUnlocked((u) => Math.max(u, next));
+    setScene(index >= QUANTUM_CHALLENGES.length ? 'studio' : `q${index + 1}`);
   };
 
   return (
@@ -59,8 +65,13 @@ export function App({ engine }: Props) {
         </main>
       ))}
       {scene === 'recap' && (
-        <main><RecapScene engine={engine} onDone={() => setScene('studio')} /></main>
+        <main><RecapScene unlocked={unlocked} onOpen={setScene} /></main>
       )}
+      {QUANTUM_CHALLENGES.map((c) => scene === `q${c.index}` && (
+        <main key={c.id}>
+          <ChallengeScene engine={engine} challenge={c} details={details} onNext={() => goNextQubit(c.index)} onSolved={() => setUnlocked((u) => Math.max(u, CHALLENGES.length + c.index + 1))} isLast={c.index === QUANTUM_CHALLENGES.length} />
+        </main>
+      ))}
       {scene === 'studio' && info && (
         <main>
           <StudioScene engine={engine} backends={info.backends} defaultBackendId={info.defaultBackendId} details={details} />

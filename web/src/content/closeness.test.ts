@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { CHALLENGES, closenessOf, closenessWord, describeOps } from './content';
+import { ALL_CHALLENGES, CHALLENGES, closenessOf, closenessWord, describeOps, quantumLingo } from './content';
 import { probabilities, simulate } from '../engine/statevector';
 import { previewIdeal } from '../engine/browser';
 import type { Op } from '../engine/types';
 
 const odds = (nQubits: number, ops: Op[]) => probabilities(simulate({ nQubits, ops }));
 const word = (id: string, ops: Op[]) => {
-  const c = CHALLENGES.find((x) => x.id === id)!;
+  const c = ALL_CHALLENGES.find((x) => x.id === id)!;
   return closenessWord(closenessOf(c, odds(c.tracks.length, ops), ops.length));
 };
 const H0: Op = { op: 'split', q: 0 }, H1: Op = { op: 'split', q: 1 }, X0: Op = { op: 'flip', q: 0 };
@@ -14,8 +14,9 @@ const SYNC: Op = { op: 'link', control: 0, target: 1 };
 const HALF: Op = { op: 'twist', q: 0, turns: 0.5 };
 
 describe('goal, hints, solution and the closeness word agree on every puzzle', () => {
-  it('the solution Show solution loads passes the puzzle’s own check and reads "there"', () => {
-    for (const c of CHALLENGES) {
+  it('the solution Show solution loads passes the puzzle’s own check and reads "there", on the sound and the qubit puzzles', () => {
+    expect(ALL_CHALLENGES.length).toBe(8);
+    for (const c of ALL_CHALLENGES) {
       const circuit = { nQubits: c.tracks.length, ops: c.solution };
       expect(c.success(previewIdeal(circuit), circuit, 1), c.id).toBe(true);
       expect(word(c.id, c.solution), c.id).toBe('there');
@@ -24,7 +25,7 @@ describe('goal, hints, solution and the closeness word agree on every puzzle', (
   });
 
   it('the starting board never already passes, so every puzzle asks for at least one move', () => {
-    for (const c of CHALLENGES) {
+    for (const c of ALL_CHALLENGES) {
       const circuit = { nQubits: c.tracks.length, ops: c.start };
       expect(c.success(previewIdeal(circuit), circuit, 1), c.id).toBe(false);
       expect(word(c.id, c.start), c.id).not.toBe('there');
@@ -58,5 +59,15 @@ describe('goal, hints, solution and the closeness word agree on every puzzle', (
     expect(describeOps([H0, SYNC], ['Track A', 'Track B'])).toBe('Shuffle Track A, then Sync Track A to Track B');
     expect(describeOps([H0, HALF, HALF, H0], ['Path'])).toBe('Shuffle Path, then Turn ½ on Path, then Turn ½ on Path, then Shuffle Path');
     expect(describeOps([X0], ['Track A'])).toBe('Swap Track A');
+    expect(describeOps([H0, SYNC], ['qubit 0', 'qubit 1'], quantumLingo(2))).toBe('H on qubit 0, then CX from qubit 0 to qubit 1');
+    expect(describeOps([H0, HALF, HALF, H0], ['qubit 0'], quantumLingo(1))).toBe('H on qubit 0, then P(π) on qubit 0, then P(π) on qubit 0, then H on qubit 0');
+  });
+
+  it('the qubit puzzles speak in qubits and kets, with the sound names only at level 1', () => {
+    const [q1, , q3] = ALL_CHALLENGES.filter((c) => c.stage === 'quantum');
+    expect(q1.lingo!.measured('1', 'rain falling')).toBe('Measured qubit 0 → 1 (rain falling)');
+    expect(q3.lingo!.measured('01', 'rain falling and a bell')).toBe('Measured qubit 0 → 1, qubit 1 → 0');
+    expect(q1.lingo!.sideSub(1, 'Rain')).toBe('Rain');
+    expect(q3.lingo!.sideSub(1, 'Rain')).toBeNull();
   });
 });

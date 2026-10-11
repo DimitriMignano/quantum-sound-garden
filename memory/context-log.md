@@ -444,3 +444,27 @@ corrections go in a new entry. Newest at the bottom. Fill every field (`n/a` if 
   keyboard; the deploy (human).
 - Risks: on IonQ backends (one job per Run on Qollab) the loop stops after one bar with the one-job message; textures
   (rain) in a 0.35 s beat are a wash rather than a hit.
+
+### 2026-10-10 22:55 — The same puzzles again, as qubits (the sounds become the quantum picture)
+- Branch / worktree: `main`
+- Task: the founder: keep the interactivity, relabel the play into quantum words and pictures; the recap page is not it.
+- Files changed: `web/src/content/content.ts` (`Lingo`, `SOUND_LINGO`, `quantumLingo(level)`, `Challenge.stage`/`lingo`,
+  `QUANTUM_CHALLENGES`, `ALL_CHALLENGES`, `describeOps` with a lingo, `QUBITS` door copy replaces `RECAP`),
+  `web/src/engine/ket.ts` + `ket.test.ts` (the state line), `web/src/app/lingo.tsx` (context), `Board.tsx`, `PathView.tsx`,
+  `GardenView.tsx` (tiles, chips with sound subs, state line, captions), `ChallengeScene.tsx` (speaks the challenge's
+  lingo; next labels), `RecapScene.tsx` (now the qubits door), `App.tsx` (q1..q4 scenes, unlock 1..8, `#q2` links),
+  `TopBar.tsx` (Qubits), `styles.css`, `closeness.test.ts` (all eight puzzles), README, CLAUDE.md, docs/JUDGES.md,
+  docs/QOLLAB_PAGE.md, docs/DEMO_SCRIPT.md, `qollab/`, WORKLOG.md
+- Verification run: tsc clean; vitest 79; `npm run check` before the commit. Live in Chrome (Qiskit server): q2 as
+  described in WORKLOG; q3: level-2 vocabulary (no sound names), the state line (|0⟩ − |1⟩)/√2 → (|0⟩ + |1⟩)/√2 after P(π) → |0⟩ after H,
+  Measure solved it with "Measured qubit 0 → 0."; the qubits door and the nav entry work. The gate went red once on the
+  bundle tests' 5 s timeout under load with nothing wrong; the file now carries a 20 s timeout (lesson in CLAUDE.md §8).
+- Commit hash: this commit (parent 4e40eaa)
+- Seams (§22): unchanged
+- Decisions: one vocabulary object per scene rather than a second set of components, so the board, the beads and the
+  tiles cannot drift apart; the global phase is removed from the state line because it is unobservable and it is what
+  makes H·P(π)·H read as |1⟩; the sound still plays on Measure (the bridge the founder asked for), and the sound names fade
+  out over the four qubit puzzles; Qiskit bit order is kept everywhere and the caption spells it per qubit.
+- Deferred work: phone width; keyboard; a listening pass; the deploy (human).
+- Risks: the state line with uneven amplitudes shows decimals and a phase factor (honest, but dense); two-qubit states
+  with four terms are long on a phone.
