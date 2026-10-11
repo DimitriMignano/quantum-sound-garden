@@ -13,7 +13,15 @@ app and the API together (`Dockerfile`), so there is nothing to wire between a f
 Local check: `docker build -t quantum-beats . && docker run --rm -p 8080:8080 quantum-beats`, then open
 http://localhost:8080 and confirm the top bar says "Qiskit simulator (Aer, ideal)" and `/api/health` returns ok.
 
-## Railway (the `railway` CLI is installed on the founder's machine)
+## Railway, dashboard route (recommended when the account hosts other projects)
+New Project → Deploy from GitHub repo → `DimitriMignano/quantum-sound-garden`. Railway detects the Dockerfile. This creates a
+new project with nothing shared with other projects. Then Settings → Networking: a Railway domain to test, then the custom
+domains `quantumnuggets.com` and `www.quantumnuggets.com`; Settings → Resources: 1 GB memory. Deploys on every push to `main`.
+
+## Railway, CLI route (the `railway` CLI is installed on the founder's machine)
+Safety: run every command from this repo's folder (it is not linked to any project); `railway init` creates a NEW project;
+`railway status` must show that project before `railway up`; `.railwayignore` keeps `server/.env` and the virtualenv out of
+every upload. Never run delete, unlink, environment or variable commands against anything else.
 1. `railway login` (opens a browser; a human does this once).
 2. From the repo root: `railway init` (new project, name it quantum-nuggets), then `railway up` (builds the
    Dockerfile on Railway and deploys). Repeat `railway up` to ship a new commit, or connect the GitHub repo in the
