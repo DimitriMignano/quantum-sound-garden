@@ -449,12 +449,23 @@ class Bells extends Layer {
  * per AudioContext. Textures loop with their ends faded; one-shots (thunder) play from the top on trigger.
  */
 const sampleCache = new WeakMap<AudioContext, Map<string, Promise<AudioBuffer>>>();
+/** The Qollab bundle inlines samples as data: URLs, and Qollab's frame has `connect-src *`, which does not cover data:,
+ *  so fetch() of one fails there (rain and thunder were silent). An inlined sample is decoded here, never fetched. */
+function sampleBytes(url: string): Promise<ArrayBuffer> {
+  const head = /^data:[^,]*;base64,/.exec(url);
+  if (!head) return fetch(url).then((r) => r.arrayBuffer());
+  const bin = atob(url.slice(head[0].length));
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return Promise.resolve(bytes.buffer);
+}
+
 function decodeSample(ctx: AudioContext, id: string, url: string): Promise<AudioBuffer> {
   let m = sampleCache.get(ctx);
   if (!m) { m = new Map(); sampleCache.set(ctx, m); }
   let p = m.get(id);
   if (!p) {
-    p = fetch(url).then((r) => r.arrayBuffer()).then((buf) => ctx.decodeAudioData(buf));
+    p = sampleBytes(url).then((buf) => ctx.decodeAudioData(buf));
     m.set(id, p);
   }
   return p;
