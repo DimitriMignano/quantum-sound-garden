@@ -201,3 +201,9 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
   flipped the page to its result at once, because the "playback finished" check saw the previous playback before the
   new one existed (Play now clears the old playback first). Live: the replay reads "Playing…", keeps focus, and a press
   during playback does nothing.
+- 10-11 13:50 founder: keep building the project out per the plan (the deploy is the other session's). Two gaps closed:
+  the studio now offers starting points under "Start from" (Coin toss, Bell pair, One in seven, All four, Opposites),
+  each a circuit the puzzles taught, named by what it does to a beat, loaded with one tap; and the first phone-width
+  pass (the app root constrained to 390 px, which drives the same container queries as a phone): the top bar overflowed
+  by 8–10 px on every scene (now wraps, with smaller buttons under 600 px); nothing else overflowed; the board stacks
+  two moves per row with Play on its own row; the studio's pads and readings sit two per row.

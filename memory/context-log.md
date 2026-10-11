@@ -510,3 +510,19 @@ corrections go in a new entry. Newest at the bottom. Fill every field (`n/a` if 
   `useGarden.clearPlayback()` + `ChallengeScene.play()` clear the previous playback so a replay of the same mix does not
   read the old "finished" as its own end (before: the page flipped to its result at once and the label never changed).
 - Risks: the accessibility line is a promise judges may test; VoiceOver was not run here.
+
+### 2026-10-11 13:50 — Studio starting points; the phone-width pass
+- Branch / worktree: `main` (impact merged at 4e3605b)
+- Task: the plan's remaining gaps: free creation needs starting points; the accessibility promise needs the phone pass.
+- Files changed: `web/src/content/content.ts` (STUDIO.presets), `web/src/app/StudioScene.tsx` (Start from chips),
+  `web/src/styles.css` (presets; top bar wraps under 600 px), `qollab/`, `WORKLOG.md`
+- Verification run: tsc; `npm run check` green (pytest 27 + 1 skipped, vitest 80, bundle 790 KB). Live in Chrome with the
+  app root at 390 px: welcome, puzzle 1 and studio measured for elements past the root's right edge (only the top bar,
+  fixed; a code block inside a scrolling pre is not an overflow); the five presets render and load.
+- Commit hash: this commit (parent 4e3605b)
+- Seams (§22): unchanged
+- Decisions: the window could not be resized (macOS kept it maximized), so the root was constrained instead, which
+  exercises the same container queries; presets are the circuits already taught, so the studio never asks for a gate
+  the learner has not met.
+- Deferred work: a VoiceOver pass; the human submission steps.
+- Risks: the viewport meta and real touch targets were not exercised on a phone.

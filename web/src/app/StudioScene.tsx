@@ -108,6 +108,14 @@ export function StudioScene({ engine, backends, defaultBackendId }: Props) {
         ))}
       </div>
 
+      <div className="row wrap presets" role="group" aria-label={STUDIO.startFrom}>
+        <span className="label">{STUDIO.startFrom}</span>
+        {STUDIO.presets.map((p) => {
+          const on = JSON.stringify(garden.circuit.ops) === JSON.stringify(p.ops);
+          return <button key={p.id} type="button" className={`chip${on ? ' is-on' : ''}`} aria-pressed={on} title={p.what} disabled={garden.busy} onClick={() => garden.reset(p.ops)}>{p.label}</button>;
+        })}
+      </div>
+
       <Board steady={Array.from({ length: 2 }, (_, q) => { const p = marginalOne(garden.ideal.probabilities, q); return p < 1e-6 || p > 1 - 1e-6; })} seedNames={TRACKS} allowed={['flip', 'split', 'twist', 'link']} turns={[0.5, 0.25, 0.125, -0.25]} ops={garden.circuit.ops} disabled={garden.busy} showGates={details}
         onRetune={(i, t) => garden.setOps(garden.circuit.ops.map((o, k) => (k === i && o.op === 'twist' ? { ...o, turns: t } : o)))} onAdd={garden.addOp} onRemove={garden.removeOp} onReset={() => garden.reset([])}
         bloom={{ label: looping ? 'Looping…' : oneJob ? STUDIO.loopOneJob : STUDIO.loop, onClick: loop, disabled: looping || playing }}

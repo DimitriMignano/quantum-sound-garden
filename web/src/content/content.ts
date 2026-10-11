@@ -518,6 +518,15 @@ export const DONE = {
 export const STUDIO = {
   story: 'This is the real thing. Each bar compiles your mix into a Qiskit circuit, runs it on the backend shown below, and reads it eight times; the readings are the beats. Each pad is one way the two qubits can land: give it a sound. The circuit and its code are on the page, and the code runs in Qiskit unchanged.',
   oneJob: 'On this backend a Run is one job, so Loop reads 64 shots at once and plays them as eight bars.',
+  /** starting points for free creation: each one is a circuit the puzzles taught, named by what it does to a beat */
+  startFrom: 'Start from',
+  presets: [
+    { id: 'toss', label: 'Coin toss', what: 'H on qubit 0: two pads, equal odds.', ops: [{ op: 'split', q: 0 }] as Op[] },
+    { id: 'pair', label: 'Bell pair', what: 'H then CX: pads 00 and 11 only, never crossed.', ops: [{ op: 'split', q: 0 }, { op: 'link', control: 0, target: 1 }] as Op[] },
+    { id: 'seven', label: 'One in seven', what: 'H, P(π/4), H: pad 01 about one beat in seven.', ops: [{ op: 'split', q: 0 }, { op: 'twist', q: 0, turns: 0.125 }, { op: 'split', q: 0 }] as Op[] },
+    { id: 'four', label: 'All four', what: 'H on both: every pad, a quarter each.', ops: [{ op: 'split', q: 0 }, { op: 'split', q: 1 }] as Op[] },
+    { id: 'opposite', label: 'Opposites', what: 'H, CX, then X on qubit 1: pads 01 and 10 only.', ops: [{ op: 'split', q: 0 }, { op: 'link', control: 0, target: 1 }, { op: 'flip', q: 1 }] as Op[] },
+  ],
   loopOneJob: 'Loop: one job, 8 bars',
   loop: 'Loop',
   stop: 'Stop',

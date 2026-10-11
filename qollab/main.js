@@ -10393,6 +10393,83 @@ var Oe, ke, Ae, je, Me, Ne, Pe, Fe, Ie, Le, Re, ze, Be, Ve, He, Ue, We, Ge, Ke, 
 	}, et = {
 		story: "This is the real thing. Each bar compiles your mix into a Qiskit circuit, runs it on the backend shown below, and reads it eight times; the readings are the beats. Each pad is one way the two qubits can land: give it a sound. The circuit and its code are on the page, and the code runs in Qiskit unchanged.",
 		oneJob: "On this backend a Run is one job, so Loop reads 64 shots at once and plays them as eight bars.",
+		startFrom: "Start from",
+		presets: [
+			{
+				id: "toss",
+				label: "Coin toss",
+				what: "H on qubit 0: two pads, equal odds.",
+				ops: [{
+					op: "split",
+					q: 0
+				}]
+			},
+			{
+				id: "pair",
+				label: "Bell pair",
+				what: "H then CX: pads 00 and 11 only, never crossed.",
+				ops: [{
+					op: "split",
+					q: 0
+				}, {
+					op: "link",
+					control: 0,
+					target: 1
+				}]
+			},
+			{
+				id: "seven",
+				label: "One in seven",
+				what: "H, P(π/4), H: pad 01 about one beat in seven.",
+				ops: [
+					{
+						op: "split",
+						q: 0
+					},
+					{
+						op: "twist",
+						q: 0,
+						turns: .125
+					},
+					{
+						op: "split",
+						q: 0
+					}
+				]
+			},
+			{
+				id: "four",
+				label: "All four",
+				what: "H on both: every pad, a quarter each.",
+				ops: [{
+					op: "split",
+					q: 0
+				}, {
+					op: "split",
+					q: 1
+				}]
+			},
+			{
+				id: "opposite",
+				label: "Opposites",
+				what: "H, CX, then X on qubit 1: pads 01 and 10 only.",
+				ops: [
+					{
+						op: "split",
+						q: 0
+					},
+					{
+						op: "link",
+						control: 0,
+						target: 1
+					},
+					{
+						op: "flip",
+						q: 1
+					}
+				]
+			}
+		],
 		loopOneJob: "Loop: one job, 8 bars",
 		loop: "Loop",
 		stop: "Stop",
@@ -12850,6 +12927,26 @@ function Jn({ engine: e, backends: t, defaultBackendId: n }) {
 						})
 					]
 				}, e))
+			}),
+			/* @__PURE__ */ (0, H.jsxs)("div", {
+				className: "row wrap presets",
+				role: "group",
+				"aria-label": et.startFrom,
+				children: [/* @__PURE__ */ (0, H.jsx)("span", {
+					className: "label",
+					children: et.startFrom
+				}), et.presets.map((e) => {
+					let t = JSON.stringify(S.circuit.ops) === JSON.stringify(e.ops);
+					return /* @__PURE__ */ (0, H.jsx)("button", {
+						type: "button",
+						className: `chip${t ? " is-on" : ""}`,
+						"aria-pressed": t,
+						title: e.what,
+						disabled: S.busy,
+						onClick: () => S.reset(e.ops),
+						children: e.label
+					}, e.id);
+				})]
 			}),
 			/* @__PURE__ */ (0, H.jsx)(wn, {
 				steady: Array.from({ length: 2 }, (e, t) => {

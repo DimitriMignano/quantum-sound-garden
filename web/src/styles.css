@@ -262,7 +262,9 @@
 @container (max-width: 600px) {
   .topbar { position: static; }
   .topbar__brand h1 { font-size: 1.05rem; }
-  .topbar__nav { margin-left: 0; }
+  .topbar__nav { margin-left: 0; flex-wrap: wrap; }
+  .navbtn { min-width: 1.9rem; height: 1.9rem; padding: 0 0.45rem; font-size: 0.85rem; }
+  .navbtn--wide { padding: 0 0.65rem; }
   .vol input { width: 70px; }
   .scene { padding: 0.75rem; }
   .move { flex-basis: 40%; }
@@ -339,6 +341,7 @@
 .did { margin: 0; padding: 0 0 0 1.4rem; display: grid; gap: 0.5rem; font-size: 1.08rem; color: var(--ink); max-width: 64ch; }
 .did li { padding-left: 0.2rem; text-wrap: pretty; }
 .did li::marker { color: var(--accent); font-weight: 600; }
+.presets { padding: 0 0.2rem; }
 /* the studio's tempo */
 .tempo { display: inline-flex; gap: 0.3rem; align-items: center; }
 
