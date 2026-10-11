@@ -24,6 +24,13 @@ sound names fading out over the four, so the learner ends up operating a circuit
 and its Loop. The **Circuit** toggle shows gate names, bits,
 percentages and the Qiskit code for whatever mix is on screen.
 
+## Impact: who this is for, and what they can do after fifteen minutes
+Kids, musicians, first-year students, and anyone who learns by ear rather than by notation. Nothing is assumed: not an
+instrument, not a qubit, not a bit. After the arc (Hear it → Name it → Build it) a learner has prepared a Bell state,
+used interference to cancel an outcome, shortened a circuit to beat noise, and read the Qiskit code for all of it. It is
+accessible by design: every result is written as well as heard, every control works from the keyboard, motion can be
+turned off, hints are the steps of the solution, and Show solution means nobody is ever stuck.
+
 ## Why quantum is essential, not decorative
 - The sounds are shaped by state preparation, not by a random number: a Turn changes nothing you hear until a
   second Shuffle makes the paths interfere (puzzle 3), and a dephased twin of the same circuit cannot cancel the

@@ -1,6 +1,14 @@
 # Quantum Beats Studio
 
-**Make sounds with the rules of quantum physics.** Learn four moves by ear → solve four puzzles → play the same four again as qubits → make a beat.
+**Make sounds with the rules of quantum physics.** For anyone who has never touched an instrument or a qubit. In about
+fifteen minutes you prepare, measure and shorten real quantum circuits, and you end up making beats from them.
+
+**Hear it → Name it → Build it.** Four moves and four puzzles by ear, with no quantum words. Then the same four puzzles
+as qubits (X, H, a phase, CX, Measure) with the state drawn on the page, the sound names fading out as you go. Then a
+studio where every bar of a beat is a real circuit run, with the Qiskit code on the page.
+
+**Accessible by design.** Every result is written as well as heard, every control works from the keyboard, motion can
+be turned off, and nobody gets stuck: every puzzle has hints that are the steps of the solution and a Show solution button.
 
 Each track is a qubit that plays one of two sounds. You **Swap** (X), **Shuffle** (Hadamard), **Turn** (phase) and
 **Sync** (CNOT) the tracks, then **Play** (measure): each Play is one measurement of a real Qiskit circuit, and you hear

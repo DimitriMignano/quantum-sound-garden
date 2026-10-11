@@ -50,6 +50,8 @@ export interface GardenApi {
   replay(): void;
   skip(): void;
   stopPlayback(): void;
+  /** forget the last playback before a new Play, so a stale "finished" is never read as the new one ending */
+  clearPlayback(): void;
   hearOdds(): void;
   code(shots: number): Promise<string>;
 }
@@ -157,8 +159,9 @@ export function useGarden(engine: QuantumEngine, nQubits: number, assignment: As
   const replay = useCallback(() => { if (seqRef.current.length) playRef.current(seqRef.current, lastStepRef.current); }, []);
   const skip = useCallback(() => { mixer.stopSequence(); setPlayback((p) => (p ? { ...p, outcome: null, index: p.total, finished: true } : null)); }, []);
   const stopPlayback = useCallback(() => { mixer.stopSequence(); setPlayback((p) => (p ? { ...p, outcome: null, index: p.total, finished: true } : null)); }, []);
+  const clearPlayback = useCallback(() => { setPlayback(null); }, []);
   const hearOdds = useCallback(() => { setOddsHidden(false); }, []);
   const code = useCallback((shots: number) => engine.qiskitCode(circuit, shots), [engine, circuit]);
 
-  return { circuit, ideal, qiskitIdeal, idealAgrees, result, resultLabel, measured, measuredFidelity, playback, busy, error, oddsHidden, setOddsHidden, addOp, removeOp, setOps, reset, bloom, replay, skip, stopPlayback, hearOdds, code };
+  return { circuit, ideal, qiskitIdeal, idealAgrees, result, resultLabel, measured, measuredFidelity, playback, busy, error, oddsHidden, setOddsHidden, addOp, removeOp, setOps, reset, bloom, replay, skip, stopPlayback, clearPlayback, hearOdds, code };
 }

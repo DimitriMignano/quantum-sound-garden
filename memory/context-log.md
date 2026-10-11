@@ -488,3 +488,25 @@ corrections go in a new entry. Newest at the bottom. Fill every field (`n/a` if 
 - Deferred work: the human checklist; a listening pass of the loop; phone width; keyboard.
 - Risks: the Qollab adapter has only been exercised against the fake backend in tests, never on qollab.xyz; the first
   real Run there is the riskiest step left and it is a human's.
+
+### 2026-10-11 13:10 — Impact in the language: the arc, the closing page, accessibility said and checked
+- Branch / worktree: `impact` (from e357eb7), to be merged into `main` after the teammate's deploy is confirmed
+- Task: the founder's creative-liberty brief: bridge the gaps so the goals of teaching, helping and accessibility are
+  visible in the language and feel met.
+- Files changed: `web/src/content/content.ts` (APP.lead, APP.arc, APP.access, intro line, DONE), `web/src/app/Welcome.tsx`
+  (arc cards, access line), `web/src/app/DoneScene.tsx` (new), `web/src/app/App.tsx` (scene `done`, `#done`),
+  `web/src/app/ChallengeScene.tsx` (last qubit puzzle → the closing page), `web/src/styles.css`, `docs/QOLLAB_PAGE.md`,
+  `README.md`, `docs/JUDGES.md` (Impact section), `docs/DEMO_SCRIPT.md`, `qollab/`, `WORKLOG.md`
+- Verification run: tsc clean; vitest 80; `npm run check` before the commit. Live in Chrome: the front door with the three
+  cards and the access line; the closing page (`#done`) with its four lines and the code; keyboard on puzzle 2: Tab ×14 →
+  Swap (outline visible), Enter adds it, Tab ×6 → Play, Enter plays.
+- Commit hash: this commit (parent e357eb7)
+- Seams (§22): unchanged
+- Decisions: the arc is three cards on the front door rather than a progress bar in the nav (the nav is the arc already);
+  the closing page shows the two-gate Bell circuit as "the circuit you ended on" because every solved puzzle 4 is that
+  circuit up to equivalent gates; "accessible by design" claims only what was checked (captions, keyboard, motion).
+- Deferred work: phone width; a screen-reader pass with VoiceOver (not run); the deploy and submission (human).
+- Also fixed (found by the keyboard pass): `Board.tsx` Play is inert, not disabled, during playback (focus stays);
+  `useGarden.clearPlayback()` + `ChallengeScene.play()` clear the previous playback so a replay of the same mix does not
+  read the old "finished" as its own end (before: the page flipped to its result at once and the label never changed).
+- Risks: the accessibility line is a promise judges may test; VoiceOver was not run here.

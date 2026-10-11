@@ -151,6 +151,7 @@
 .move__amounts .chip--small { padding: 0.15rem 0.45rem; }
 .board__bloom { flex: 1 1 150px; display: flex; gap: 0.5rem; align-items: center; justify-content: center; flex-wrap: wrap; }
 .bloom { font-size: 1.1rem; padding: 0.8rem 1.6rem; }
+.bloom.is-inert { opacity: 0.45; cursor: not-allowed; filter: none; }
 .board__foot { display: flex; justify-content: flex-end; }
 
 /* the path of beads */
@@ -328,6 +329,16 @@
 .concepts b { font-family: var(--font-display); font-weight: 500; font-size: 1.1rem; }
 .concepts small { color: var(--ink-faint); }
 .concepts span { color: var(--ink-dim); font-size: 0.92rem; text-wrap: pretty; }
+/* the front door's arc and the closing page's list */
+.arc { list-style: none; margin: 0.9rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.6rem; text-align: left; }
+.arc li { display: grid; gap: 0.2rem; padding: 0.6rem 0.7rem; border-radius: var(--radius-s); background: color-mix(in srgb, var(--panel) 70%, transparent); border: 1px solid var(--line); min-width: 0; }
+.arc b { font-family: var(--font-display); font-weight: 500; font-size: 1.05rem; }
+.arc span { color: var(--ink-dim); font-size: 0.85rem; line-height: 1.4; text-wrap: pretty; }
+.welcome__access { margin-top: 0.6rem; max-width: 46ch; }
+@container (max-width: 600px) { .arc { grid-template-columns: 1fr; } }
+.did { margin: 0; padding: 0 0 0 1.4rem; display: grid; gap: 0.5rem; font-size: 1.08rem; color: var(--ink); max-width: 64ch; }
+.did li { padding-left: 0.2rem; text-wrap: pretty; }
+.did li::marker { color: var(--accent); font-weight: 600; }
 /* the studio's tempo */
 .tempo { display: inline-flex; gap: 0.3rem; align-items: center; }
 

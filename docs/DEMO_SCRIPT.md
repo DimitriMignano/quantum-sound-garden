@@ -1,7 +1,8 @@
 # Demo script (2–3 minutes, screen recording with voiceover; headphones on)
 
-**0:00 – 0:10 · Hook.** The front door: "Quantum Beats Studio. Make sounds with the rules of quantum physics." Press
-*Start* (sound starts). "Everything you hear is a real Qiskit circuit being measured."
+**0:00 – 0:10 · Hook.** The front door: "Quantum Beats Studio. Make sounds with the rules of quantum physics. For anyone
+who has never touched an instrument or a qubit." Point at the three parts: Hear it, Name it, Build it. Press *Start*.
+"Everything you hear is a real Qiskit circuit being measured."
 
 **0:10 – 0:40 · Learn.** Page 2 *A track, and Swap*: Try it, rain. Page 3 *Shuffle*: Play three times, the car or rain;
 a second Shuffle: "two Shuffles cancel. Dice never do that." Page 4 *Turn: the dial*: tap ½ ¼ ⅛ and watch the odds.
@@ -23,7 +24,7 @@ time. Turn ½ again, then Shuffle: crickets only. "Interference. The paths remem
 away, Play again: the match jumps. "Fewer gates, less noise." Press *Play them as qubits*.
 
 **2:15 – 2:30 · As qubits.** The same board, relabeled: qubit 0, |0⟩ and |1⟩, H, CX, Measure. Build the Bell pair
-again in ten seconds; the state line reads (|00⟩ + |11⟩)/√2. "They already know how to play this."
+again in ten seconds; the state line reads (|00⟩ + |11⟩)/√2. "They already know how to play this." Solve it; press *See what you can do now*: "You ran real quantum circuits."
 
 **2:30 – 3:00 · Studio + close.** Press *Make a beat*. Four pads, a sound each; Shuffle A, Sync; press *Loop*: a bar of
 eight beats, then another, never the same twice. Change the mix while it runs: the next bar follows. Press *Circuit*:

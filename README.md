@@ -1,7 +1,9 @@
 # Quantum Sound Garden
 
-**Quantum Beats Studio: make sounds with the rules of quantum physics.** Learn four moves by ear → solve four
-puzzles → play the same four again as qubits → make a beat.
+**Quantum Beats Studio: make sounds with the rules of quantum physics.** For anyone who has never touched an
+instrument or a qubit. Hear it (four moves, four puzzles, by ear) → Name it (the same puzzles as qubits, with the state
+drawn) → Build it (beats from real circuit runs, with the Qiskit code). Every result is written as well as heard, every
+control works from the keyboard, and nobody gets stuck.
 
 An audio-first way to learn quantum computing and then make something with it, for people who have never played an
 instrument or touched a qubit. Each track is a qubit that plays one of two sounds. You **Swap** (X), **Shuffle**

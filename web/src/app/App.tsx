@@ -8,6 +8,7 @@ import { TutorialScene } from './TutorialScene';
 import { ChallengeScene } from './ChallengeScene';
 import { StudioScene } from './StudioScene';
 import { RecapScene } from './RecapScene';
+import { DoneScene } from './DoneScene';
 
 interface Props { engine: QuantumEngine }
 
@@ -36,7 +37,7 @@ export function App({ engine }: Props) {
     if (!ok && audio.stuck) return; // say so on the welcome screen instead of opening a silent tutorial
     // #learn, #c3 or #studio in the URL opens that scene directly (for demos and testing); the gesture is still required.
     const hash = window.location.hash.replace('#', '');
-    if (/^[cq][1-4]$/.test(hash) || hash === 'studio' || hash === 'learn' || hash === 'recap') { setUnlocked(CHALLENGES.length + QUANTUM_CHALLENGES.length + 1); setScene(hash); return; }
+    if (/^[cq][1-4]$/.test(hash) || hash === 'studio' || hash === 'learn' || hash === 'recap' || hash === 'done') { setUnlocked(CHALLENGES.length + QUANTUM_CHALLENGES.length + 1); setScene(hash); return; }
     setScene(target);
   };
 
@@ -49,7 +50,7 @@ export function App({ engine }: Props) {
   const goNextQubit = (index: number) => {
     const next = CHALLENGES.length + index + 1;
     setUnlocked((u) => Math.max(u, next));
-    setScene(index >= QUANTUM_CHALLENGES.length ? 'studio' : `q${index + 1}`);
+    setScene(index >= QUANTUM_CHALLENGES.length ? 'done' : `q${index + 1}`);
   };
 
   return (
@@ -72,6 +73,9 @@ export function App({ engine }: Props) {
           <ChallengeScene engine={engine} challenge={c} details={details} onNext={() => goNextQubit(c.index)} onSolved={() => setUnlocked((u) => Math.max(u, CHALLENGES.length + c.index + 1))} isLast={c.index === QUANTUM_CHALLENGES.length} />
         </main>
       ))}
+      {scene === 'done' && (
+        <main><DoneScene engine={engine} onDone={() => setScene('studio')} /></main>
+      )}
       {scene === 'studio' && info && (
         <main>
           <StudioScene engine={engine} backends={info.backends} defaultBackendId={info.defaultBackendId} details={details} />

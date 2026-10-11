@@ -11,7 +11,14 @@ import { agreement, fidelity, marginalOne, bitstrings, bitOf } from '../engine/o
 export const APP = {
   title: 'Quantum Beats Studio',
   pitch: 'Make sounds with the rules of quantum physics.',
-  lead: 'Learn four moves by ear. Solve four puzzles. Solve them again as qubits. Then make beats from real quantum circuits.',
+  lead: 'For anyone who has never touched an instrument or a qubit. By the end you will have prepared, measured and shortened real quantum circuits.',
+  /** the arc, in three words a kid and a judge both get */
+  arc: [
+    { name: 'Hear it', what: 'Four moves and four puzzles, by ear, with no quantum words.' },
+    { name: 'Name it', what: 'The same puzzles as qubits: X, H, a phase, CX, Measure, with the state drawn.' },
+    { name: 'Build it', what: 'Beats from real circuit runs, with the Qiskit code on the page.' },
+  ],
+  access: 'Every result is written as well as heard, every control works from the keyboard, and motion can be turned off.',
   honesty:
     'You are not hearing a quantum state. The sound is ordinary audio driven by the measured results of a circuit (a real Qiskit circuit whenever a Qiskit engine is available), and every result names the engine that produced it.',
   startButton: 'Start (3 minutes)',
@@ -469,7 +476,7 @@ export const LESSONS: Lesson[] = [
   { id: 'intro', title: 'What’s going on', text: '', show: [], ops: [], beats: 0, hear: '', intro: [
     'Two tracks. Track A plays a car or rain; Track B plays a bell or thunder. Play plays every track once.',
     'A track can stay undecided until you press Play. Two tracks can be tied so they always decide together.',
-    'Four moves shape a track: Swap, Shuffle, Turn, Sync. Every mix you build is a real quantum circuit; the Circuit button shows it.',
+    'Four moves shape a track: Swap, Shuffle, Turn, Sync. Every mix you build is a real quantum circuit. By the end you will run them under their real names and make a beat from them.',
   ] },
   { id: 'tracks', title: 'A track, and Swap', tracks: 1, text: 'Track A plays a car. Swap switches it to rain.', show: ['flip'], ops: [X0], beats: 6, hear: 'Rain. Swap switched the track, and it stays switched.' },
   { id: 'shuffle', title: 'Shuffle', tracks: 1, text: 'Shuffle makes a coin toss: each Play lands on the car or on rain. Shuffle again and the toss is undone.', show: ['flip', 'split'], ops: [H0], beats: 8, hear: 'One landing. Play again for another. Add a second Shuffle: always the car again.' },
@@ -491,6 +498,20 @@ export const QUBITS = {
     { move: 'Play', gate: 'measure', meaning: 'One definite reading per qubit, drawn with the odds the circuit set.' },
   ],
   puzzles: 'The qubit puzzles',
+};
+
+/** After the last qubit puzzle: what they can do now, said plainly, then the studio. */
+export const DONE = {
+  title: 'You ran real quantum circuits',
+  lead: 'Not a game about quantum. Every result named the backend that produced it, and the code under every mix runs in Qiskit unchanged. Here is what you did.',
+  did: [
+    'Flipped a qubit with X, and built the same flip from a superposition and a phase.',
+    'Prepared a Bell state with H and CX: two qubits that always agree.',
+    'Used a phase and interference to cancel an outcome, something no coin can do.',
+    'Shortened a six-gate circuit to two, and measured closer to its meaning under noise.',
+  ],
+  codeTitle: 'The two-gate circuit you ended on, in Qiskit',
+  next: 'Make a beat',
 };
 
 /** The studio: a beat machine. Every bar is a fresh set of readings of the mix. */

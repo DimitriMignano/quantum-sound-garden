@@ -100,7 +100,9 @@ export function Board({ seedNames, allowed, ops, disabled, showGates, turns = [0
         {allowed.includes('twist') && dialCard()}
         {n > 1 && move('link', { op: 'link', control: seed, target: other })}
         <div className="board__bloom">
-          <button type="button" className="primary bloom" onClick={bloom.onClick} disabled={disabled || bloom.disabled}>{bloom.label}</button>
+          {/* inert rather than disabled while a sound plays, so keyboard focus stays on Play for the next press */}
+          <button type="button" className={`primary bloom${disabled || bloom.disabled ? ' is-inert' : ''}`} aria-disabled={disabled || bloom.disabled || undefined}
+            onClick={() => { if (!(disabled || bloom.disabled)) bloom.onClick(); }}>{bloom.label}</button>
           {extra}
         </div>
       </div>

@@ -66,6 +66,10 @@ export function Welcome({ info, reducedMotion, audioOk, stuck, onStart }: Props)
           <span aria-hidden="true"> · </span>
           <button type="button" className="linklike" onClick={() => onStart('studio')}>Open the studio</button>
         </p>
+        <ol className="arc" aria-label="The three parts">
+          {APP.arc.map((a) => <li key={a.name}><b>{a.name}</b><span>{a.what}</span></li>)}
+        </ol>
+        <p className="help welcome__access">{APP.access}</p>
         {audioOk === false && <p className="error" role="alert">{stuck ? 'Your browser’s audio engine is not responding (Chrome does this sometimes). Quit the browser completely and reopen it, then come back here.' : 'Audio could not start in this browser. The studio still works visually.'}</p>}
         <details className="howto">
           <summary>What you are actually hearing</summary>

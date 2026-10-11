@@ -63,6 +63,7 @@ export function ChallengeScene({ engine, challenge, details, onNext, onSolved, i
   }, [resultIsCurrent, goalMet]);
 
   const play = useCallback(async () => {
+    garden.clearPlayback(); // a replay of the same mix must not read the previous playback's end as its own
     setPhase('playing');
     setPlays((n) => n + 1);
     setPlayedOps(JSON.stringify(garden.circuit.ops));
@@ -97,7 +98,7 @@ export function ChallengeScene({ engine, challenge, details, onNext, onSolved, i
     caption = lingo.pressToPlay;
   }
   const closenessLabel = solved && goalMet ? 'Solved' : closenessWord(closeness);
-  const nextLabel = isLast ? (quantum ? 'Make a beat' : 'Play them as qubits') : 'Next puzzle';
+  const nextLabel = isLast ? (quantum ? 'See what you can do now' : 'Play them as qubits') : 'Next puzzle';
 
   return (
     <LingoProvider value={lingo}>
@@ -122,7 +123,7 @@ export function ChallengeScene({ engine, challenge, details, onNext, onSolved, i
         <div className="success" role="status">
           <div className="success__text">
             <p className="success__title">Solved</p>
-            <p className="success__body">{isLast ? (quantum ? 'That was the last puzzle. The studio is yours.' : 'That was the last sound puzzle. Next, the same four as qubits.') : 'Next puzzle, or keep playing with this mix.'}</p>
+            <p className="success__body">{isLast ? (quantum ? 'That was the last puzzle. You have been running real circuits.' : 'That was the last sound puzzle. Next, the same four as qubits.') : 'Next puzzle, or keep playing with this mix.'}</p>
           </div>
           <div className="row">
             <button type="button" className="primary" onClick={onNext}>{nextLabel}</button>

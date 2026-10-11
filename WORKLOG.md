@@ -185,3 +185,19 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
   Qiskit" are always on the page; on one-job backends (IonQ on Qollab) Loop reads 64 shots in ONE job and plays them as
   eight bars (a bundle test proves exactly one job of 64 shots is spent); the live caption counts "Bar b · beat i of 8".
   The human checklist above is rewritten from the rules.
+- 10-11 13:10 founder: creative liberty to bridge the gaps once the deploy is done; the impact must be seen in the
+  language, and the goals (teaching, helping, accessibility) must feel met. Built on branch `impact` (merged to main
+  once the teammate's deploy is confirmed): the front door now says who it is for and what they will have done ("For
+  anyone who has never touched an instrument or a qubit. By the end you will have prepared, measured and shortened real
+  quantum circuits."), shows the arc as three cards (Hear it · Name it · Build it) and an accessibility line (written as
+  well as heard, keyboard, motion off); the tutorial intro names the end of the arc; after the last qubit puzzle a
+  closing page, "You ran real quantum circuits", lists the four things they did in plain words next to the two-gate
+  circuit's Qiskit code, then "Make a beat"; the last qubit puzzle's Next reads "See what you can do now". The project
+  page, README, judges page (a new Impact section: who it is for, what they can do after fifteen minutes, accessible by
+  design) and the demo script open with the same language. Keyboard pass, live: fourteen Tabs from the top of puzzle 2
+  land on Swap with a visible outline, Enter adds the move, six more Tabs land on Play, Enter plays.
+  Two bugs the keyboard pass surfaced, fixed in the same change: Play was `disabled` while a sound played, which threw
+  keyboard focus off it (now inert: aria-disabled, ignores presses, keeps focus); and a second Play of an unchanged mix
+  flipped the page to its result at once, because the "playback finished" check saw the previous playback before the
+  new one existed (Play now clears the old playback first). Live: the replay reads "Playing…", keeps focus, and a press
+  during playback does nothing.
