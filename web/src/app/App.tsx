@@ -7,6 +7,7 @@ import { Welcome } from './Welcome';
 import { TutorialScene } from './TutorialScene';
 import { ChallengeScene } from './ChallengeScene';
 import { StudioScene } from './StudioScene';
+import { RecapScene } from './RecapScene';
 
 interface Props { engine: QuantumEngine }
 
@@ -35,14 +36,14 @@ export function App({ engine }: Props) {
     if (!ok && audio.stuck) return; // say so on the welcome screen instead of opening a silent tutorial
     // #learn, #c3 or #studio in the URL opens that scene directly (for demos and testing); the gesture is still required.
     const hash = window.location.hash.replace('#', '');
-    if (/^c[1-4]$/.test(hash) || hash === 'studio' || hash === 'learn') { setUnlocked(CHALLENGES.length); setScene(hash); return; }
+    if (/^c[1-4]$/.test(hash) || hash === 'studio' || hash === 'learn' || hash === 'recap') { setUnlocked(CHALLENGES.length + 1); setScene(hash); return; }
     setScene(target);
   };
 
   const goNext = (index: number) => {
     const next = index + 1;
     setUnlocked((u) => Math.max(u, next));
-    setScene(next > CHALLENGES.length ? 'studio' : `c${next}`);
+    setScene(next > CHALLENGES.length ? 'recap' : `c${next}`);
   };
 
   return (
@@ -57,6 +58,9 @@ export function App({ engine }: Props) {
           <ChallengeScene engine={engine} challenge={c} details={details} onNext={() => goNext(c.index)} onSolved={() => setUnlocked((u) => Math.max(u, c.index + 1))} isLast={c.index === CHALLENGES.length} />
         </main>
       ))}
+      {scene === 'recap' && (
+        <main><RecapScene engine={engine} onDone={() => setScene('studio')} /></main>
+      )}
       {scene === 'studio' && info && (
         <main>
           <StudioScene engine={engine} backends={info.backends} defaultBackendId={info.defaultBackendId} details={details} />

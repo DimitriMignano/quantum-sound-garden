@@ -131,3 +131,25 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
   amber) was anchored at the left end, under the base sound's chip, so 85% · 15% showed a short amber bar under Car. The fill
   now sits at the right end, under the hit chip; the dark remainder on the left is the base share. The spoken label reads in
   the same order as the visible one (base, then hit). Verified live on the Turn page with Shuffle, Turn ⅛, Shuffle.
+- 10-10 22:20 founder, after solving puzzle 2: goal, hints and solution were not aligned; the studio is not what was
+  envisioned ("create new things… a layer of repetition"); "it never gets around to teaching the quantum"; far too many
+  words; every mix that works must count; nobody may get stuck ("a see solution button"). Done, all five:
+  · Every puzzle now has `solution` (the mix Show solution loads, said in words in the caption: "Shuffle Track A, then
+    Sync Track A to Track B. Press Play."), hints that are the steps of that solution in order (the Sync hint names the
+    selected track and what the button reads), `done` that states exactly what the check reads, and a test that the
+    solution passes the check, reads "there", that the start board never passes, and that other correct mixes pass too
+    (H·P(π)·H for rain; the pair built from Track B; Shuffle then Swap for the footsteps). Show solution appears after any
+    missed Play. Hints disappear once the goal is met. Bug found live and fixed: after Show solution the page read Solved
+    before the Play (the result phase of the missed Play met the new odds); a result now counts only for the mix it measured.
+  · The quantum is taught explicitly: when a puzzle is solved, "In quantum terms" names the concept (a qubit and X;
+    superposition and entanglement; interference; noise and depth) in three lines, with Go deeper for the circuit, the
+    code and the sideways experiments. A recap page after puzzle 4 ("The quantum you used", nav: Quantum) maps Track,
+    Swap, Shuffle, Turn, Sync, Play to qubit, X, H, P(θ), CX, measure, lists the five ideas with where they were met, and
+    shows the Perfect Pair in Qiskit. Then "Make a beat".
+  · The studio is a beat machine: Loop reads the mix eight times per bar and plays the readings as beats (tempo Slow,
+    Medium, Fast), a fresh bar each time until Stop; the mix can change while it runs and the next bar follows. Play
+    once remains. Live: Bar 1 "5 of 8: a car driving by", level 0.089; bars keep coming; Stop gives level 0.000.
+  · Copy cut everywhere: the intro is three lines, each tutorial page one or two sentences, each puzzle one goal
+    sentence, one done-when sentence, at most one story sentence, hints of one sentence; the welcome lead and the moves'
+    descriptions shortened; Great job! is now Solved; "The same garden" is gone.
+  · Docs rewritten for the flow: README, JUDGES.md (90-second path), QOLLAB_PAGE.md, DEMO_SCRIPT.md, the thesis.

@@ -312,6 +312,24 @@
 .success__text { display: grid; gap: 0.15rem; }
 .success__title { font-family: var(--font-display); font-size: 1.6rem; color: var(--good); margin: 0; }
 .success__body { margin: 0; color: var(--ink); }
+/* the quantum lesson, once a puzzle is solved: the concept in one name, three lines, and Go deeper for the circuit */
+.quantum { display: grid; gap: 0.5rem; padding: 0.9rem 1rem; border-radius: var(--radius); background: var(--panel); border: 1px solid var(--line-strong); }
+.quantum__label { text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.72rem; font-weight: 600; color: var(--vine); margin: 0; }
+.quantum__concept { margin: 0; font-size: 1.3rem; }
+.quantum > p { margin: 0; color: var(--ink); line-height: 1.5; text-wrap: pretty; max-width: 70ch; }
+/* the recap page */
+.recap { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
+.recap th { text-align: left; font-weight: 500; color: var(--ink-faint); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--line-strong); }
+.recap td { padding: 0.55rem 0.6rem; border-bottom: 1px solid var(--line); vertical-align: top; color: var(--ink); }
+.recap__move { font-family: var(--font-display); font-size: 1.1rem; white-space: nowrap; }
+.recap code { color: var(--accent); }
+.concepts { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.concepts li { display: grid; gap: 0.15rem; padding: 0.7rem 0.8rem; border-radius: var(--radius-s); background: var(--panel); border: 1px solid var(--line); min-width: 0; }
+.concepts b { font-family: var(--font-display); font-weight: 500; font-size: 1.1rem; }
+.concepts small { color: var(--ink-faint); }
+.concepts span { color: var(--ink-dim); font-size: 0.92rem; text-wrap: pretty; }
+/* the studio's tempo */
+.tempo { display: inline-flex; gap: 0.3rem; align-items: center; }
 
 .move__sub--warn { color: var(--phase); }
 

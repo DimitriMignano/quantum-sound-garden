@@ -1,15 +1,18 @@
 # Quantum Sound Garden
 
-**Quantum Beats Studio — make beats with the rules of quantum physics.** Learn four moves by ear → solve four
-puzzles → build your own → read the Qiskit code. Eyes closed works.
+**Quantum Beats Studio: make sounds with the rules of quantum physics.** Learn four moves by ear → solve four
+puzzles → read the quantum you used → make a beat.
 
-An audio-first learning and creation experience for people who have never played an instrument or touched a qubit.
-Each track is a qubit that plays one of two sounds. You **Swap** (X), **Shuffle** (Hadamard), **Turn** (phase) and
-**Sync** (CNOT) the tracks, then **Play** (measure): each Play is one measurement of a real Qiskit circuit, and the
-studio plays a car, rain, a bell or thunder for what was read. A five-page tutorial teaches each move by ear (Swap = X, Shuffle = H, Turn =
-phase, Sync = CX, Play = measure); four puzzles make you use them (superposition, entanglement, interference, noise)
-each with a goal panel that says what to do, when it is done, and how close the mix is (far, warmer, closer, almost, there); a two-track studio with four sound pads then lets you build any
-mix and hear what it lands on. The **Circuit** button shows gate names, bits, percentages and the Qiskit code behind any mix.
+An audio-first way to learn quantum computing and then make something with it, for people who have never played an
+instrument or touched a qubit. Each track is a qubit that plays one of two sounds. You **Swap** (X), **Shuffle**
+(Hadamard), **Turn** (phase) and **Sync** (CNOT) the tracks, then **Play** (measure): each Play is one measurement of
+a real Qiskit circuit, and you hear a car, rain, a bell or thunder for what was read. A five-page tutorial teaches each
+move by ear, with no quantum words. Four puzzles make you use them; each has a goal panel (the goal, when it is done,
+a live closeness word), hints that are the steps of the solution, a **Show solution** button so nobody gets stuck, and,
+once solved, the same thing **in quantum terms** (qubit and X, superposition and entanglement, interference, noise and
+depth). A recap page puts the four moves and Play in quantum words next to the Qiskit code. Then the studio: four sound
+pads and **Loop**, a beat machine whose every bar is eight fresh readings of your mix. The **Circuit** button shows gate
+names, bits, percentages and the Qiskit code behind any mix.
 
 Entry for the Qollab + IonQ Quantum Hackathon (theme: Quantum Playground). _This effort is supported by Qollab & IonQ._
 
@@ -40,8 +43,8 @@ statevector vs Qiskit parity, the taught behaviors, sampling, noise) and the Qol
 |---|---|---|
 | Hadamard creates alternative outcomes | Tutorial "Shuffle", puzzles 1 and 2: Shuffle makes a 50/50 mix | `server/tests/test_circuit.py::test_split_is_balanced`, `test_backends.py::test_hadamard_shots_are_approximately_balanced` |
 | Phase alone leaves probabilities unchanged | Tutorial "Turn", puzzle 3: Turn, Play, nothing changes | `test_twist_alone_leaves_probabilities_unchanged` |
-| Phase matters when branches recombine; constructive and destructive interference | Tutorial "Shuffle, Turn, Shuffle", puzzle 3: Turn then Shuffle silences the footsteps (or makes them certain) | `test_phase_then_recombination_changes_the_outcome`, `test_phase_then_recombination_changes_sampled_distribution` |
-| Controlled gates create measurable correlations | Tutorial "Sync a shuffled track", puzzle 2: thunder only with rain (Bell pair, 01 and 10 never appear) | `test_bell_state_correlations`, `test_bell_shots_are_correlated` |
+| Phase matters when branches recombine; constructive and destructive interference | Tutorial "Turn: the dial", puzzle 3: Turn then Shuffle silences the footsteps (or makes them certain) | `test_phase_then_recombination_changes_the_outcome`, `test_phase_then_recombination_changes_sampled_distribution` |
+| Controlled gates create measurable correlations | Tutorial "Sync", puzzle 2: thunder only with rain (Bell pair, 01 and 10 never appear) | `test_bell_state_correlations`, `test_bell_shots_are_correlated` |
 | Measurement draws classical outcomes from the prepared state | Every Play; predicted vs measured bars (Circuit view) | `test_deterministic_basis_state_preparation`, `test_deterministic_preparation_samples_one_outcome` |
 | Noise adds unintended outcomes; shorter circuits are more robust | Puzzle 4 | `test_teaching_noise_produces_unintended_outcomes_and_rewards_shorter_circuits` (Aer) and the vitest twin (in-app model) |
 | The audio system interprets normalized results consistently | everywhere | `test_normalize_counts_shapes`, `statevector.test.ts` ("sampling and result interpretation") |

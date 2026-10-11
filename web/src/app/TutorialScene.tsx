@@ -44,7 +44,7 @@ export function TutorialScene({ engine, details, onDone }: Props) {
         <header className="puzzle__head">
           <p className="eyebrow">Learn · {step + 1} of {LESSONS.length}</p>
           <h2>{lesson.title}</h2>
-          <p className="lesson__text">{lesson.text}</p>
+          {lesson.text && <p className="lesson__text">{lesson.text}</p>}
         </header>
         <section className="intro" aria-label={lesson.title}>
           {lesson.intro.map((line, i) => <p key={i} className="intro__line"><span className="intro__num" aria-hidden="true">{i + 1}</span>{line}</p>)}

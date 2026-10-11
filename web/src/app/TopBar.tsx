@@ -32,6 +32,7 @@ export function TopBar({ info, scene, onScene, reducedMotion, onReducedMotion, d
       <nav className="topbar__nav" aria-label="Scenes">
         {nav('learn', 'Learn')}
         {[1, 2, 3, 4].map((i) => nav(`c${i}`, String(i), i > unlocked, i > unlocked ? 'Solve the previous puzzle first' : `Puzzle ${i}`))}
+        {nav('recap', 'Quantum', unlocked < 5, unlocked < 5 ? 'Solve the four puzzles first' : 'The quantum you used')}
         {nav('studio', 'Studio')}
       </nav>
       <div className="topbar__tools">

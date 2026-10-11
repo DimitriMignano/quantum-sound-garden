@@ -1,30 +1,33 @@
 # Demo script (2–3 minutes, screen recording with voiceover; headphones on)
 
-**0:00 – 0:12 · Hook.** The front door: "Quantum Beats Studio. Make beats with the rules of quantum physics." Press
+**0:00 – 0:10 · Hook.** The front door: "Quantum Beats Studio. Make sounds with the rules of quantum physics." Press
 *Start* (sound starts). "Everything you hear is a real Qiskit circuit being measured."
 
-**0:12 – 0:45 · Learn.** Page 2 *A track, and Swap*: Try it, rain. Page 3 *Shuffle*: Play three times, the car or rain,
-then a second Shuffle: "two Shuffles cancel; dice never do that." Page 4 *Turn: the dial*: tap ½ ¼ ⅛ and watch the
-odds. "You just heard interference, and nobody said the word." Page 5 *Sync*: the pair that always agrees. Press
-*Start the puzzles*.
+**0:10 – 0:40 · Learn.** Page 2 *A track, and Swap*: Try it, rain. Page 3 *Shuffle*: Play three times, the car or rain;
+a second Shuffle: "two Shuffles cancel. Dice never do that." Page 4 *Turn: the dial*: tap ½ ¼ ⅛ and watch the odds.
+Page 5 *Sync*: the pair that always agrees. Press *Start the puzzles*.
 
-**0:45 – 1:05 · Make It Rain (puzzle 1).** "The hum says: far." Press Swap: the hum locks smooth, "there". Press
-Play: rain, "Solved." Press *Why?*: "Swap is the X gate" and the Qiskit code. "You can play this with
-your eyes closed: the hum is the progress bar."
+**0:40 – 0:55 · Make It Rain (puzzle 1).** Read the goal panel: "Make Track A play rain, every Play. Done when the tile
+reads always Rain." Swap, Play: rain, the panel turns green. The lesson appears: "a track is a qubit; Swap is the X gate."
 
-**1:05 – 1:45 · Perfect Pair (puzzle 2).** Shuffle Sky, Sync Sky to Storm, Play: rain with thunder or crickets with
-the bell, never thunder with the car. *Why?* → *Go deeper*: "Classical twins, sideways" scatter into thunder with the car; "Your
-pair, sideways" still agrees. "That is entanglement: agreement that survives a different question."
+**0:55 – 1:35 · Perfect Pair (puzzle 2).** Press Play first: car and bell, "Closeness: far". Press *Hint*: "Shuffle
+Track A." Then *Show solution*: the mix loads and is said in words. Play: rain with thunder, "Solved". The lesson:
+"Shuffle is Hadamard, superposition; Sync is CNOT, entanglement; together, a Bell state." *Go deeper*: "Classical
+twins, sideways" scatter into thunder with the car; "Your pair, sideways" still agrees. "Agreement that survives a
+different question: that is the witness."
 
-**1:45 – 2:15 · Silence the Footsteps (puzzle 3).** Turn: the hum does not move. Shuffle: footsteps, every time. Turn
-half, then Shuffle: crickets only. "Interference. The paths remembered each other." Optional: *Dephased twin* brings
-the footsteps back.
+**1:35 – 2:00 · Silence the Footsteps (puzzle 3).** Turn: the closeness word does not move. Shuffle: footsteps, every
+time. Turn ½ again, then Shuffle: crickets only. "Interference. The paths remembered each other."
 
-**2:15 – 2:35 · Clean the Mix (puzzle 4), fast.** The six-move mix plays with stray thunder; tap the redundant beads
-away, Play again: the match jumps. "Fewer gates, less noise."
+**2:00 – 2:15 · Clean the Mix (puzzle 4), fast.** The six-move mix plays with stray thunder; tap the redundant beads
+away, Play again: the match jumps. "Fewer gates, less noise." Press *The quantum you used*.
 
-**2:35 – 3:00 · Studio + close.** Four pads, a sound each; two or three moves; Play a few times: one landing each. Press
-*Circuit* in the top bar: gate names, bits, predicted-versus-measured bars and the Qiskit code appear. End on the
-backend pill (Qollab backend or IonQ simulator) and the line "This effort is supported by Qollab & IonQ."
+**2:15 – 2:30 · Recap.** The table: Track is a qubit, Swap is X, Shuffle is H, Turn is a phase, Sync is CX, Play is a
+measurement. The Perfect Pair in Qiskit, five lines.
 
-Tips: *Skip* keeps the video tight; turn *Circuit* on for the second half so judges see the gates and the code.
+**2:30 – 3:00 · Studio + close.** Press *Make a beat*. Four pads, a sound each; Shuffle A, Sync; press *Loop*: a bar of
+eight beats, then another, never the same twice. Change the mix while it runs: the next bar follows. Press *Circuit*:
+gate names, bits, predicted-versus-measured bars and the code. End on the backend pill and "This effort is supported by
+Qollab & IonQ."
+
+Tips: *Skip to the puzzles* keeps the video tight; turn *Circuit* on for the second half so judges see the gates and the code.

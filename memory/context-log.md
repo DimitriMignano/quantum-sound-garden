@@ -418,3 +418,29 @@ corrections go in a new entry. Newest at the bottom. Fill every field (`n/a` if 
   `npm run check` before the commit.
 - Commit hash: this commit (parent 4c9eee6)
 - Seams (§22): unchanged · Decisions: amber stays the hit color (the 1 lobe); only its anchor moved · Deferred: none · Risks: none known.
+
+### 2026-10-10 22:20 — Alignment, Show solution, the quantum taught, the studio as a beat machine, words cut
+- Branch / worktree: `main`
+- Task: the founder's five points after solving puzzle 2 (see WORKLOG 22:20).
+- Files changed: `web/src/content/content.ts` (rewritten: shorter copy; Challenge gains `solution`, `quantum`, loses
+  `reveal`/`shows`; `describeOps`; `RECAP`, `STUDIO`), `web/src/app/ChallengeScene.tsx` (rewritten: Show solution,
+  hints end on solve, "In quantum terms" + Go deeper; `resultIsCurrent` guard), `web/src/app/RecapScene.tsx` (new),
+  `web/src/app/StudioScene.tsx` (rewritten: Loop, tempo, Stop, Play once), `web/src/app/App.tsx` + `TopBar.tsx` (recap
+  scene, "Quantum" nav, `#recap`), `web/src/app/TutorialScene.tsx` (empty intro text), `web/src/styles.css`,
+  `web/src/content/closeness.test.ts` (alignment tests), `README.md`, `CLAUDE.md`, `docs/JUDGES.md`, `docs/QOLLAB_PAGE.md`,
+  `docs/DEMO_SCRIPT.md`, `qollab/`, `WORKLOG.md`
+- Verification run: tsc clean; vitest 75; `npm run check` before the commit. Live in Chrome (Qiskit server): puzzle 2
+  missed Play → Hear it again / Hint / Show solution; Show solution loads the pair, caption says it in words, chip
+  "there" (not Solved); Play → Solved, banner, "In quantum terms: Superposition and entanglement", Go deeper shows the
+  path, the code and the three sideways runs; recap page: 6 rows, 5 concepts, the pair's code from the server; studio
+  Loop: bars of 8 readings at 8 shots each, Stop silences (level 0.000).
+- Commit hash: this commit (parent 5170ad2)
+- Seams (§22): unchanged
+- Decisions: Show solution is offered after any missed Play (never a dead end); the solved state requires a result for
+  the mix that was played; the quantum lesson is shown, not hidden behind a button, with Go deeper for the circuit and
+  the witness; the studio's Loop re-measures every bar (the circuit is the pattern generator) rather than repeating one
+  bar; the recap sits between puzzle 4 and the studio and in the nav as "Quantum".
+- Deferred work: a listening pass of the loop with the four default sounds (textures pulse at beat length); phone width;
+  keyboard; the deploy (human).
+- Risks: on IonQ backends (one job per Run on Qollab) the loop stops after one bar with the one-job message; textures
+  (rain) in a 0.35 s beat are a wash rather than a hit.
