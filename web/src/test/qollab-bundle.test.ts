@@ -89,4 +89,28 @@ describe('the built Qollab bundle', { timeout: 20000 }, () => {
     expect(((globalThis as { backend?: { jobs: number } }).backend as { jobs: number }).jobs).toBe(0);
     expect(document.querySelector('.resultnote')?.textContent ?? document.body.textContent).toContain('Qiskit Statevector');
   });
+
+  it('on an IonQ backend the studio’s Loop spends exactly one job, of 64 shots, and plays it as eight bars', async () => {
+    fake.calls.length = 0;
+    await boot('ionq_simulator');
+    (document.querySelector('.primary--big') as HTMLButtonElement).click();
+    const studioNav = () => [...document.querySelectorAll('.navbtn')].find((b) => b.textContent?.trim() === 'Studio') as HTMLButtonElement | undefined;
+    for (let i = 0; i < 50 && (!studioNav() || studioNav()!.disabled); i++) await new Promise((r) => setTimeout(r, 50)); // the nav wakes after the gesture
+    studioNav()!.click();
+    for (let i = 0; i < 50 && !document.querySelector('.scene--studio select'); i++) await new Promise((r) => setTimeout(r, 50));
+    const select = [...document.querySelectorAll('.scene--studio select')].find((s) => [...s.querySelectorAll('option')].some((o) => o.value === 'qollab')) as HTMLSelectElement;
+    expect(select, 'the backend select with the IonQ device').toBeTruthy();
+    const setter = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value')!.set!;
+    setter.call(select, 'qollab');
+    select.dispatchEvent(new Event('change', { bubbles: true }));
+    await new Promise((r) => setTimeout(r, 100));
+    expect((document.querySelector('.bloom') as HTMLButtonElement).textContent).toContain('one job');
+    (document.querySelector('.bloom') as HTMLButtonElement).click();
+    for (let i = 0; i < 50 && !fake.calls.some((c) => c.fn === 'run_json.callPromising'); i++) await new Promise((r) => setTimeout(r, 50));
+    await new Promise((r) => setTimeout(r, 300));
+    const runs = fake.calls.filter((c) => c.fn === 'run_json.callPromising');
+    expect(runs.length).toBe(1);
+    expect(runs[0].args[3]).toBe(64);
+    expect(((globalThis as { backend?: { jobs: number } }).backend as { jobs: number }).jobs).toBe(1);
+  });
 });

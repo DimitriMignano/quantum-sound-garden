@@ -11,7 +11,7 @@ import { agreement, fidelity, marginalOne, bitstrings, bitOf } from '../engine/o
 export const APP = {
   title: 'Quantum Beats Studio',
   pitch: 'Make sounds with the rules of quantum physics.',
-  lead: 'Learn four moves by ear. Solve four puzzles. Make a beat.',
+  lead: 'Learn four moves by ear. Solve four puzzles. Solve them again as qubits. Then make beats from real quantum circuits.',
   honesty:
     'You are not hearing a quantum state. The sound is ordinary audio driven by the measured results of a circuit (a real Qiskit circuit whenever a Qiskit engine is available), and every result names the engine that produced it.',
   startButton: 'Start (3 minutes)',
@@ -355,6 +355,7 @@ export const QUANTUM_CHALLENGES: Challenge[] = [
     title: 'Flip the qubit',
     goal: 'Make qubit 0 read 1, every measurement.',
     done: 'The tile reads always |1⟩.',
+    story: 'You did this with Swap. X is its real name: the same button, the same effect, on a qubit. The sound names stay under the gates for this puzzle and the next.',
     tracks: [TRACK_A], start: [], allowed: ['flip', 'split', 'twist'],
     target: { '0': 0, '1': 1 }, exposure: 4,
     success: (i) => p1(i) > 0.99,
@@ -368,7 +369,7 @@ export const QUANTUM_CHALLENGES: Challenge[] = [
     title: 'A Bell pair',
     goal: 'Make the two qubits always agree: 00 or 11, never 01 or 10.',
     done: 'Both tiles read 50 · 50, and 01 and 10 sit at 0%.',
-    story: 'H on both qubits would give all four results, a quarter each.',
+    story: 'The pair you built with Shuffle and Sync. In quantum words it is a Bell state, the best-known two-qubit circuit there is. H on both qubits would give all four results, a quarter each.',
     tracks: [TRACK_A, TRACK_B], start: [], allowed: ['flip', 'split', 'twist', 'link'],
     target: BELL, exposure: 4,
     closeness: (p) => { const toss = (q: number) => 1 - Math.abs(2 * marginalOne(p, q) - 1); return Math.min(agreement(p, 0, 1), (toss(0) + toss(1)) / 2); },
@@ -388,7 +389,7 @@ export const QUANTUM_CHALLENGES: Challenge[] = [
     title: 'Cancel the 1',
     goal: 'Make qubit 0 read 0, every measurement.',
     done: 'The tile reads always |0⟩.',
-    story: 'Qubit 0 is in (|0⟩ − |1⟩)/√2: an H, then P(π).',
+    story: 'No more sound names. The state line is your guide now: it shows the sign the bar cannot. Qubit 0 is in (|0⟩ − |1⟩)/√2: an H, then P(π).',
     tracks: [TRACK_A], start: [H0, HALF], allowed: ['split', 'twist', 'flip'],
     target: { '0': 1, '1': 0 }, exposure: 4,
     success: (i) => p1(i) < 0.01,
@@ -415,7 +416,7 @@ export const QUANTUM_CHALLENGES: Challenge[] = [
     title: 'Two gates, not six',
     goal: 'Prepare the same Bell state with two gates.',
     done: 'Two gates on the circuit, 01 and 10 at 0%, and the measured bars close to the predicted ones.',
-    story: 'This Bell pair was built with six gates. Each gate lets in a little noise, turned up here.',
+    story: 'The last one is a working habit, not a trick: fewer gates, less noise. This Bell pair was built with six gates; each lets in a little noise, turned up here.',
     tracks: [TRACK_A, TRACK_B],
     start: [
       { op: 'split', q: 0 }, { op: 'split', q: 1 }, { op: 'split', q: 1 },
@@ -478,8 +479,8 @@ export const LESSONS: Lesson[] = [
 
 /** The door into the qubit puzzles: the same board, the real names, then play. */
 export const QUBITS = {
-  title: 'Same moves, quantum names',
-  lead: 'You already know how to play this. From here the tracks are qubits, the sounds are |0⟩ and |1⟩, and the moves have their real names. The same four puzzles, in the words a quantum computer uses.',
+  title: 'You already know the gates',
+  lead: 'Every move you made was a gate on a real quantum circuit: Swap was X, Shuffle was H, Turn was a phase, Sync was CX, and Play was a measurement. Here are the same four puzzles in the words a quantum computer uses. The help thins out as you go: the sound names stay under the gate names for two puzzles, then they are gone, and by the fourth you are reading a circuit the way Qiskit writes it.',
   start: 'Play them as qubits',
   rows: [
     { move: 'Track', gate: 'qubit', meaning: 'Reads 0 or 1 when measured: 0 plays the first sound, 1 the second.' },
@@ -494,7 +495,9 @@ export const QUBITS = {
 
 /** The studio: a beat machine. Every bar is a fresh set of readings of the mix. */
 export const STUDIO = {
-  story: 'Each pad is one way the two tracks can land: give it a sound. Build a mix, then press Loop: every bar is eight fresh readings of your mix, played as a beat. Change the mix while it runs.',
+  story: 'This is the real thing. Each bar compiles your mix into a Qiskit circuit, runs it on the backend shown below, and reads it eight times; the readings are the beats. Each pad is one way the two qubits can land: give it a sound. The circuit and its code are on the page, and the code runs in Qiskit unchanged.',
+  oneJob: 'On this backend a Run is one job, so Loop reads 64 shots at once and plays them as eight bars.',
+  loopOneJob: 'Loop: one job, 8 bars',
   loop: 'Loop',
   stop: 'Stop',
   once: 'Play once',

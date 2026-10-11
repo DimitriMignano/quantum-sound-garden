@@ -8,8 +8,9 @@ a car, rain, a bell or thunder for what was read. A five-page tutorial teaches e
 including the two rules dice can never follow (two Shuffles cancel; a Turn is silent until the next Shuffle). Four
 puzzles make you use them (superposition and entanglement, interference, noise); each has a goal panel with a live
 closeness word, hints that are the steps of the solution, a Show solution button, and, once solved, the lesson in
-quantum terms. Then the same four puzzles again as qubits: qubit 0 and qubit 1, |0⟩ and |1⟩, X, H, P(θ), CX, Measure, with a state line that shows the phase; the sound names stay for two puzzles, then go. The studio's **Loop** is a beat machine:
-every bar is eight fresh readings of your mix. The **Circuit** button shows gate names, bits, percentages and the Qiskit
+quantum terms. Then the same four puzzles again as qubits: qubit 0 and qubit 1, |0⟩ and |1⟩, X, H, P(θ), CX, Measure, with a state line that shows the phase; the sound names stay for two puzzles, then go. The studio's **Loop** is a beat machine: every bar
+is eight fresh readings of your mix, a real circuit run on the backend you chose, with the circuit and its Qiskit code on
+the page; on an IonQ backend (one job per Run) Loop reads 64 shots in one job and plays them as eight bars. The **Circuit** button shows gate names, bits, percentages and the Qiskit
 code behind any mix. (Repository name: quantum-sound-garden.)
 
 _This effort is supported by Qollab & IonQ._

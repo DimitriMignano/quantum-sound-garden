@@ -22,14 +22,17 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
       playable rules → puzzles where Bloom asks for the guess → creator with four sound pads; jargon behind a Circuit toggle
 - [ ] Live test at phone width after the redesign (the Chrome resize did not take; earlier 390px check predates it); keyboard pass
 
-## Needs a human
-- IonQ API key in `server/.env` (`IONQ_API_KEY=...`) to prove the standalone IonQ path (the live test skips without it).
-- Make the GitHub repository PUBLIC before submitting (the rules require a public repo; it is private now).
-- Upload `dist/quantum-sound-garden-qollab.zip` to Qollab (New Project → Upload your own files), run it once on the
-  built-in simulator and once on an IonQ simulator (this is the first live test of the Qollab adapter; note the
-  backend label the top bar shows on each, because IonQ detection relies on the backend's name containing "ionq"), publish
-  under MIT, paste `docs/QOLLAB_PAGE.md` as the project page, record the 2–3 minute video (`docs/DEMO_SCRIPT.md`),
-  submit from the registration page before 2026-10-11 19:00 ET.
+## Needs a human (the rules, re-read 2026-10-11 12:15 ET; submissions close 2026-10-11 19:00 ET)
+- Make the GitHub repository PUBLIC (the rules: public, runnable without sign-in, MIT, dependencies listed, no secrets).
+  `server/.env` is gitignored; `requirements.txt` and `package.json` list the dependencies; LICENSE is MIT.
+- Upload `dist/quantum-sound-garden-qollab.zip` to Qollab (New Project → Upload your own files), paste `docs/QOLLAB_PAGE.md`
+  as the project page, publish under MIT. Press Run on the built-in simulator AND on the IonQ simulator before submitting
+  ("only failed runs affect judging"; the top bar must read an IonQ label on the IonQ run, and the studio's Loop must read
+  "Loop: one job, 8 bars" there).
+- Record the 2–3 minute video (`docs/DEMO_SCRIPT.md`) and host it at a public link with no sign-in (YouTube, Loom, Vimeo
+  or Drive); put the link on the project page.
+- Declare the theme at submission: Quantum Playground. The team captain submits before 19:00 ET.
+- Optional: an IonQ API key in `server/.env` (`IONQ_API_KEY=...`) proves the standalone IonQ path (the live test skips without it).
 
 ## Log
 - 10-10 11:50 scaffolded repo; 12:05 architecture locked after reading Qollab runtime docs.
@@ -165,3 +168,18 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
   four qubit puzzles unlocked in order; the nav entry is Qubits. The tests cover all eight puzzles and the ket formatter.
   Live on puzzle 2 as qubits: the state line moved |00⟩ → (|00⟩ + |01⟩)/√2 → (|00⟩ + |11⟩)/√2 as H and CX were pressed;
   Measure solved it with "Measured qubit 0 → 1, qubit 1 → 1 (Rain + Thunder)" and "What you did: A Bell state".
+- 10-11 12:10 founder: the qubits page should reveal what they learned and say that the help thins out; make it clear
+  this is a real way of learning quantum, not a game; bridge to the studio (what are they doing when they make beats);
+  the beats must be real circuits so everything they create is represented correctly; pull the competition guidelines
+  and check where we stand. Rules re-read (qollab.xyz how-it-works): four traits (novelty & creativity, technical
+  execution, impact potential, documentation quality), judges press Run on a free simulator, a Qiskit project runnable
+  on Qollab's simulators including IonQ's, MIT, a project page, a public repo without secrets, a 2–3 minute video at a
+  public link, "only failed runs affect judging: press Run on the IonQ simulator before you submit", IonQ backends take
+  one job per Run, Playground bar: superposition, interference, entanglement or measurement essential. Done: the door
+  page now reads "You already know the gates" (every move was a gate; the help thins out: sound names for two puzzles,
+  then gone); each qubit puzzle opens with one line of context (what they did before, what to watch now); the welcome
+  lead names the whole arc; the studio opens with "This is the real thing": every bar compiles the mix to a Qiskit
+  circuit and runs it on the backend shown, and the circuit, the four readings, the backend select and "Your beat, in
+  Qiskit" are always on the page; on one-job backends (IonQ on Qollab) Loop reads 64 shots in ONE job and plays them as
+  eight bars (a bundle test proves exactly one job of 64 shots is spent); the live caption counts "Bar b · beat i of 8".
+  The human checklist above is rewritten from the rules.

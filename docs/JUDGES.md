@@ -9,7 +9,9 @@ Run → Start → "Learn the moves", then Try it on each page: a car becomes rai
 sets the odds (Turn: tap ½ ¼ ⅛), the pair that always agrees (Sync). "Start the puzzles": puzzle 1 is one Swap. Puzzle 2:
 Shuffle, Sync, Play; the page turns green and says, in quantum terms, what a Bell state is; "Go deeper" plays the pair
 and two classical twins sideways (the entanglement witness). After puzzle 4, "Play them as qubits": the same board relabeled (qubit 0, |0⟩, |1⟩, X, H, P(θ), CX, Measure) with a
-state line that shows the sign a phase sets. The front door also has "Jump to the puzzles" and "Open the studio". In the studio press Loop: a beat whose every bar is eight fresh readings of the mix. The Circuit button
+state line that shows the sign a phase sets. The front door also has "Jump to the puzzles" and "Open the studio". In the studio press Loop: a beat whose every bar is eight fresh readings of the mix, as a real circuit run on the chosen
+backend; the circuit, its Qiskit code and the backend are always on the page there, and on IonQ backends (one job per
+Run) Loop reads 64 shots in one job and plays them as eight bars. The Circuit button
 shows the gates, the bits and the Qiskit code at any moment.
 
 ## How it plays

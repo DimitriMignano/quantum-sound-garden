@@ -22,8 +22,11 @@ const TEMPOS = [
 ];
 
 /** The studio: four pads (one sound per way the two tracks can land), the four moves, and Loop: a beat machine whose
- *  every bar is a fresh set of readings of the mix. Play once is one landing, one sound. */
-export function StudioScene({ engine, backends, defaultBackendId, details }: Props) {
+ *  every bar is a fresh set of readings of the mix, as a real circuit run on the chosen backend. The circuit, its code
+ *  and the backend are always on the page here: this is where the sounds and the quantum meet. On a one-job backend
+ *  (IonQ on Qollab) Loop reads all its bars in one job. Play once is one landing, one sound. */
+export function StudioScene({ engine, backends, defaultBackendId }: Props) {
+  const details = true; // the studio always shows the circuit
   const [assignment, setAssignment] = useState<Record<string, string[]>>(DEFAULT_STUDIO_ASSIGNMENT);
   const [noise, setNoise] = useState(false);
   const [backendId, setBackendId] = useState(defaultBackendId);
@@ -43,6 +46,8 @@ export function StudioScene({ engine, backends, defaultBackendId, details }: Pro
     { name: TRACKS[1], base: assignment['00'][0], hit: assignment['10'][0] },
   ], [assignment]);
   const selectable = backends.filter((b) => b.available || b.reason);
+  const oneJob = !!backends.find((b) => b.id === backendId)?.oneJobPerRun;
+  const BARS_PER_JOB = 8;
   const playing = !!garden.playback && !garden.playback.finished;
 
   const stop = useCallback(() => {
@@ -57,6 +62,14 @@ export function StudioScene({ engine, backends, defaultBackendId, details }: Pro
   const barRef = useRef<() => Promise<void>>(async () => {});
   barRef.current = async () => {
     if (!loopRef.current) return;
+    if (oneJob) {
+      // one job per Run: every bar the loop will play is measured in this single circuit run
+      const r = await garden.bloom(BAR * BARS_PER_JOB, { noise, backendId, moments: BAR * BARS_PER_JOB, step, label: 'eight bars, one job' });
+      if (!r) { stop(); return; }
+      setBars(BARS_PER_JOB);
+      timerRef.current = window.setTimeout(() => { loopRef.current = false; setLooping(false); }, BAR * BARS_PER_JOB * step * 1000 + 400);
+      return;
+    }
     const r = await garden.bloom(BAR, { noise, backendId, moments: BAR, step, label: 'bar' });
     if (!r || !loopRef.current) { stop(); return; }
     setBars((b) => b + 1);
@@ -75,10 +88,10 @@ export function StudioScene({ engine, backends, defaultBackendId, details }: Pro
       <header className="puzzle__head">
         <p className="eyebrow">{APP.studioTitle}</p>
         <h2>{APP.studioTagline}</h2>
-        <p className="story">{STUDIO.story}</p>
+        <p className="story">{STUDIO.story}{oneJob ? ` ${STUDIO.oneJob}` : ''}</p>
       </header>
 
-      <GardenView garden={garden} tracks={studioTracks} assignment={assignment} details={details} caption={caption} />
+      <GardenView garden={garden} tracks={studioTracks} assignment={assignment} details={details} caption={caption} barLength={BAR} />
 
       <div className="pads" role="group" aria-label="A sound for each pad">
         {labels.map((b) => (
@@ -97,10 +110,10 @@ export function StudioScene({ engine, backends, defaultBackendId, details }: Pro
 
       <Board steady={Array.from({ length: 2 }, (_, q) => { const p = marginalOne(garden.ideal.probabilities, q); return p < 1e-6 || p > 1 - 1e-6; })} seedNames={TRACKS} allowed={['flip', 'split', 'twist', 'link']} turns={[0.5, 0.25, 0.125, -0.25]} ops={garden.circuit.ops} disabled={garden.busy} showGates={details}
         onRetune={(i, t) => garden.setOps(garden.circuit.ops.map((o, k) => (k === i && o.op === 'twist' ? { ...o, turns: t } : o)))} onAdd={garden.addOp} onRemove={garden.removeOp} onReset={() => garden.reset([])}
-        bloom={{ label: looping ? 'Looping…' : STUDIO.loop, onClick: loop, disabled: looping || playing }}
+        bloom={{ label: looping ? 'Looping…' : oneJob ? STUDIO.loopOneJob : STUDIO.loop, onClick: loop, disabled: looping || playing }}
         extra={<>
           {looping && <button type="button" className="ghost" onClick={stop}>{STUDIO.stop}</button>}
-          {looping && bars > 0 && <span className="pill" aria-live="polite">{STUDIO.bar(bars)}</span>}
+          {looping && bars > 0 && <span className="pill" aria-live="polite">{oneJob ? '8 bars from one job' : STUDIO.bar(bars)}</span>}
           {!looping && <button type="button" className="ghost" onClick={once} disabled={garden.busy || playing}>{STUDIO.once}</button>}
           {!looping && playing && <button type="button" className="ghost" onClick={garden.stopPlayback}>{STUDIO.stop}</button>}
         </>} />
@@ -111,7 +124,7 @@ export function StudioScene({ engine, backends, defaultBackendId, details }: Pro
           {TEMPOS.map((t) => <button key={t.id} type="button" className={`chip chip--small${tempo === t.id ? ' is-on' : ''}`} aria-pressed={tempo === t.id} onClick={() => setTempo(t.id)}>{t.label}</button>)}
         </span>
         <label className="toggle"><input type="checkbox" checked={noise} onChange={(e) => setNoise(e.target.checked)} /> Add noise</label>
-        {details && selectable.length > 1 && (
+        {selectable.length > 1 && (
           <label className="row">
             <span className="label">Backend</span>
             <select value={backendId} onChange={(e) => setBackendId(e.target.value)}>
@@ -124,7 +137,7 @@ export function StudioScene({ engine, backends, defaultBackendId, details }: Pro
       {garden.result && <ResultNote result={garden.result} />}
       <button type="button" className="linklike" aria-expanded={why} onClick={() => setWhy((w) => !w)}>Why does each bar come out different?</button>
       {why && <p className="help">{WHY_BEATS_VARY}</p>}
-      {details && <CodePanel load={code} />}
+      <CodePanel load={code} title="Your beat, in Qiskit" />
     </div>
   );
 }

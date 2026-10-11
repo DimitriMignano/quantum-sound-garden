@@ -38,12 +38,12 @@ var t = Object.defineProperty, n = (e, t, n) => () => {
 	};
 	function b() {}
 	b.prototype = y.prototype;
-	function ee(e, t, n) {
+	function x(e, t, n) {
 		this.props = e, this.context = t, this.refs = v, this.updater = n || g;
 	}
-	var x = ee.prototype = new b();
-	x.constructor = ee, _(x, y.prototype), x.isPureReactComponent = !0;
-	var S = Array.isArray;
+	var S = x.prototype = new b();
+	S.constructor = x, _(S, y.prototype), S.isPureReactComponent = !0;
+	var ee = Array.isArray;
 	function te() {}
 	var C = {
 		H: null,
@@ -114,12 +114,12 @@ var t = Object.defineProperty, n = (e, t, n) => () => {
 				case d: return c = e._init, se(c(e._payload), r, i, a, o);
 			}
 		}
-		if (c) return o = o(e), c = a === "" ? "." + ae(e, 0) : a, S(o) ? (i = "", c != null && (i = c.replace(E, "$&/") + "/"), se(o, r, i, "", function(e) {
+		if (c) return o = o(e), c = a === "" ? "." + ae(e, 0) : a, ee(o) ? (i = "", c != null && (i = c.replace(E, "$&/") + "/"), se(o, r, i, "", function(e) {
 			return e;
 		})) : o != null && (re(o) && (o = T(o, i + (o.key == null || e && e.key === o.key ? "" : ("" + o.key).replace(E, "$&/") + "/") + c)), r.push(o)), 1;
 		c = 0;
 		var l = a === "" ? "." : a + ":";
-		if (S(e)) for (var u = 0; u < e.length; u++) a = e[u], s = l + ae(a, u), c += se(a, r, i, s, o);
+		if (ee(e)) for (var u = 0; u < e.length; u++) a = e[u], s = l + ae(a, u), c += se(a, r, i, s, o);
 		else if (u = h(e), typeof u == "function") for (e = u.call(e), u = 0; !(a = e.next()).done;) a = a.value, s = l + ae(a, u++), c += se(a, r, i, s, o);
 		else if (s === "object") {
 			if (typeof e.then == "function") return se(oe(e), r, i, a, o);
@@ -203,7 +203,7 @@ var t = Object.defineProperty, n = (e, t, n) => () => {
 			return e;
 		}
 	};
-	e.Activity = f, e.Children = pe, e.Component = y, e.Fragment = r, e.Profiler = a, e.PureComponent = ee, e.StrictMode = i, e.Suspense = l, e.ViewTransition = p, e.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE = C, e.__COMPILER_RUNTIME = {
+	e.Activity = f, e.Children = pe, e.Component = y, e.Fragment = r, e.Profiler = a, e.PureComponent = x, e.StrictMode = i, e.Suspense = l, e.ViewTransition = p, e.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE = C, e.__COMPILER_RUNTIME = {
 		__proto__: null,
 		c: function(e) {
 			return C.H.useMemoCache(e);
@@ -362,27 +362,27 @@ var t = Object.defineProperty, n = (e, t, n) => () => {
 			i = n(l);
 		}
 	}
-	function ee(e) {
+	function x(e) {
 		if (h = !1, b(e), !m) {
-			if (n(c) !== null) m = !0, x || (x = !0, T());
+			if (n(c) !== null) m = !0, S || (S = !0, T());
 			else {
 				var t = n(l);
-				t !== null && E(ee, t.startTime - e);
+				t !== null && E(x, t.startTime - e);
 			}
 		}
 	}
-	var x = !1, S = -1, te = 5, C = -1;
+	var S = !1, ee = -1, te = 5, C = -1;
 	function ne() {
 		return g ? !0 : !(e.unstable_now() - C < te);
 	}
 	function w() {
-		if (g = !1, x) {
+		if (g = !1, S) {
 			var t = e.unstable_now();
 			C = t;
 			var i = !0;
 			try {
 				a: {
-					m = !1, h && (h = !1, v(S), S = -1), p = !0;
+					m = !1, h && (h = !1, v(ee), ee = -1), p = !0;
 					var a = f;
 					try {
 						b: {
@@ -402,7 +402,7 @@ var t = Object.defineProperty, n = (e, t, n) => () => {
 							if (d !== null) i = !0;
 							else {
 								var u = n(l);
-								u !== null && E(ee, u.startTime - t), i = !1;
+								u !== null && E(x, u.startTime - t), i = !1;
 							}
 						}
 						break a;
@@ -412,7 +412,7 @@ var t = Object.defineProperty, n = (e, t, n) => () => {
 					i = void 0;
 				}
 			} finally {
-				i ? T() : x = !1;
+				i ? T() : S = !1;
 			}
 		}
 	}
@@ -429,7 +429,7 @@ var t = Object.defineProperty, n = (e, t, n) => () => {
 		_(w, 0);
 	};
 	function E(t, n) {
-		S = _(function() {
+		ee = _(function() {
 			t(e.unstable_now());
 		}, n);
 	}
@@ -497,7 +497,7 @@ var t = Object.defineProperty, n = (e, t, n) => () => {
 			startTime: a,
 			expirationTime: s,
 			sortIndex: -1
-		}, a > o ? (r.sortIndex = a, t(l, r), n(c) === null && r === n(l) && (h ? (v(S), S = -1) : h = !0, E(ee, a - o))) : (r.sortIndex = s, t(c, r), m || p || (m = !0, x || (x = !0, T()))), r;
+		}, a > o ? (r.sortIndex = a, t(l, r), n(c) === null && r === n(l) && (h ? (v(ee), ee = -1) : h = !0, E(x, a - o))) : (r.sortIndex = s, t(c, r), m || p || (m = !0, S || (S = !0, T()))), r;
 	}, e.unstable_shouldYield = ne, e.unstable_wrapCallback = function(e) {
 		var t = f;
 		return function() {
@@ -794,12 +794,12 @@ var t = Object.defineProperty, n = (e, t, n) => () => {
 			default: throw Error(i(559));
 		}
 	}
-	var ee = null, x = null;
-	function S(e, t, n) {
-		return e === n || e === t && (ee = e, !0);
+	var x = null, S = null;
+	function ee(e, t, n) {
+		return e === n || e === t && (x = e, !0);
 	}
 	function te(e, t, n) {
-		return e === n ? (x = e, !1) : e === t && (x !== null && (ee = e), !0);
+		return e === n ? (S = e, !1) : e === t && (S !== null && (x = e), !0);
 	}
 	function C(e) {
 		if (e === null) return null;
@@ -7965,7 +7965,7 @@ var t = Object.defineProperty, n = (e, t, n) => () => {
 			}
 			return a;
 		}
-		return e & Node.DOCUMENT_POSITION_PRECEDING ? ((t = !!a) && !(t = a === n) && (t = ne(n, a, C), t === null ? t = !1 : (h(t, !0, S, a, n), a = ee, ee = null, t = a !== null)), t) : e & Node.DOCUMENT_POSITION_FOLLOWING ? ((t = !!a) && !(t = a === r) && (t = ne(r, a, C), t === null ? t = !1 : (h(t, !0, te, a, r), a = ee, x = ee = null, t = a !== null)), t) : !1;
+		return e & Node.DOCUMENT_POSITION_PRECEDING ? ((t = !!a) && !(t = a === n) && (t = ne(n, a, C), t === null ? t = !1 : (h(t, !0, ee, a, n), a = x, x = null, t = a !== null)), t) : e & Node.DOCUMENT_POSITION_FOLLOWING ? ((t = !!a) && !(t = a === r) && (t = ne(r, a, C), t === null ? t = !1 : (h(t, !0, te, a, r), a = x, S = x = null, t = a !== null)), t) : !1;
 	}
 	function Zp(e, t) {
 		var n = e.ownerDocument.createRange();
@@ -9096,7 +9096,7 @@ function y(e, t = 1) {
 var b = n((() => {}));
 //#endregion
 //#region src/engine/statevector.ts
-function ee(e) {
+function x(e) {
 	let t = 1 << e, n = new Float64Array(t), r = new Float64Array(t);
 	return n[0] = 1, {
 		nQubits: e,
@@ -9104,7 +9104,7 @@ function ee(e) {
 		im: r
 	};
 }
-function x(e, t, n, r, i, a) {
+function S(e, t, n, r, i, a) {
 	let { re: o, im: s } = e, c = o.length, l = 1 << t;
 	for (let e = 0; e < c; e++) {
 		if (e & l) continue;
@@ -9112,7 +9112,7 @@ function x(e, t, n, r, i, a) {
 		o[e] = n[0] * c - n[1] * u + r[0] * d - r[1] * f, s[e] = n[0] * u + n[1] * c + r[0] * f + r[1] * d, o[t] = i[0] * c - i[1] * u + a[0] * d - a[1] * f, s[t] = i[0] * u + i[1] * c + a[0] * f + a[1] * d;
 	}
 }
-function S(e, t) {
+function ee(e, t) {
 	switch (t.op) {
 		case "flip":
 			E.x(e, t.q);
@@ -9127,8 +9127,8 @@ function S(e, t) {
 	}
 }
 function te(e) {
-	let t = ee(e.nQubits);
-	for (let n of e.ops) S(t, n);
+	let t = x(e.nQubits);
+	for (let n of e.ops) ee(t, n);
 	if (e.basis === "x") for (let n = 0; n < e.nQubits; n++) E.h(t, n);
 	return t;
 }
@@ -9170,8 +9170,8 @@ function re(e, t, n, r) {
 		n < 1 ? E.x(e, t) : n < 2 ? E.y(e, t) : E.z(e, t);
 	};
 	for (let s = 0; s < t; s++) {
-		let t = ee(e.nQubits);
-		for (let i of e.ops) S(t, i), i.op === "link" ? (r() < n.p2 && o(t, i.control), r() < n.p2 && o(t, i.target)) : r() < n.p1 && o(t, i.q);
+		let t = x(e.nQubits);
+		for (let i of e.ops) ee(t, i), i.op === "link" ? (r() < n.p2 && o(t, i.control), r() < n.p2 && o(t, i.target)) : r() < n.p1 && o(t, i.q);
 		if (e.basis === "x") for (let i = 0; i < e.nQubits; i++) E.h(t, i), r() < n.p1 && o(t, i);
 		let s = C(t), c = r(), l = 0, u = 0;
 		for (let e = 0; e < i.length; e++) {
@@ -9190,19 +9190,19 @@ function re(e, t, n, r) {
 var ie, E, ae = n((() => {
 	b(), ie = Math.SQRT1_2, E = {
 		x(e, t) {
-			x(e, t, [0, 0], [1, 0], [1, 0], [0, 0]);
+			S(e, t, [0, 0], [1, 0], [1, 0], [0, 0]);
 		},
 		y(e, t) {
-			x(e, t, [0, 0], [0, -1], [0, 1], [0, 0]);
+			S(e, t, [0, 0], [0, -1], [0, 1], [0, 0]);
 		},
 		z(e, t) {
-			x(e, t, [1, 0], [0, 0], [0, 0], [-1, 0]);
+			S(e, t, [1, 0], [0, 0], [0, 0], [-1, 0]);
 		},
 		h(e, t) {
-			x(e, t, [ie, 0], [ie, 0], [ie, 0], [-ie, 0]);
+			S(e, t, [ie, 0], [ie, 0], [ie, 0], [-ie, 0]);
 		},
 		p(e, t, n) {
-			x(e, t, [1, 0], [0, 0], [0, 0], [Math.cos(n), Math.sin(n)]);
+			S(e, t, [1, 0], [0, 0], [0, 0], [Math.cos(n), Math.sin(n)]);
 		},
 		cx(e, t, n) {
 			let { re: r, im: i } = e, a = 1 << t, o = 1 << n;
@@ -9636,7 +9636,7 @@ var Oe, ke, Ae, je, Me, Ne, Pe, Fe, Ie, Le, Re, ze, Be, Ve, He, Ue, We, Ge, Ke, 
 	b(), Oe = {
 		title: "Quantum Beats Studio",
 		pitch: "Make sounds with the rules of quantum physics.",
-		lead: "Learn four moves by ear. Solve four puzzles. Make a beat.",
+		lead: "Learn four moves by ear. Solve four puzzles. Solve them again as qubits. Then make beats from real quantum circuits.",
 		honesty: "You are not hearing a quantum state. The sound is ordinary audio driven by the measured results of a circuit (a real Qiskit circuit whenever a Qiskit engine is available), and every result names the engine that produced it.",
 		startButton: "Start (3 minutes)",
 		startHint: "Sound starts when you press this.",
@@ -10073,6 +10073,7 @@ var Oe, ke, Ae, je, Me, Ne, Pe, Fe, Ie, Le, Re, ze, Be, Ve, He, Ue, We, Ge, Ke, 
 			title: "Flip the qubit",
 			goal: "Make qubit 0 read 1, every measurement.",
 			done: "The tile reads always |1⟩.",
+			story: "You did this with Swap. X is its real name: the same button, the same effect, on a qubit. The sound names stay under the gates for this puzzle and the next.",
 			tracks: [Le],
 			start: [],
 			allowed: [
@@ -10104,7 +10105,7 @@ var Oe, ke, Ae, je, Me, Ne, Pe, Fe, Ie, Le, Re, ze, Be, Ve, He, Ue, We, Ge, Ke, 
 			title: "A Bell pair",
 			goal: "Make the two qubits always agree: 00 or 11, never 01 or 10.",
 			done: "Both tiles read 50 · 50, and 01 and 10 sit at 0%.",
-			story: "H on both qubits would give all four results, a quarter each.",
+			story: "The pair you built with Shuffle and Sync. In quantum words it is a Bell state, the best-known two-qubit circuit there is. H on both qubits would give all four results, a quarter each.",
 			tracks: [Le, Re],
 			start: [],
 			allowed: [
@@ -10143,7 +10144,7 @@ var Oe, ke, Ae, je, Me, Ne, Pe, Fe, Ie, Le, Re, ze, Be, Ve, He, Ue, We, Ge, Ke, 
 			title: "Cancel the 1",
 			goal: "Make qubit 0 read 0, every measurement.",
 			done: "The tile reads always |0⟩.",
-			story: "Qubit 0 is in (|0⟩ − |1⟩)/√2: an H, then P(π).",
+			story: "No more sound names. The state line is your guide now: it shows the sign the bar cannot. Qubit 0 is in (|0⟩ − |1⟩)/√2: an H, then P(π).",
 			tracks: [Le],
 			start: [Be, He],
 			allowed: [
@@ -10202,7 +10203,7 @@ var Oe, ke, Ae, je, Me, Ne, Pe, Fe, Ie, Le, Re, ze, Be, Ve, He, Ue, We, Ge, Ke, 
 			title: "Two gates, not six",
 			goal: "Prepare the same Bell state with two gates.",
 			done: "Two gates on the circuit, 01 and 10 at 0%, and the measured bars close to the predicted ones.",
-			story: "This Bell pair was built with six gates. Each gate lets in a little noise, turned up here.",
+			story: "The last one is a working habit, not a trick: fewer gates, less noise. This Bell pair was built with six gates; each lets in a little noise, turned up here.",
 			tracks: [Le, Re],
 			start: [
 				{
@@ -10327,8 +10328,8 @@ var Oe, ke, Ae, je, Me, Ne, Pe, Fe, Ie, Le, Re, ze, Be, Ve, He, Ue, We, Ge, Ke, 
 			hear: "One landing. Play more: the car with the bell, or rain with thunder. Never crossed."
 		}
 	], Qe = {
-		title: "Same moves, quantum names",
-		lead: "You already know how to play this. From here the tracks are qubits, the sounds are |0⟩ and |1⟩, and the moves have their real names. The same four puzzles, in the words a quantum computer uses.",
+		title: "You already know the gates",
+		lead: "Every move you made was a gate on a real quantum circuit: Swap was X, Shuffle was H, Turn was a phase, Sync was CX, and Play was a measurement. Here are the same four puzzles in the words a quantum computer uses. The help thins out as you go: the sound names stay under the gate names for two puzzles, then they are gone, and by the fourth you are reading a circuit the way Qiskit writes it.",
 		start: "Play them as qubits",
 		rows: [
 			{
@@ -10364,7 +10365,9 @@ var Oe, ke, Ae, je, Me, Ne, Pe, Fe, Ie, Le, Re, ze, Be, Ve, He, Ue, We, Ge, Ke, 
 		],
 		puzzles: "The qubit puzzles"
 	}, $e = {
-		story: "Each pad is one way the two tracks can land: give it a sound. Build a mix, then press Loop: every bar is eight fresh readings of your mix, played as a beat. Change the mix while it runs.",
+		story: "This is the real thing. Each bar compiles your mix into a Qiskit circuit, runs it on the backend shown below, and reads it eight times; the readings are the beats. Each pad is one way the two qubits can land: give it a sound. The circuit and its code are on the page, and the code runs in Qiskit unchanged.",
+		oneJob: "On this backend a Run is one job, so Loop reads 64 shots at once and plays them as eight bars.",
+		loopOneJob: "Loop: one job, 8 bars",
 		loop: "Loop",
 		stop: "Stop",
 		once: "Play once",
@@ -11483,14 +11486,14 @@ function tn(e, t, n, r = [], i = !1) {
 	let [a, o] = (0, F.useState)(r), s = (0, F.useMemo)(() => ({
 		nQubits: t,
 		ops: a
-	}), [t, a]), c = (0, F.useMemo)(() => ue(s), [s]), [l, u] = (0, F.useState)(null), [d, f] = (0, F.useState)(null), [p, m] = (0, F.useState)(null), [h, g] = (0, F.useState)(null), [b, ee] = (0, F.useState)(!1), [x, S] = (0, F.useState)(null), [te, C] = (0, F.useState)(i), ne = (0, F.useRef)([]), w = (0, F.useRef)(n), T = (0, F.useRef)(.9), re = (0, F.useRef)(() => {});
+	}), [t, a]), c = (0, F.useMemo)(() => ue(s), [s]), [l, u] = (0, F.useState)(null), [d, f] = (0, F.useState)(null), [p, m] = (0, F.useState)(null), [h, g] = (0, F.useState)(null), [b, x] = (0, F.useState)(!1), [S, ee] = (0, F.useState)(null), [te, C] = (0, F.useState)(i), ne = (0, F.useRef)([]), w = (0, F.useRef)(n), T = (0, F.useRef)(.9), re = (0, F.useRef)(() => {});
 	(0, F.useEffect)(() => {
 		let t = !0, n = setTimeout(async () => {
 			try {
 				let n = await e.ideal(s);
 				t && u(n.source === "qiskit" ? n : null);
 			} catch (e) {
-				t && (u(null), S(e instanceof Error ? e.message : String(e)));
+				t && (u(null), ee(e instanceof Error ? e.message : String(e)));
 			}
 		}, 120);
 		return () => {
@@ -11506,9 +11509,9 @@ function tn(e, t, n, r = [], i = !1) {
 		$t.silence(.5);
 	}, []);
 	let E = (0, F.useMemo)(() => d ? _(d.counts) : null, [d]), ae = (0, F.useMemo)(() => E ? v(E, c.probabilities) : null, [E, c]), oe = (0, F.useCallback)((e) => {
-		o(e), S(null);
+		o(e), ee(null);
 	}, []), se = (0, F.useCallback)((e) => o((t) => [...t, e]), []), ce = (0, F.useCallback)((e) => o((t) => t.filter((t, n) => n !== e)), []), le = (0, F.useCallback)((e) => {
-		$t.stopSequence(), o(e ?? r), f(null), m(null), g(null), S(null);
+		$t.stopSequence(), o(e ?? r), f(null), m(null), g(null), ee(null);
 	}, [r]);
 	return re.current = (e, t) => {
 		g({
@@ -11544,7 +11547,7 @@ function tn(e, t, n, r = [], i = !1) {
 		measuredFidelity: ae,
 		playback: h,
 		busy: b,
-		error: x,
+		error: S,
 		oddsHidden: te,
 		setOddsHidden: C,
 		addOp: se,
@@ -11552,7 +11555,7 @@ function tn(e, t, n, r = [], i = !1) {
 		setOps: oe,
 		reset: le,
 		bloom: (0, F.useCallback)(async (n, r = {}) => {
-			ee(!0), S(null), $t.stopSequence();
+			x(!0), ee(null), $t.stopSequence();
 			try {
 				let i = r.noise ? fe : void 0, a = r.basis ?? "z", o;
 				if (r.mixture && r.mixture.length > 1) {
@@ -11579,9 +11582,9 @@ function tn(e, t, n, r = [], i = !1) {
 				let c = o.memory && o.memory.length === o.shots ? o.memory : y(o.counts, o.shots * 7919 + o.elapsedMs), l = Qt.thin(c, r.moments ?? Math.min(24, o.shots));
 				return ne.current = l, T.current = r.step ?? .9, re.current(l, T.current), o;
 			} catch (e) {
-				return S(e instanceof be || e instanceof Error ? e.message : String(e)), null;
+				return ee(e instanceof be || e instanceof Error ? e.message : String(e)), null;
 			} finally {
-				ee(!1);
+				x(!1);
 			}
 		}, [
 			e,
@@ -11677,30 +11680,30 @@ var sn = n((() => {})), cn, ln, un, dn, fn = n((() => {
 }));
 //#endregion
 //#region src/app/GardenView.tsx
-function pn({ garden: e, tracks: t, assignment: n, details: r, caption: i }) {
-	let a = dn(), o = a.mode === "quantum", s = (0, gn.useMemo)(() => p(e.circuit.nQubits), [e.circuit.nQubits]), c = (0, gn.useMemo)(() => e.circuit.ops.filter((e) => e.op === "link").map((e) => e.op === "link" ? e : null), [e.circuit.ops]), l = e.playback && !e.playback.finished && e.playback.outcome, u = e.playback?.outcome ?? null, d = e.playback?.finished ? e.result?.memory?.[0] ?? null : null, f = e.oddsHidden, g = l ? o ? a.measured(e.playback.outcome, e.playback.caption) : vn(e.playback.caption) : "", _ = l ? e.playback.total > 1 ? `${e.playback.index + 1} of ${e.playback.total}: ${g}` : g : null, v = f ? `Press ${a.verbs.bloom} to find out.` : `Right now: ${mn(e.ideal.probabilities, n, o)}`;
+function pn({ garden: e, tracks: t, assignment: n, details: r, caption: i, barLength: a }) {
+	let o = dn(), s = o.mode === "quantum", c = (0, gn.useMemo)(() => p(e.circuit.nQubits), [e.circuit.nQubits]), l = (0, gn.useMemo)(() => e.circuit.ops.filter((e) => e.op === "link").map((e) => e.op === "link" ? e : null), [e.circuit.ops]), u = e.playback && !e.playback.finished && e.playback.outcome, d = e.playback?.outcome ?? null, f = e.playback?.finished ? e.result?.memory?.[0] ?? null : null, g = e.oddsHidden, _ = u ? s ? o.measured(e.playback.outcome, e.playback.caption) : vn(e.playback.caption) : "", v = e.playback, y = v && v.total > 1 ? a && v.total > a ? `Bar ${Math.floor(v.index / a) + 1} · ${v.index % a + 1} of ${a}` : `${v.index + 1} of ${v.total}` : null, b = u ? y ? `${y}: ${_}` : _ : null, x = g ? `Press ${o.verbs.bloom} to find out.` : `Right now: ${mn(e.ideal.probabilities, n, s)}`;
 	return /* @__PURE__ */ (0, I.jsxs)("div", {
 		className: "garden",
 		children: [
 			/* @__PURE__ */ (0, I.jsx)("div", {
 				className: `tiles tiles--${t.length}`,
 				children: t.map((t, n) => {
-					let i = h(e.ideal.probabilities, n), s = u ? m(u, n) : d ? m(d, n) : null, c = qt(t.base).name, l = qt(t.hit).name, p = a.sideName(0, c), g = a.sideName(1, l), _ = a.sideSub(0, c), v = a.sideSub(1, l), y = f ? "hidden" : i < .01 ? "base" : i > .99 ? "hit" : "mixed";
+					let i = h(e.ideal.probabilities, n), a = d ? m(d, n) : f ? m(f, n) : null, c = qt(t.base).name, l = qt(t.hit).name, u = o.sideName(0, c), p = o.sideName(1, l), _ = o.sideSub(0, c), v = o.sideSub(1, l), y = g ? "hidden" : i < .01 ? "base" : i > .99 ? "hit" : "mixed";
 					return /* @__PURE__ */ (0, I.jsxs)("div", {
-						className: `tile tile--${y}${u ? " is-playing" : ""}`,
+						className: `tile tile--${y}${d ? " is-playing" : ""}`,
 						children: [
 							/* @__PURE__ */ (0, I.jsxs)("div", {
 								className: "tile__head",
 								children: [
 									/* @__PURE__ */ (0, I.jsx)("span", {
 										className: "tile__name",
-										children: a.trackName(n, t.name)
+										children: o.trackName(n, t.name)
 									}),
-									r && !o && /* @__PURE__ */ (0, I.jsxs)("small", {
+									r && !s && /* @__PURE__ */ (0, I.jsxs)("small", {
 										className: "tile__qubit",
 										children: ["qubit ", n]
 									}),
-									o && a.level === 1 && /* @__PURE__ */ (0, I.jsx)("small", {
+									s && o.level === 1 && /* @__PURE__ */ (0, I.jsx)("small", {
 										className: "tile__qubit",
 										children: t.name
 									})
@@ -11709,27 +11712,27 @@ function pn({ garden: e, tracks: t, assignment: n, details: r, caption: i }) {
 							/* @__PURE__ */ (0, I.jsxs)("div", {
 								className: "tile__sounds",
 								children: [/* @__PURE__ */ (0, I.jsxs)("span", {
-									className: `tile__sound tile__sound--base${s === 0 ? " is-on" : ""}`,
-									children: [p, _ && /* @__PURE__ */ (0, I.jsxs)("small", { children: [" ", _] })]
+									className: `tile__sound tile__sound--base${a === 0 ? " is-on" : ""}`,
+									children: [u, _ && /* @__PURE__ */ (0, I.jsxs)("small", { children: [" ", _] })]
 								}), /* @__PURE__ */ (0, I.jsxs)("span", {
-									className: `tile__sound tile__sound--hit${s === 1 ? " is-on" : ""}`,
-									children: [g, v && /* @__PURE__ */ (0, I.jsxs)("small", { children: [" ", v] })]
+									className: `tile__sound tile__sound--hit${a === 1 ? " is-on" : ""}`,
+									children: [p, v && /* @__PURE__ */ (0, I.jsxs)("small", { children: [" ", v] })]
 								})]
 							}),
 							/* @__PURE__ */ (0, I.jsxs)("div", {
 								className: "tile__bar",
 								role: "img",
-								"aria-label": f ? `${t.name}: odds hidden` : `${t.name}: ${p} ${_n(1 - i)}, ${g} ${_n(i)}`,
+								"aria-label": g ? `${t.name}: odds hidden` : `${t.name}: ${u} ${_n(1 - i)}, ${p} ${_n(i)}`,
 								children: [
 									/* @__PURE__ */ (0, I.jsx)("span", {
 										className: "tile__fill",
-										style: { width: f ? "0%" : `${i * 100}%` }
+										style: { width: g ? "0%" : `${i * 100}%` }
 									}),
-									!f && /* @__PURE__ */ (0, I.jsx)("span", {
+									!g && /* @__PURE__ */ (0, I.jsx)("span", {
 										className: "tile__pct",
-										children: y === "base" ? `always ${p}` : y === "hit" ? `always ${g}` : `${_n(1 - i)} · ${_n(i)}`
+										children: y === "base" ? `always ${u}` : y === "hit" ? `always ${p}` : `${_n(1 - i)} · ${_n(i)}`
 									}),
-									f && /* @__PURE__ */ (0, I.jsx)("span", {
+									g && /* @__PURE__ */ (0, I.jsx)("span", {
 										className: "tile__pct",
 										children: "?"
 									})
@@ -11739,20 +11742,20 @@ function pn({ garden: e, tracks: t, assignment: n, details: r, caption: i }) {
 					}, n);
 				})
 			}),
-			c.length > 0 && /* @__PURE__ */ (0, I.jsx)("p", {
+			l.length > 0 && /* @__PURE__ */ (0, I.jsx)("p", {
 				className: "synced",
-				children: c.map((e, n) => /* @__PURE__ */ (0, I.jsxs)("span", {
+				children: l.map((e, n) => /* @__PURE__ */ (0, I.jsxs)("span", {
 					className: "synced__chip",
 					children: [
-						a.sync,
+						o.sync,
 						": ",
-						a.trackName(e.control, t[e.control]?.name ?? ""),
+						o.trackName(e.control, t[e.control]?.name ?? ""),
 						" → ",
-						a.trackName(e.target, t[e.target]?.name ?? "")
+						o.trackName(e.target, t[e.target]?.name ?? "")
 					]
 				}, n))
 			}),
-			o && !f && /* @__PURE__ */ (0, I.jsxs)("p", {
+			s && !g && /* @__PURE__ */ (0, I.jsxs)("p", {
 				className: "state",
 				"aria-live": "polite",
 				children: [/* @__PURE__ */ (0, I.jsx)("span", {
@@ -11761,18 +11764,18 @@ function pn({ garden: e, tracks: t, assignment: n, details: r, caption: i }) {
 				}), /* @__PURE__ */ (0, I.jsx)("code", { children: rn(e.ideal.amplitudes) })]
 			}),
 			/* @__PURE__ */ (0, I.jsx)("p", {
-				className: `caption${l ? " is-live" : ""}`,
+				className: `caption${u ? " is-live" : ""}`,
 				role: "status",
 				"aria-live": "polite",
-				children: _ ?? i ?? v
+				children: b ?? i ?? x
 			}),
 			r && /* @__PURE__ */ (0, I.jsx)("ul", {
 				className: "outcomes",
 				"aria-label": "Readings",
-				children: s.map((r) => {
-					let i = e.ideal.probabilities[r] ?? 0, s = e.measured?.[r];
+				children: c.map((r) => {
+					let i = e.ideal.probabilities[r] ?? 0, a = e.measured?.[r];
 					return /* @__PURE__ */ (0, I.jsxs)("li", {
-						className: `outcome${u === r ? " is-active" : ""}`,
+						className: `outcome${d === r ? " is-active" : ""}`,
 						children: [
 							/* @__PURE__ */ (0, I.jsxs)("div", {
 								className: "outcome__head",
@@ -11780,7 +11783,7 @@ function pn({ garden: e, tracks: t, assignment: n, details: r, caption: i }) {
 									className: "outcome__bits",
 									title: `measurement result ${r} (qubit 0 is the rightmost bit)`,
 									children: r
-								}), (!o || a.level === 1) && /* @__PURE__ */ (0, I.jsx)("span", {
+								}), (!s || o.level === 1) && /* @__PURE__ */ (0, I.jsx)("span", {
 									className: "outcome__name",
 									children: Yt(n, r)
 								})]
@@ -11788,7 +11791,7 @@ function pn({ garden: e, tracks: t, assignment: n, details: r, caption: i }) {
 							t.length > 1 && /* @__PURE__ */ (0, I.jsx)("div", {
 								className: "outcome__seeds",
 								children: t.map((e, t) => /* @__PURE__ */ (0, I.jsxs)("span", { children: [
-									a.trackName(t, e.name),
+									o.trackName(t, e.name),
 									" ",
 									m(r, t)
 								] }, t))
@@ -11797,17 +11800,17 @@ function pn({ garden: e, tracks: t, assignment: n, details: r, caption: i }) {
 								className: "outcome__bars",
 								children: [/* @__PURE__ */ (0, I.jsx)("div", {
 									className: "bar bar--predicted",
-									title: f ? "predicted: hidden" : `predicted ${_n(i)}`,
-									children: /* @__PURE__ */ (0, I.jsx)("span", { style: { width: f ? "0%" : `${i * 100}%` } })
-								}), s !== void 0 && /* @__PURE__ */ (0, I.jsx)("div", {
+									title: g ? "predicted: hidden" : `predicted ${_n(i)}`,
+									children: /* @__PURE__ */ (0, I.jsx)("span", { style: { width: g ? "0%" : `${i * 100}%` } })
+								}), a !== void 0 && /* @__PURE__ */ (0, I.jsx)("div", {
 									className: "bar bar--measured",
-									title: `measured ${_n(s)}`,
-									children: /* @__PURE__ */ (0, I.jsx)("span", { style: { width: `${s * 100}%` } })
+									title: `measured ${_n(a)}`,
+									children: /* @__PURE__ */ (0, I.jsx)("span", { style: { width: `${a * 100}%` } })
 								})]
 							}),
 							/* @__PURE__ */ (0, I.jsxs)("div", {
 								className: "outcome__nums",
-								children: [/* @__PURE__ */ (0, I.jsxs)("span", { children: ["predicted ", /* @__PURE__ */ (0, I.jsx)("b", { children: f ? "?" : _n(i) })] }), s !== void 0 && /* @__PURE__ */ (0, I.jsxs)("span", { children: ["measured ", /* @__PURE__ */ (0, I.jsx)("b", { children: _n(s) })] })]
+								children: [/* @__PURE__ */ (0, I.jsxs)("span", { children: ["predicted ", /* @__PURE__ */ (0, I.jsx)("b", { children: g ? "?" : _n(i) })] }), a !== void 0 && /* @__PURE__ */ (0, I.jsxs)("span", { children: ["measured ", /* @__PURE__ */ (0, I.jsx)("b", { children: _n(a) })] })]
 							})
 						]
 					}, r);
@@ -11891,12 +11894,12 @@ var xn, Sn, Cn, wn = n((() => {
 //#endregion
 //#region src/app/Board.tsx
 function Tn({ seedNames: e, allowed: t, ops: n, disabled: r, showGates: i, turns: a = [.5, .25], steady: o, onAdd: s, onRemove: c, onReset: l, onRetune: u, bloom: d, extra: f }) {
-	let p = dn(), m = p.mode === "quantum", h = i || m, [g, _] = (0, En.useState)(0), [v, y] = (0, En.useState)(a[0]), b = e.length, ee = b > 1 ? (g + 1) % b : g, x = -1;
+	let p = dn(), m = p.mode === "quantum", h = i || m, [g, _] = (0, En.useState)(0), [v, y] = (0, En.useState)(a[0]), b = e.length, x = b > 1 ? (g + 1) % b : g, S = -1;
 	n.forEach((e, t) => {
-		e.op === "twist" && e.q === g && (x = t);
+		e.op === "twist" && e.q === g && (S = t);
 	});
-	let S = x >= 0 && u ? n[x].turns : v, te = (e) => {
-		y(e), x >= 0 && u && u(x, e);
+	let ee = S >= 0 && u ? n[S].turns : v, te = (e) => {
+		y(e), S >= 0 && u && u(S, e);
 	}, C = (n, a) => {
 		if (!t.includes(n)) return null;
 		let o = ke[n], c = p.verbs[n], l = p.whats[n], u = p.subs?.[n];
@@ -11914,7 +11917,7 @@ function Tn({ seedNames: e, allowed: t, ops: n, disabled: r, showGates: i, turns
 				}),
 				n === "link" && b > 1 && /* @__PURE__ */ (0, L.jsxs)("span", {
 					className: "move__sub",
-					children: ["to ", e[ee]]
+					children: ["to ", e[x]]
 				}),
 				u && /* @__PURE__ */ (0, L.jsx)("span", {
 					className: "move__sub",
@@ -11994,14 +11997,14 @@ function Tn({ seedNames: e, allowed: t, ops: n, disabled: r, showGates: i, turns
 							}), /* @__PURE__ */ (0, L.jsx)("div", {
 								className: "move__amounts",
 								role: "group",
-								"aria-label": x >= 0 && u ? "Turn amount (changes the Turn on this track)" : "Turn amount",
+								"aria-label": S >= 0 && u ? "Turn amount (changes the Turn on this track)" : "Turn amount",
 								children: a.map((e) => /* @__PURE__ */ (0, L.jsxs)("button", {
 									type: "button",
-									className: `chip chip--small${S === e ? " is-on" : ""}`,
-									"aria-pressed": S === e,
+									className: `chip chip--small${ee === e ? " is-on" : ""}`,
+									"aria-pressed": ee === e,
 									disabled: r,
 									onClick: () => te(e),
-									title: `${Dn[String(e)]?.label ?? e} turn${x >= 0 && u ? " (turns the dial already on this track)" : ""}${h ? ` (${Dn[String(e)]?.math})` : ""}`,
+									title: `${Dn[String(e)]?.label ?? e} turn${S >= 0 && u ? " (turns the dial already on this track)" : ""}${h ? ` (${Dn[String(e)]?.math})` : ""}`,
 									children: [Dn[String(e)]?.label ?? e, h && /* @__PURE__ */ (0, L.jsxs)("small", { children: [" ", Dn[String(e)]?.math] })]
 								}, e))
 							})]
@@ -12010,7 +12013,7 @@ function Tn({ seedNames: e, allowed: t, ops: n, disabled: r, showGates: i, turns
 					b > 1 && C("link", {
 						op: "link",
 						control: g,
-						target: ee
+						target: x
 					}),
 					/* @__PURE__ */ (0, L.jsxs)("div", {
 						className: "board__bloom",
@@ -12181,10 +12184,10 @@ function Nn({ engine: e, details: t, onDone: n }) {
 			})
 		]
 	});
-	let ee = (e) => JSON.stringify(e.map((e) => e && typeof e == "object" && e.op === "twist" ? {
+	let x = (e) => JSON.stringify(e.map((e) => e && typeof e == "object" && e.op === "twist" ? {
 		...e,
 		turns: 0
-	} : e)), x = g.turns ? ee(u.circuit.ops) === ee(g.ops) : Fn(u.circuit.ops, g.ops), S = !!u.playback && !u.playback.finished, te = u.busy || S, C = u.playback?.finished && u.result?.memory?.[0] ? Xt(l, u.result.memory[0]) : null, ne = u.playback?.finished && p === g.id && x ? g.hear : C ? `You heard: ${C}. The tile shows this mix’s odds. Try it loads the page’s mix.` : te ? void 0 : g.show.length === 0 ? "Press Try it." : `Press Try it, or build it yourself with ${g.show.length === 1 ? "the move" : "the moves"} below and press Play.`;
+	} : e)), S = g.turns ? x(u.circuit.ops) === x(g.ops) : Fn(u.circuit.ops, g.ops), ee = !!u.playback && !u.playback.finished, te = u.busy || ee, C = u.playback?.finished && u.result?.memory?.[0] ? Xt(l, u.result.memory[0]) : null, ne = u.playback?.finished && p === g.id && S ? g.hear : C ? `You heard: ${C}. The tile shows this mix’s odds. Try it loads the page’s mix.` : te ? void 0 : g.show.length === 0 ? "Press Try it." : `Press Try it, or build it yourself with ${g.show.length === 1 ? "the move" : "the moves"} below and press Play.`;
 	return /* @__PURE__ */ (0, R.jsxs)("div", {
 		className: "scene scene--learn",
 		children: [
@@ -12402,7 +12405,7 @@ var Vn, Hn, Un = n((() => {
 //#endregion
 //#region src/app/ChallengeScene.tsx
 function Wn({ engine: e, challenge: t, details: n, onNext: r, onSolved: i, isLast: a }) {
-	let o = t.lingo ?? Ae, s = o.mode === "quantum", c = (0, Gn.useMemo)(() => t.tracks.map((e, t) => o.trackName(t, e.name)), [t, o]), l = (0, Gn.useMemo)(() => Ee(t.tracks), [t]), u = tn(e, t.tracks.length, l, t.start), [d, f] = (0, Gn.useState)(0), [p, m] = (0, Gn.useState)("build"), [g, _] = (0, Gn.useState)(!1), [v, y] = (0, Gn.useState)(!1), [b, ee] = (0, Gn.useState)(0), [x, S] = (0, Gn.useState)(!1), [te, C] = (0, Gn.useState)(null), [ne, w] = (0, Gn.useState)(null);
+	let o = t.lingo ?? Ae, s = o.mode === "quantum", c = (0, Gn.useMemo)(() => t.tracks.map((e, t) => o.trackName(t, e.name)), [t, o]), l = (0, Gn.useMemo)(() => Ee(t.tracks), [t]), u = tn(e, t.tracks.length, l, t.start), [d, f] = (0, Gn.useState)(0), [p, m] = (0, Gn.useState)("build"), [g, _] = (0, Gn.useState)(!1), [v, y] = (0, Gn.useState)(!1), [b, x] = (0, Gn.useState)(0), [S, ee] = (0, Gn.useState)(!1), [te, C] = (0, Gn.useState)(null), [ne, w] = (0, Gn.useState)(null);
 	(0, Gn.useEffect)(() => {
 		m("build");
 	}, [u.circuit]), (0, Gn.useEffect)(() => {
@@ -12441,14 +12444,14 @@ function Wn({ engine: e, challenge: t, details: n, onNext: r, onSolved: i, isLas
 		re && T && !oe.current && (oe.current = !0, ae(!0), $t.ding());
 	}, [re, T]);
 	let se = (0, Gn.useCallback)(async () => {
-		m("playing"), ee((e) => e + 1), C(JSON.stringify(u.circuit.ops)), await u.bloom(t.beats, {
+		m("playing"), x((e) => e + 1), C(JSON.stringify(u.circuit.ops)), await u.bloom(t.beats, {
 			noise: t.noisy,
 			moments: 1,
 			step: 3
 		}) || m("build");
 	}, [t, u]), ce = () => {
-		u.reset(t.solution), S(!0), f(t.hints.length);
-	}, le = x && Kn(u.circuit.ops, t.solution), ue = b > 0 && !T && !le, de = (0, Gn.useCallback)(() => u.code(t.beats), [u, t.beats]), fe = u.busy || p === "playing", pe = n || t.exposure >= 1, me = n || t.exposure >= 2 || s, he;
+		u.reset(t.solution), ee(!0), f(t.hints.length);
+	}, le = S && Kn(u.circuit.ops, t.solution), ue = b > 0 && !T && !le, de = (0, Gn.useCallback)(() => u.code(t.beats), [u, t.beats]), fe = u.busy || p === "playing", pe = n || t.exposure >= 1, me = n || t.exposure >= 2 || s, he;
 	if (re && u.measured) {
 		let e = u.result?.memory?.[0] ?? null, n = hn(u.measured, l, e), r = e ? o.measured(e, n) : `You heard ${n}`;
 		he = T ? `Solved. ${r}.` : `${r}.`, t.noisy && u.measuredFidelity !== null && (he += ` Match to the clean mix: ${_n(u.measuredFidelity)}`, he += ne && u.circuit.ops.length < ne.ops ? ` (it was ${_n(ne.fidelity)} with ${ne.ops} moves; yours has ${u.circuit.ops.length}).` : ".");
@@ -12692,42 +12695,58 @@ var Gn, B, Kn, qn = n((() => {
 }));
 //#endregion
 //#region src/app/StudioScene.tsx
-function Jn({ engine: e, backends: t, defaultBackendId: n, details: r }) {
-	let [i, a] = (0, Yn.useState)(et), [o, s] = (0, Yn.useState)(!1), [c, l] = (0, Yn.useState)(n), [u, d] = (0, Yn.useState)(!1), [f, g] = (0, Yn.useState)("mid"), [_, v] = (0, Yn.useState)(!1), [y, b] = (0, Yn.useState)(0), ee = (0, Yn.useRef)(!1), x = (0, Yn.useRef)(null), S = tn(e, 2, i, []), te = (0, Yn.useCallback)(() => S.code(Qn), [S]), C = (0, Yn.useMemo)(() => p(2), []), ne = ($n.find((e) => e.id === f) ?? $n[1]).step, w = (0, Yn.useMemo)(() => [{
+function Jn({ engine: e, backends: t, defaultBackendId: n }) {
+	let [r, i] = (0, Yn.useState)(et), [a, o] = (0, Yn.useState)(!1), [s, c] = (0, Yn.useState)(n), [l, u] = (0, Yn.useState)(!1), [d, f] = (0, Yn.useState)("mid"), [g, _] = (0, Yn.useState)(!1), [v, y] = (0, Yn.useState)(0), b = (0, Yn.useRef)(!1), x = (0, Yn.useRef)(null), S = tn(e, 2, r, []), ee = (0, Yn.useCallback)(() => S.code(Qn), [S]), te = (0, Yn.useMemo)(() => p(2), []), C = ($n.find((e) => e.id === d) ?? $n[1]).step, ne = (0, Yn.useMemo)(() => [{
 		name: Xn[0],
-		base: i["00"][0],
-		hit: i["01"][0]
+		base: r["00"][0],
+		hit: r["01"][0]
 	}, {
 		name: Xn[1],
-		base: i["00"][0],
-		hit: i[10][0]
-	}], [i]), T = t.filter((e) => e.available || e.reason), re = !!S.playback && !S.playback.finished, ie = (0, Yn.useCallback)(() => {
-		ee.current = !1, v(!1), x.current !== null && (clearTimeout(x.current), x.current = null), S.stopPlayback();
+		base: r["00"][0],
+		hit: r[10][0]
+	}], [r]), w = t.filter((e) => e.available || e.reason), T = !!t.find((e) => e.id === s)?.oneJobPerRun, re = !!S.playback && !S.playback.finished, ie = (0, Yn.useCallback)(() => {
+		b.current = !1, _(!1), x.current !== null && (clearTimeout(x.current), x.current = null), S.stopPlayback();
 	}, [S]), E = (0, Yn.useRef)(async () => {});
 	E.current = async () => {
-		ee.current && (!await S.bloom(Zn, {
-			noise: o,
-			backendId: c,
-			moments: Zn,
-			step: ne,
-			label: "bar"
-		}) || !ee.current ? ie() : (b((e) => e + 1), x.current = window.setTimeout(() => {
-			E.current();
-		}, Zn * ne * 1e3 + 350)));
+		if (b.current) {
+			if (T) {
+				if (!await S.bloom(64, {
+					noise: a,
+					backendId: s,
+					moments: 64,
+					step: C,
+					label: "eight bars, one job"
+				})) {
+					ie();
+					return;
+				}
+				y(8), x.current = window.setTimeout(() => {
+					b.current = !1, _(!1);
+				}, 64 * C * 1e3 + 400);
+			} else !await S.bloom(Zn, {
+				noise: a,
+				backendId: s,
+				moments: Zn,
+				step: C,
+				label: "bar"
+			}) || !b.current ? ie() : (y((e) => e + 1), x.current = window.setTimeout(() => {
+				E.current();
+			}, Zn * C * 1e3 + 350));
+		}
 	};
 	let ae = () => {
-		ee.current = !0, v(!0), b(0), E.current();
+		b.current = !0, _(!0), y(0), E.current();
 	};
 	(0, Yn.useEffect)(() => () => {
-		ee.current = !1, x.current !== null && clearTimeout(x.current);
+		b.current = !1, x.current !== null && clearTimeout(x.current);
 	}, []);
 	let oe = () => S.bloom(Qn, {
-		noise: o,
-		backendId: c,
+		noise: a,
+		backendId: s,
 		moments: 1,
 		step: 4,
 		label: "your sound"
-	}), se = _ ? S.busy ? $e.measuring : void 0 : S.playback?.finished ? y > 0 ? $e.stopped : "Play once again for another landing, or change the mix." : S.circuit.ops.length === 0 ? $e.idle : void 0;
+	}), se = g ? S.busy ? $e.measuring : void 0 : S.playback?.finished ? v > 0 ? $e.stopped : "Play once again for another landing, or change the mix." : S.circuit.ops.length === 0 ? $e.idle : void 0;
 	return /* @__PURE__ */ (0, V.jsxs)("div", {
 		className: "scene scene--studio",
 		children: [
@@ -12739,24 +12758,25 @@ function Jn({ engine: e, backends: t, defaultBackendId: n, details: r }) {
 						children: Oe.studioTitle
 					}),
 					/* @__PURE__ */ (0, V.jsx)("h2", { children: Oe.studioTagline }),
-					/* @__PURE__ */ (0, V.jsx)("p", {
+					/* @__PURE__ */ (0, V.jsxs)("p", {
 						className: "story",
-						children: $e.story
+						children: [$e.story, T ? ` ${$e.oneJob}` : ""]
 					})
 				]
 			}),
 			/* @__PURE__ */ (0, V.jsx)(pn, {
 				garden: S,
-				tracks: w,
-				assignment: i,
-				details: r,
-				caption: se
+				tracks: ne,
+				assignment: r,
+				details: !0,
+				caption: se,
+				barLength: Zn
 			}),
 			/* @__PURE__ */ (0, V.jsx)("div", {
 				className: "pads",
 				role: "group",
 				"aria-label": "A sound for each pad",
-				children: C.map((e) => /* @__PURE__ */ (0, V.jsxs)("label", {
+				children: te.map((e) => /* @__PURE__ */ (0, V.jsxs)("label", {
 					className: "pad",
 					children: [
 						/* @__PURE__ */ (0, V.jsx)("span", {
@@ -12771,15 +12791,15 @@ function Jn({ engine: e, backends: t, defaultBackendId: n, details: r }) {
 							className: "sr-only",
 							children: Xn.map((t, n) => `${t} ${m(e, n) ? "on" : "off"}`).join(", ")
 						}),
-						r && /* @__PURE__ */ (0, V.jsx)("code", {
+						/* @__PURE__ */ (0, V.jsx)("code", {
 							className: "pad__bits",
 							title: "qubit 0 is the rightmost bit",
 							children: e
 						}),
 						/* @__PURE__ */ (0, V.jsx)("select", {
-							value: i[e][0],
-							onChange: (t) => a({
-								...i,
+							value: r[e][0],
+							onChange: (t) => i({
+								...r,
 								[e]: [t.target.value]
 							}),
 							"aria-label": `Sound when ${Xn.map((t, n) => `${t} is ${m(e, n) ? "on" : "off"}`).join(" and ")}`,
@@ -12811,7 +12831,7 @@ function Jn({ engine: e, backends: t, defaultBackendId: n, details: r }) {
 				],
 				ops: S.circuit.ops,
 				disabled: S.busy,
-				showGates: r,
+				showGates: !0,
 				onRetune: (e, t) => S.setOps(S.circuit.ops.map((n, r) => r === e && n.op === "twist" ? {
 					...n,
 					turns: t
@@ -12820,30 +12840,30 @@ function Jn({ engine: e, backends: t, defaultBackendId: n, details: r }) {
 				onRemove: S.removeOp,
 				onReset: () => S.reset([]),
 				bloom: {
-					label: _ ? "Looping…" : $e.loop,
+					label: g ? "Looping…" : T ? $e.loopOneJob : $e.loop,
 					onClick: ae,
-					disabled: _ || re
+					disabled: g || re
 				},
 				extra: /* @__PURE__ */ (0, V.jsxs)(V.Fragment, { children: [
-					_ && /* @__PURE__ */ (0, V.jsx)("button", {
+					g && /* @__PURE__ */ (0, V.jsx)("button", {
 						type: "button",
 						className: "ghost",
 						onClick: ie,
 						children: $e.stop
 					}),
-					_ && y > 0 && /* @__PURE__ */ (0, V.jsx)("span", {
+					g && v > 0 && /* @__PURE__ */ (0, V.jsx)("span", {
 						className: "pill",
 						"aria-live": "polite",
-						children: $e.bar(y)
+						children: T ? "8 bars from one job" : $e.bar(v)
 					}),
-					!_ && /* @__PURE__ */ (0, V.jsx)("button", {
+					!g && /* @__PURE__ */ (0, V.jsx)("button", {
 						type: "button",
 						className: "ghost",
 						onClick: oe,
 						disabled: S.busy || re,
 						children: $e.once
 					}),
-					!_ && re && /* @__PURE__ */ (0, V.jsx)("button", {
+					!g && re && /* @__PURE__ */ (0, V.jsx)("button", {
 						type: "button",
 						className: "ghost",
 						onClick: S.stopPlayback,
@@ -12863,9 +12883,9 @@ function Jn({ engine: e, backends: t, defaultBackendId: n, details: r }) {
 							children: $e.tempo
 						}), $n.map((e) => /* @__PURE__ */ (0, V.jsx)("button", {
 							type: "button",
-							className: `chip chip--small${f === e.id ? " is-on" : ""}`,
-							"aria-pressed": f === e.id,
-							onClick: () => g(e.id),
+							className: `chip chip--small${d === e.id ? " is-on" : ""}`,
+							"aria-pressed": d === e.id,
+							onClick: () => f(e.id),
 							children: e.label
 						}, e.id))]
 					}),
@@ -12873,19 +12893,19 @@ function Jn({ engine: e, backends: t, defaultBackendId: n, details: r }) {
 						className: "toggle",
 						children: [/* @__PURE__ */ (0, V.jsx)("input", {
 							type: "checkbox",
-							checked: o,
-							onChange: (e) => s(e.target.checked)
+							checked: a,
+							onChange: (e) => o(e.target.checked)
 						}), " Add noise"]
 					}),
-					r && T.length > 1 && /* @__PURE__ */ (0, V.jsxs)("label", {
+					w.length > 1 && /* @__PURE__ */ (0, V.jsxs)("label", {
 						className: "row",
 						children: [/* @__PURE__ */ (0, V.jsx)("span", {
 							className: "label",
 							children: "Backend"
 						}), /* @__PURE__ */ (0, V.jsx)("select", {
-							value: c,
-							onChange: (e) => l(e.target.value),
-							children: T.map((e) => /* @__PURE__ */ (0, V.jsxs)("option", {
+							value: s,
+							onChange: (e) => c(e.target.value),
+							children: w.map((e) => /* @__PURE__ */ (0, V.jsxs)("option", {
 								value: e.id,
 								disabled: !e.available,
 								children: [e.label, e.available ? "" : ` (${e.reason})`]
@@ -12903,15 +12923,18 @@ function Jn({ engine: e, backends: t, defaultBackendId: n, details: r }) {
 			/* @__PURE__ */ (0, V.jsx)("button", {
 				type: "button",
 				className: "linklike",
-				"aria-expanded": u,
-				onClick: () => d((e) => !e),
+				"aria-expanded": l,
+				onClick: () => u((e) => !e),
 				children: "Why does each bar come out different?"
 			}),
-			u && /* @__PURE__ */ (0, V.jsx)("p", {
+			l && /* @__PURE__ */ (0, V.jsx)("p", {
 				className: "help",
 				children: "Each Play is one measurement: one definite answer, drawn with the odds the mix set. The same mix, played again, gives the same odds, not the same answer."
 			}),
-			r && /* @__PURE__ */ (0, V.jsx)(kn, { load: te })
+			/* @__PURE__ */ (0, V.jsx)(kn, {
+				load: ee,
+				title: "Your beat, in Qiskit"
+			})
 		]
 	});
 }

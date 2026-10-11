@@ -15,10 +15,12 @@ interface Props {
   details: boolean;
   /** the one line under the tiles when nothing is playing (the scene's current instruction or result) */
   caption?: ReactNode;
+  /** beats per bar, when a long playback is a beat: the live caption then counts bars */
+  barLength?: number;
 }
 
 /** One tile per track: its two sounds, how likely each is right now, and which one just played. */
-export function GardenView({ garden, tracks, assignment, details, caption }: Props) {
+export function GardenView({ garden, tracks, assignment, details, caption, barLength }: Props) {
   const lingo = useLingo();
   const quantum = lingo.mode === 'quantum';
   const labels = useMemo(() => bitstrings(garden.circuit.nQubits), [garden.circuit.nQubits]);
@@ -28,7 +30,11 @@ export function GardenView({ garden, tracks, assignment, details, caption }: Pro
   const lastOutcome = garden.playback?.finished ? garden.result?.memory?.[0] ?? null : null;
   const hidden = garden.oddsHidden;
   const liveText = playing ? (quantum ? lingo.measured(garden.playback!.outcome!, garden.playback!.caption) : cap(garden.playback!.caption)) : '';
-  const live = playing ? (garden.playback!.total > 1 ? `${garden.playback!.index + 1} of ${garden.playback!.total}: ${liveText}` : liveText) : null;
+  const pb = garden.playback;
+  const counter = pb && pb.total > 1
+    ? (barLength && pb.total > barLength ? `Bar ${Math.floor(pb.index / barLength) + 1} · ${(pb.index % barLength) + 1} of ${barLength}` : `${pb.index + 1} of ${pb.total}`)
+    : null;
+  const live = playing ? (counter ? `${counter}: ${liveText}` : liveText) : null;
   const fallback = hidden ? `Press ${lingo.verbs.bloom} to find out.` : `Right now: ${describeOdds(garden.ideal.probabilities, assignment, quantum)}`;
 
   return (

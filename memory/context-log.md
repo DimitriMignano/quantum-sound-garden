@@ -468,3 +468,23 @@ corrections go in a new entry. Newest at the bottom. Fill every field (`n/a` if 
 - Deferred work: phone width; keyboard; a listening pass; the deploy (human).
 - Risks: the state line with uneven amplitudes shows decimals and a phase factor (honest, but dense); two-qubit states
   with four terms are long on a phone.
+
+### 2026-10-11 12:10 — The arc said out loud, the studio as real circuits, the rules re-read
+- Branch / worktree: `main`
+- Task: the founder's five points (reveal, context, "real not a game", bridge to the studio, real circuits for beats) and a
+  fresh read of the competition guidelines.
+- Files changed: `web/src/content/content.ts` (door copy, qubit puzzle context lines, welcome lead, studio copy incl. the
+  one-job line), `web/src/app/StudioScene.tsx` (circuit always shown; one-job Loop = one 64-shot job as eight bars),
+  `web/src/app/GardenView.tsx` (`barLength` → "Bar b · beat i of 8"), `web/src/test/qollab-bundle.test.ts` (the one-job
+  Loop test), `WORKLOG.md` (human checklist from the rules), `docs/JUDGES.md`, `docs/QOLLAB_PAGE.md`, `README.md`, `qollab/`
+- Verification run: tsc clean; the bundle test file 5/5 against the rebuilt bundle; `npm run check` before the commit. Live
+  in Chrome: the door copy, the studio with gates, readings, backend select and code on the page, Loop "4 of 8" with
+  "Bar 1", Stop.
+- Commit hash: this commit (parent e3b2f5f)
+- Seams (§22): unchanged · hosted still PARTIAL (not on Qollab yet; human)
+- Decisions: Playground stays the theme (the bar is met by the pair, the phase puzzle and the beats; Unlocked asks for a
+  hard topic such as error correction, which this does not teach); the studio always shows the circuit because it is
+  the culmination; on a one-job backend the loop is one job, never a second run.
+- Deferred work: the human checklist; a listening pass of the loop; phone width; keyboard.
+- Risks: the Qollab adapter has only been exercised against the fake backend in tests, never on qollab.xyz; the first
+  real Run there is the riskiest step left and it is a human's.

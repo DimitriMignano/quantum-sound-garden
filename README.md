@@ -11,7 +11,8 @@ move by ear, with no quantum words. Four puzzles make you use them; each has a g
 a live closeness word), hints that are the steps of the solution, a **Show solution** button so nobody gets stuck, and,
 once solved, the same thing **in quantum terms** (qubit and X, superposition and entanglement, interference, noise and
 depth). Then the same four puzzles again as qubits: the tracks become qubit 0 and qubit 1, the sounds become |0⟩ and |1⟩, the moves become X, H, P(θ) and CX, Play becomes Measure, and a state line draws the ket so the phase a Turn sets is visible; the sound names stay under the gate names for two puzzles, then go. The hands already know the board; only the words change. Then the studio: four sound
-pads and **Loop**, a beat machine whose every bar is eight fresh readings of your mix. The **Circuit** button shows gate
+pads and **Loop**, a beat machine whose every bar is eight fresh readings of your mix as a real circuit run on the chosen
+backend, with the circuit, its Qiskit code and the backend always on the page (one job of 64 shots on IonQ backends). The **Circuit** button shows gate
 names, bits, percentages and the Qiskit code behind any mix.
 
 Entry for the Qollab + IonQ Quantum Hackathon (theme: Quantum Playground). _This effort is supported by Qollab & IonQ._
