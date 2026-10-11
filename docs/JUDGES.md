@@ -51,7 +51,7 @@ turned off, hints are the steps of the solution, and Show solution means nobody 
   are flagged, and the one-job-per-Run rule on IonQ backends is handled, not hidden.
 
 ## Where to look
-Hosted with the full Qiskit server (Aer ideal and noisy, IonQ with a key): https://beats.quantumnuggets.com. The judged artifact is the Qollab
-project; the hosted copy is the same code behind a FastAPI server.
+The judged artifact is the Qollab project. The same code also runs locally behind a FastAPI + Qiskit server (Aer ideal
+and noisy, IonQ with a key): `npm run dev`, see the README.
 `README.md` (run and the behavior-to-test table) · `docs/ARCHITECTURE.md` · `docs/QUANTUM_TO_AUDIO.md` ·
 `docs/LIMITATIONS.md` (careful claims) · `docs/IONQ_SETUP.md` · `server/tests` and `web/src/engine/statevector.test.ts`.

@@ -1,6 +1,6 @@
 # Deploying the full app (Qiskit included) to beats.quantumnuggets.com
 
-The public address is **https://beats.quantumnuggets.com**. The apex, quantumnuggets.com, is the team's landing page
+The intended public address is **https://beats.quantumnuggets.com** (not live as of 2026-10-11 16:55 ET: no DNS record yet). The apex, quantumnuggets.com, is the team's landing page
 (it links to this app and to a teammate's project), so this app never claims the apex or `www`.
 
 The Qollab upload stays the judged artifact. This is the public site for judges, teammates and anyone after the

@@ -250,3 +250,7 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
   out. The founder joined @liambergerson's team on Qollab (the captain submits; the project must be owned by a teammate).
   Still open: the Qollab page text (the dead beats.quantumnuggets.com line, the IonQ "Running…" sentence, the video link),
   the video, Publish, and the captain's submission before 19:00 ET.
+- 10-11 16:55 beats.quantumnuggets.com has no DNS record, so every live-link claim came out (Qollab page text, README,
+  JUDGES; DEPLOY says "intended"). The Qollab Project Card was byte-identical to the uploaded page (SHA-256 match), so the
+  two passages were replaced in place (the dead link, and the IonQ "Running…" sentence); after a reload the card hashes the
+  same as `docs/QOLLAB_PAGE.md`. Still open: the video link on the page, Publish, the captain's submission.

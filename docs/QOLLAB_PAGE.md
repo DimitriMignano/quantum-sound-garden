@@ -54,8 +54,8 @@ Use Chrome, Edge, Brave, Opera or Firefox; Qollab does not run projects in Safar
 ## Source, docs and tests
 Full source, architecture notes, the quantum-to-audio mapping, limitations and the test suite (pytest + vitest,
 including Qiskit-vs-browser parity fixtures): https://github.com/DimitriMignano/quantum-sound-garden
-(`README.md`, `docs/`). The same app is also hosted with a local Qiskit server (Aer, and IonQ with a key) at
-https://beats.quantumnuggets.com; the Qollab project is the judged artifact. Which engine produced what: the tutorial, puzzles 1–3 and the studio play on the chosen backend (or on
+(`README.md`, `docs/`). The same app also runs locally against a Qiskit server (Aer, and IonQ with a key); see the
+README. The Qollab project is the judged artifact. Which engine produced what: the tutorial, puzzles 1–3 and the studio play on the chosen backend (or on
 Qiskit's Statevector with local sampling when the one-job-per-Run limit applies); puzzle 4's noise is simulated
 in-app by a stochastic Pauli sampler (not a Qiskit job) unless you picked a noise-model backend, in which case the
 provider's noise applies. Each result names its engine.
