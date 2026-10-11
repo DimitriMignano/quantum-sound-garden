@@ -126,6 +126,18 @@ def test_json_entry_points_round_trip():
     assert out["gate_count"] == 2
 
 
+def test_build_circuit_for_run_and_normalize_counts_json_serve_the_javascript_submission_path():
+    # Qollab proxies a remote job only when JavaScript calls backend.run itself: Python hands over the measured
+    # circuit, and normalizes whatever counts the job returned.
+    qc = C.build_circuit_for_run(2, json.dumps([{"op": "split", "q": 0}, {"op": "link", "control": 0, "target": 1}]))
+    assert [i.operation.name for i in qc.data] == ["h", "cx", "measure", "measure"]
+    assert qc.num_clbits == 2
+    out = json.loads(C.normalize_counts_json(json.dumps({"00": 5, "11": 3}), 2, 8))
+    assert out == {"counts": {"00": 5, "01": 0, "10": 0, "11": 3}, "shots": 8, "counts_kind": "counts"}
+    probs = json.loads(C.normalize_counts_json(json.dumps({"00": 0.5, "11": 0.5}), 2, 8))
+    assert probs["counts_kind"] == "probabilities" and sum(probs["counts"].values()) == 8
+
+
 def test_run_json_with_a_fake_backend_returns_normalized_counts():
     class FakeJob:
         def __init__(self, counts):

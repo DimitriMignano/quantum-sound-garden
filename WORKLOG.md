@@ -207,3 +207,16 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
   pass (the app root constrained to 390 px, which drives the same container queries as a phone): the top bar overflowed
   by 8–10 px on every scene (now wraps, with smaller buttons under 600 px); nothing else overflowed; the board stacks
   two moves per row with Play on its own row; the studio's pads and readings sit two per row.
+- 10-11 15:00 the first real Runs on qollab.xyz (project created under the founder's account from the bundle; the
+  cookie banner declined; nothing published). Built-in simulator: boots, the top bar reads "Qollab simulator
+  (basic_simulator)", Qollab's console "Done" in 3.1 s. IonQ Aria 1: boots, defaults to the statevector as designed; the
+  studio's Bell-pair loop ran 19 bars on the statevector path with 00/11 only. Choosing "IonQ via Qollab" and pressing
+  Loop produced a wall of red: the Python-side `backend.run` POSTs from the sandbox and Qollab blocks every method but
+  GET. A two-file probe project settled the mechanism: from JavaScript, `await backend.run(qc, { shots })` then
+  `await job.result()` returned a real IonQ Aria 1 job in 709 ms (counts 00: 5, 11: 3), and Qollab even drew it; the
+  same call inside Python failed. Fixed: the engine submits from JavaScript (`build_circuit_for_run` →
+  `backend.run` → `normalize_counts_json`), keeps the Python path for local simulators, and if a remote job still fails it
+  answers from the statevector with a one-line note naming what was requested and why, never a traceback; the one-job
+  guard is released when no job reached IonQ. Tests: engine unit tests, the bundle tests rewritten for the JavaScript
+  path, a pytest for the two entry points. The new bundle was uploaded into the existing Qollab project. Two probe
+  drafts ("qsg probe (delete me)", "qsg probe 2 (delete me)") sit in the account and should be deleted by a human.

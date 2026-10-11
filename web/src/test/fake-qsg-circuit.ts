@@ -31,18 +31,33 @@ export const run_json = withPromising('run_json', (backend: { name: string; run:
   return JSON.stringify({ counts, shots, counts_kind: 'counts', backend_name: backend.name, backend_class: 'FakeBackend', basis });
 });
 
+/** The measured circuit "object": the fake keeps the recipe, and the fake backend samples it. */
+export const build_circuit_for_run = withPromising('build_circuit_for_run', (n: number, opsJson: string, basis = 'z') =>
+  ({ n, ops: JSON.parse(opsJson) as Op[], basis }));
+
+export const normalize_counts_json = withPromising('normalize_counts_json', (countsJson: string, n: number, shots: number) => {
+  const raw = JSON.parse(countsJson) as Record<string, number>;
+  const counts: Record<string, number> = {};
+  for (let i = 0; i < 2 ** n; i++) { const k = i.toString(2).padStart(n, '0'); counts[k] = raw[k] ?? 0; }
+  return JSON.stringify({ counts, shots, counts_kind: 'counts' });
+});
+
 export const describe_backend_json = withPromising('describe_backend_json', (backend: { name: string }) =>
   JSON.stringify({ name: backend.name, class: 'BasicSimulator', module: 'qiskit.providers.basic_provider', kind: backend.name.includes('ionq') ? 'ionq-simulator' : 'local-ideal' }));
 
-/** A backend that samples from the statevector, like Qollab's built-in simulator would. */
+/** A backend that samples from the statevector, like Qollab's built-in simulator would. Its `run` takes the circuit
+ *  object from build_circuit_for_run and `{ shots }`, like the real PyProxy does from JavaScript, and returns a job
+ *  whose result's get_counts gives a Map (what a Pyodide dict's toJs gives). */
 export function makeFakeBackend(name: string) {
   const random = rng(7);
   return {
     name,
     jobs: 0,
-    run(n: number, ops: Op[], shots: number, basis: string) {
+    run(qc: { n: number; ops: Op[]; basis: string }, opts: { shots: number }) {
       this.jobs++;
-      return sampleCounts(probabilities(simulate({ nQubits: n, ops, basis: basis as 'z' | 'x' })), shots, random);
+      const counts = sampleCounts(probabilities(simulate({ nQubits: qc.n, ops: qc.ops, basis: qc.basis as 'z' | 'x' })), opts.shots, random);
+      const job = { result: async () => ({ get_counts: () => ({ toJs: () => new Map(Object.entries(counts)) }) }) };
+      return Promise.resolve(job);
     },
   };
 }

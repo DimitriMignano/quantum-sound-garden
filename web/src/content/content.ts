@@ -101,7 +101,7 @@ export const WHY_BEATS_VARY =
 
 export const BACKEND_NOTES = {
   browser: 'Browser math, not Qiskit. Start the local Qiskit server or open this on Qollab for real backends.',
-  fallback: (from: string, reason: string) => `Requested ${from}, but it could not run (${reason}). This result came from the local Qiskit simulator instead.`,
+  fallback: (from: string, reason: string, instead: string) => `Requested ${from}, but it could not run (${reason}). This result came from ${instead} instead.`,
   probabilities: 'This backend returned exact probabilities (no shot noise); they were scaled to the reading count.',
 };
 

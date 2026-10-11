@@ -65,13 +65,16 @@ describe('the built Qollab bundle', { timeout: 20000 }, () => {
     expect(idealCall?.args[0]).toBe(1);
     expect(JSON.parse(idealCall?.args[1] as string)).toEqual([{ op: 'flip', q: 0 }]);
     (document.querySelector('.bloom') as HTMLButtonElement).click(); // Play
-    for (let i = 0; i < 50 && !fake.calls.some((c) => c.fn === 'run_json.callPromising'); i++) await new Promise((r) => setTimeout(r, 50));
-    const run = fake.calls.find((c) => c.fn === 'run_json.callPromising');
-    expect(run).toBeTruthy();
-    expect(run?.args[1]).toBe(1);
-    expect(JSON.parse(run?.args[2] as string)).toEqual([{ op: 'flip', q: 0 }]);
-    expect(run?.args[3]).toBe(12);
-    expect(run?.args[4]).toBe('z');
+    for (let i = 0; i < 50 && !fake.calls.some((c) => c.fn === 'normalize_counts_json.callPromising'); i++) await new Promise((r) => setTimeout(r, 50));
+    // the job is submitted from JavaScript: the circuit object comes from Python, backend.run gets it with { shots }
+    const built = fake.calls.find((c) => c.fn === 'build_circuit_for_run.callPromising');
+    expect(built).toBeTruthy();
+    expect(built?.args[0]).toBe(1);
+    expect(JSON.parse(built?.args[1] as string)).toEqual([{ op: 'flip', q: 0 }]);
+    expect(built?.args[2]).toBe('z');
+    const normalized = fake.calls.find((c) => c.fn === 'normalize_counts_json.callPromising');
+    expect(normalized?.args[2]).toBe(12);
+    expect(fake.calls.some((c) => c.fn === 'run_json.callPromising')).toBe(false);
     expect(((globalThis as { backend?: { jobs: number } }).backend as { jobs: number }).jobs).toBe(1);
   });
 
@@ -85,7 +88,7 @@ describe('the built Qollab bundle', { timeout: 20000 }, () => {
     await new Promise((r) => setTimeout(r, 300));
     (document.querySelector('.bloom') as HTMLButtonElement).click();
     await new Promise((r) => setTimeout(r, 500));
-    expect(fake.calls.some((c) => c.fn === 'run_json.callPromising')).toBe(false);
+    expect(fake.calls.some((c) => c.fn === 'run_json.callPromising' || c.fn === 'build_circuit_for_run.callPromising')).toBe(false);
     expect(((globalThis as { backend?: { jobs: number } }).backend as { jobs: number }).jobs).toBe(0);
     expect(document.querySelector('.resultnote')?.textContent ?? document.body.textContent).toContain('Qiskit Statevector');
   });
@@ -106,11 +109,11 @@ describe('the built Qollab bundle', { timeout: 20000 }, () => {
     await new Promise((r) => setTimeout(r, 100));
     expect((document.querySelector('.bloom') as HTMLButtonElement).textContent).toContain('one job');
     (document.querySelector('.bloom') as HTMLButtonElement).click();
-    for (let i = 0; i < 50 && !fake.calls.some((c) => c.fn === 'run_json.callPromising'); i++) await new Promise((r) => setTimeout(r, 50));
+    for (let i = 0; i < 50 && !fake.calls.some((c) => c.fn === 'normalize_counts_json.callPromising'); i++) await new Promise((r) => setTimeout(r, 50));
     await new Promise((r) => setTimeout(r, 300));
-    const runs = fake.calls.filter((c) => c.fn === 'run_json.callPromising');
-    expect(runs.length).toBe(1);
-    expect(runs[0].args[3]).toBe(64);
+    const builds = fake.calls.filter((c) => c.fn === 'build_circuit_for_run.callPromising');
+    expect(builds.length).toBe(1);
+    expect(fake.calls.find((c) => c.fn === 'normalize_counts_json.callPromising')?.args[2]).toBe(64);
     expect(((globalThis as { backend?: { jobs: number } }).backend as { jobs: number }).jobs).toBe(1);
   });
 });

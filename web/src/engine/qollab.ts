@@ -18,6 +18,9 @@ export interface CircuitPyModule {
   qiskit_code: PyFn;
   run_json: PyFn;
   describe_backend_json: PyFn;
+  /** the measured circuit as an object, so JavaScript can submit it to `backend.run` itself (see runFromJs) */
+  build_circuit_for_run?: PyFn;
+  normalize_counts_json?: PyFn;
 }
 export interface PyFn {
   (...args: unknown[]): unknown;
@@ -36,6 +39,23 @@ export class OneJobLimitError extends Error {
   }
 }
 
+/** The last meaningful line of a Pyodide traceback, so a person never meets a wall of red. */
+export function shortReason(e: unknown): string {
+  const text = e instanceof Error ? e.message : String(e);
+  if (/Failed to fetch|ConnectionError|Connection aborted|POST/i.test(text)) {
+    return 'the job could not be submitted from the browser: Qollab blocks POST requests from project code';
+  }
+  const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
+  const last = lines[lines.length - 1] ?? 'unknown error';
+  return last.length > 180 ? last.slice(0, 177) + '…' : last;
+}
+
+const withTimeout = <T,>(p: Promise<T>, ms: number, what: string): Promise<T> =>
+  new Promise<T>((resolve, reject) => {
+    const t = setTimeout(() => reject(new Error(`${what} did not answer within ${Math.round(ms / 1000)} s`)), ms);
+    p.then((v) => { clearTimeout(t); resolve(v); }, (e) => { clearTimeout(t); reject(e); });
+  });
+
 async function call(fn: PyFn, ...args: unknown[]): Promise<string> {
   const out = fn.callPromising ? await fn.callPromising(...args) : fn(...args);
   if (typeof out === 'string') return out;
@@ -50,6 +70,26 @@ export class QollabEngine implements QuantumEngine {
   private seedCounter = 1;
 
   constructor(private rt: QollabRuntime) {}
+
+  /**
+   * Submit the job from JavaScript: `await backend.run(qc, { shots })`, then `await job.result()`. Qollab's runtime
+   * proxies a remote (IonQ) job only on this path; the same call made inside Python tries to POST from the sandbox
+   * and is blocked. Measured 2026-10-11 on qollab.xyz: 709 ms to an IonQ Aria 1 simulator job, counts returned.
+   */
+  private async runFromJs(circuit: Circuit, shots: number, basis: Basis): Promise<{ counts: Record<string, number>; shots: number; counts_kind: 'counts' | 'probabilities' }> {
+    const build = this.rt.py.build_circuit_for_run, normalize = this.rt.py.normalize_counts_json;
+    if (!build?.callPromising || !normalize) throw new Error('the Python module has no build_circuit_for_run');
+    const backend = this.rt.backend as { run?: (qc: unknown, opts: { shots: number }) => unknown } | null;
+    if (typeof backend?.run !== 'function') throw new Error('backend.run is not a function');
+    const qc = await build.callPromising(circuit.nQubits, JSON.stringify(circuit.ops), basis);
+    const job = (await backend.run(qc, { shots })) as { result: () => unknown };
+    const res = (await job.result()) as { get_counts: () => unknown };
+    const got = res.get_counts();
+    const asJs = (got as { toJs?: () => unknown })?.toJs?.();
+    const obj: Record<string, number> = asJs instanceof Map ? Object.fromEntries(asJs as Map<string, number>) : typeof got === 'object' && got !== null ? (got as Record<string, number>) : {};
+    const raw = await call(normalize, JSON.stringify(obj), circuit.nQubits, shots);
+    return JSON.parse(raw) as { counts: Record<string, number>; shots: number; counts_kind: 'counts' | 'probabilities' };
+  }
 
   private async describe(): Promise<BackendDescriptor> {
     if (this.device) return this.device;
@@ -129,8 +169,25 @@ export class QollabEngine implements QuantumEngine {
       if (this.jobConsumed) throw new OneJobLimitError();
       this.jobConsumed = true; // before submitting: a failed result must not trigger a second submission
     }
-    const raw = await call(this.rt.py.run_json, this.rt.backend, circuit.nQubits, JSON.stringify(circuit.ops), shots, basis);
-    const r = JSON.parse(raw) as { counts: Record<string, number>; shots: number; counts_kind: 'counts' | 'probabilities'; backend_name: string };
-    return { counts: r.counts, shots: r.shots, countsKind: r.counts_kind, backend: device, elapsedMs: Math.round(performance.now() - t0), basis };
+    try {
+      let r: { counts: Record<string, number>; shots: number; counts_kind: 'counts' | 'probabilities' };
+      try {
+        r = await withTimeout(this.runFromJs(circuit, shots, basis), 180_000, device.label);
+      } catch (eJs) {
+        if (device.remote) throw eJs; // a remote job is only ever proxied on the JavaScript path
+        // a local simulator: the Python path (backend.run inside run_json) works there too
+        const raw = await withTimeout(call(this.rt.py.run_json, this.rt.backend, circuit.nQubits, JSON.stringify(circuit.ops), shots, basis), 120_000, device.label);
+        r = JSON.parse(raw) as typeof r;
+      }
+      return { counts: r.counts, shots: r.shots, countsKind: r.counts_kind, backend: device, elapsedMs: Math.round(performance.now() - t0), basis };
+    } catch (e) {
+      if (!device.remote) throw new Error(`${device.label} could not run the circuit: ${shortReason(e)}`);
+      // A remote job that never left the sandbox (Qollab allows project code only GET requests) spent nothing: free the
+      // guard, answer from Qiskit's statevector, and SAY what was requested and why it fell back.
+      this.jobConsumed = false;
+      const ideal = await this.ideal(circuit);
+      const counts = sampleCounts(ideal.probabilities, shots, random);
+      return { counts, shots, countsKind: 'counts', backend: this.statevectorBackend(), elapsedMs: Math.round(performance.now() - t0), basis, fallbackFrom: device.label, fallbackReason: shortReason(e) };
+    }
   }
 }

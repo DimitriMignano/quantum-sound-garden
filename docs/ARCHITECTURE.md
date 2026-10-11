@@ -63,3 +63,13 @@ counts (`shotSequence`), identical on Replay.
   left external (Qollab resolves it to `qollab/qsg/circuit.py`). The build script copies the Python module, writes
   `requirements.txt`, derives `qollab/index.html` (body only, no `<script>`) from `web/index.html`, copies the project
   page and license, asserts every file and the 2 MB limit, and zips to `dist/`.
+
+## How a job is submitted on Qollab (measured 2026-10-11)
+Qollab's runtime proxies a remote (IonQ) job only when JavaScript calls `await backend.run(qc, { shots })` and then
+`await job.result()`; the same `backend.run` made inside a Python function tries to POST from the sandbox and is
+blocked (project code may only GET). So on Qollab the engine asks Python for the measured circuit object
+(`build_circuit_for_run`), submits it from JavaScript, and hands the counts back to Python to normalize
+(`normalize_counts_json`). A local simulator also accepts the Python path (`run_json`), kept as the second try. If a
+remote job still fails, the result comes from Qiskit's statevector with a note that names what was requested and why,
+and the one-job guard is released because no job reached IonQ. Probe: a two-file project on qollab.xyz returned an
+IonQ Aria 1 simulator job in 709 ms with counts {00: 5, 11: 3}; the Python-side call in the same run failed.

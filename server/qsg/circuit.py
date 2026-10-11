@@ -285,6 +285,24 @@ def run_json(backend: Any, n_qubits: int, ops_json: str, shots: int = 256, basis
     )
 
 
+def build_circuit_for_run(n_qubits: int, ops_json: str, basis: str = "z"):
+    """Qollab entry point: the measured circuit as an object, for main.js to pass to `backend.run` ITSELF.
+
+    Qollab's runtime proxies a remote (IonQ) job only when it is submitted from JavaScript
+    (`await backend.run(qc, { shots })`, then `await job.result()`); the same call made inside Python tries to POST
+    from the sandbox and is blocked. Measured 2026-10-11 on qollab.xyz with a probe project.
+    """
+    return build_circuit(int(n_qubits), ops_json, measure=True, basis=basis)
+
+
+def normalize_counts_json(counts_json: str, n_qubits: int, shots: int) -> str:
+    """Qollab entry point: the counts a JavaScript-submitted job returned, normalized like run_json's."""
+    raw = json.loads(counts_json)
+    shots = max(1, min(int(shots), 10000))
+    counts, kind = normalize_counts(raw, int(n_qubits), shots)
+    return json.dumps({"counts": counts, "shots": shots, "counts_kind": kind})
+
+
 def describe_backend_json(backend: Any) -> str:
     """Qollab entry point: what did the person pick in the Select QPU dialog?"""
     name = _backend_name(backend)

@@ -526,3 +526,23 @@ corrections go in a new entry. Newest at the bottom. Fill every field (`n/a` if 
   the learner has not met.
 - Deferred work: a VoiceOver pass; the human submission steps.
 - Risks: the viewport meta and real touch targets were not exercised on a phone.
+
+### 2026-10-11 15:00 — First real Runs on Qollab; jobs are submitted from JavaScript
+- Branch / worktree: `main`
+- Task: the first Run on qollab.xyz, and the failure it exposed on IonQ backends.
+- Files changed: `server/qsg/circuit.py` (`build_circuit_for_run`, `normalize_counts_json`), `web/src/engine/qollab.ts`
+  (`runFromJs`, fallback with a note, `shortReason`, timeouts, guard released on a failed submission),
+  `web/src/engine/qollab.test.ts` (new), `web/src/test/fake-qsg-circuit.ts` (JavaScript-style fake backend),
+  `web/src/test/qollab-bundle.test.ts`, `server/tests/test_circuit.py`, `web/src/content/content.ts` +
+  `web/src/app/ResultNote.tsx` (the fallback note names the backend that answered), `docs/ARCHITECTURE.md`, `qollab/`,
+  `WORKLOG.md`
+- Verification run: `npm run check` green (pytest 28 + 1 skipped, vitest 83, bundle 792 KB). On qollab.xyz: the probe
+  project's console (verbatim in WORKLOG); the main project boots on both simulators. The new bundle's IonQ job in the
+  studio is not yet exercised on the real site (the preview takes no synthetic input; the founder presses it).
+- Commit hash: this commit (parent 6497838)
+- Seams (§22): hosted PARTIAL on Qollab (draft, not published) · beats.quantumnuggets.com pending the teammate's deploy
+- Decisions: JavaScript-first submission with Python as the local fallback; a failed remote job degrades to the
+  statevector with an honest note rather than an error, because a judge pressing Run must never meet a traceback.
+- Deferred work: delete the two probe drafts (human); the founder's Play and Loop on the real site; Publish; Submit.
+- Risks: `get_counts()` key format from other backends (IBM noise models, Braket) not exercised; normalize handles
+  bitstrings, spaced strings, hex and probabilities.
