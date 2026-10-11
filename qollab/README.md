@@ -27,7 +27,9 @@ _This effort is supported by Qollab & IonQ._
 1. Press **Run Project**, then **Run**, and pick a backend in **Select QPU**. The built-in simulator gives unlimited
    Plays on the device itself. With an IonQ cloud simulator, Qollab allows **one job per Run**, so the tutorial and
    the puzzles play on Qiskit's Statevector (computed in your browser, readings sampled locally) and the studio offers the
-   single IonQ job (with IonQ's noise model of a real QPU) when you choose it; press Run again for another.
+   single IonQ job (with IonQ's noise model of a real QPU) when you choose it; press Run again for another. Qollab
+   sends a job only while a Run is open, so on IonQ the console reads **Running…** until that job comes back, then
+   **Done**; Stop ends the Run sooner.
 2. Press **Start**. Sound starts only after that press (browser autoplay rules). Headphones help.
 3. Learn the moves, press **Start the puzzles**, solve the four, play them again as qubits, then open **Studio** and press **Loop**.
 

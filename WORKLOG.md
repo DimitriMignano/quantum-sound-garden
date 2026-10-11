@@ -220,3 +220,15 @@ Deadline: **2026-10-11 19:00 ET** (Qollab + IonQ Quantum Hackathon, theme: Quant
   guard is released when no job reached IonQ. Tests: engine unit tests, the bundle tests rewritten for the JavaScript
   path, a pytest for the two entry points. The new bundle was uploaded into the existing Qollab project. Two probe
   drafts ("qsg probe (delete me)", "qsg probe 2 (delete me)") sit in the account and should be deleted by a human.
+- 10-11 15:40 the IonQ Loop still fell back on the real site with the JavaScript path ("64 shots in 315 ms. Requested
+  IonQ via Qollab (ionq_simulator), but it could not run"), so the 15:00 diagnosis was wrong. The passing probe and the
+  failing app differed in WHEN, not in the language: the probe called `backend.run` while main.js was still running,
+  and the studio calls it on a click after Qollab's console reads "Done.". Probe 2, edited: the same call 5 s after
+  main.js returned failed in 253 ms with `TypeError: Failed to fetch` (urllib3's in-browser fetch); a job sent 30 s
+  into a Run that main.js held open came back from IonQ Aria 1 ({'00': 6, '11': 2}, 14 s), Qollab drew it, then "Done."
+  at 46.7 s. Qollab's docs: "A run has no time limit. Stop ends it." Fixed: `qollab-entry.ts` awaits `runOpen`; the
+  engine releases it at once on a local simulator and after the one job is back on IonQ, and on IonQ it tells the
+  console why the Run stays open. The fallback note no longer claims "Qollab blocks POST". Tests: three engine tests
+  for the release, and the bundle tests now watch main.js return (they failed on the old build before the fix: on IonQ
+  main.js returned at once). Gate green. Needs: the new main.js and README.md uploaded to the Qollab project, then the
+  studio's IonQ Loop pressed once on the real site.

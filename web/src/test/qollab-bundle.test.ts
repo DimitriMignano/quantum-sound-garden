@@ -14,6 +14,9 @@ const bundle = resolve(__dirname, '../../../qollab/main.js');
 const html = resolve(__dirname, '../../../qollab/index.html');
 const cache = resolve(__dirname, '../../.bundle-cache');
 let boots = 0;
+/** main.js returned, so Qollab would end the Run (qollab-entry.ts holds it open on IonQ until the one job is back) */
+let runEnded = false;
+const waitFor = async (ok: () => boolean) => { for (let i = 0; i < 50 && !ok(); i++) await new Promise((r) => setTimeout(r, 50)); };
 
 async function boot(backendName: string) {
   document.body.innerHTML = readFileSync(html, 'utf8');
@@ -23,8 +26,14 @@ async function boot(backendName: string) {
   mkdirSync(cache, { recursive: true });
   const copy = resolve(cache, `main-${process.pid}-${boots++}.js`);
   copyFileSync(bundle, copy);
-  await import(/* @vite-ignore */ copy);
-  for (let i = 0; i < 50 && !document.querySelector('.welcome'); i++) await new Promise((r) => setTimeout(r, 50));
+  runEnded = false;
+  let bootError: unknown = null;
+  // not awaited: on IonQ the module stays pending until the one job, exactly as the Run does on Qollab
+  void import(/* @vite-ignore */ copy).then(() => { runEnded = true; }, (e) => { bootError = e; });
+  await waitFor(() => !!document.querySelector('.welcome') || bootError !== null);
+  if (bootError) throw bootError;
+  await waitFor(() => fake.calls.some((c) => c.fn === 'describe_backend_json.callPromising'));
+  await new Promise((r) => setTimeout(r, 100)); // the top bar renders the backend label it described
 }
 
 /** The gesture, then the tutorial, then puzzle 1 (the tutorial shows a board too, so wait for the puzzle's own scene). */
@@ -54,6 +63,8 @@ describe('the built Qollab bundle', { timeout: 20000 }, () => {
     expect(fake.calls.some((c) => c.fn === 'describe_backend_json.callPromising')).toBe(true);
     const pill = document.querySelector('.topbar .pill')?.textContent ?? '';
     expect(pill).toContain('Qollab simulator (basic_simulator)');
+    await waitFor(() => runEnded);
+    expect(runEnded, 'on a local simulator main.js returns and the Run ends').toBe(true);
   });
 
   it('asks Python for ideals and runs a Play through backend.run with JSON ops', async () => {
@@ -91,6 +102,7 @@ describe('the built Qollab bundle', { timeout: 20000 }, () => {
     expect(fake.calls.some((c) => c.fn === 'run_json.callPromising' || c.fn === 'build_circuit_for_run.callPromising')).toBe(false);
     expect(((globalThis as { backend?: { jobs: number } }).backend as { jobs: number }).jobs).toBe(0);
     expect(document.querySelector('.resultnote')?.textContent ?? document.body.textContent).toContain('Qiskit Statevector');
+    expect(runEnded, 'the Run stays open while the one IonQ job is unspent').toBe(false);
   });
 
   it('on an IonQ backend the studio’s Loop spends exactly one job, of 64 shots, and plays it as eight bars', async () => {
@@ -108,6 +120,7 @@ describe('the built Qollab bundle', { timeout: 20000 }, () => {
     select.dispatchEvent(new Event('change', { bubbles: true }));
     await new Promise((r) => setTimeout(r, 100));
     expect((document.querySelector('.bloom') as HTMLButtonElement).textContent).toContain('one job');
+    expect(runEnded).toBe(false);
     (document.querySelector('.bloom') as HTMLButtonElement).click();
     for (let i = 0; i < 50 && !fake.calls.some((c) => c.fn === 'normalize_counts_json.callPromising'); i++) await new Promise((r) => setTimeout(r, 50));
     await new Promise((r) => setTimeout(r, 300));
@@ -115,5 +128,7 @@ describe('the built Qollab bundle', { timeout: 20000 }, () => {
     expect(builds.length).toBe(1);
     expect(fake.calls.find((c) => c.fn === 'normalize_counts_json.callPromising')?.args[2]).toBe(64);
     expect(((globalThis as { backend?: { jobs: number } }).backend as { jobs: number }).jobs).toBe(1);
+    await waitFor(() => runEnded);
+    expect(runEnded, 'the job is back, so main.js returns and the Run ends').toBe(true);
   });
 });

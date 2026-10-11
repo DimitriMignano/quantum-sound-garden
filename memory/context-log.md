@@ -546,3 +546,25 @@ corrections go in a new entry. Newest at the bottom. Fill every field (`n/a` if 
 - Deferred work: delete the two probe drafts (human); the founder's Play and Loop on the real site; Publish; Submit.
 - Risks: `get_counts()` key format from other backends (IBM noise models, Braket) not exercised; normalize handles
   bitstrings, spaced strings, hex and probabilities.
+
+### 2026-10-11 15:40 — The IonQ job goes through only while the Run is open
+- Branch / worktree: `main`
+- Task: continue the last session's live check (it ended on an API error): the studio's one-job Loop on IonQ via Qollab.
+- Files changed: `web/src/qollab-entry.ts` (`runOpen` / `releaseRun`), `web/src/engine/qollab.ts` (release in the
+  constructor for local devices and after a remote job; the hold line in the console; `describe` caches its promise;
+  `shortReason` wording; comments), `web/src/engine/qollab.test.ts` (three Run tests), `web/src/test/qollab-bundle.test.ts`
+  (boot does not await the module; the Run's end is asserted per backend), `docs/ARCHITECTURE.md`, `docs/QOLLAB_PAGE.md`,
+  `CLAUDE.md` (§7 fact, §8 lesson), `WORKLOG.md`, `qollab/`
+- Verification run: on qollab.xyz (IonQ Aria 1 simulator, free): the app's Loop fell back with the JavaScript path;
+  probe 2 edited twice: after-Done call failed (`Failed to fetch`, 253 ms), held-Run call at 30 s returned counts. The new
+  bundle tests failed on the old build (IonQ: main.js returned at once) and pass on the new one. `npm run check` green
+  (pytest 28 + 1 skipped, tsc, bundle 792 KB, vitest 86).
+- Commit hash: this commit (parent 1ab64f8)
+- Seams (§22): hosted PARTIAL on Qollab (draft; the new main.js not uploaded yet) · beats.quantumnuggets.com unchanged
+- Decisions: hold the Run open only on IonQ (local simulators run in the page and keep "Done." as before); release on a
+  successful remote job only, so a failed job can be tried again in the same Run; say in the console why the Run is open.
+- Deferred work: upload main.js + README.md to the Qollab project and press the IonQ Loop once there; delete the two
+  probe drafts (human); the general lesson ("vary one difference at a time between a passing probe and a failing app")
+  could go to the shared lessons store.
+- Risks: on IonQ the Qollab console reads "Running…" until the person spends the job or presses Stop; a judge who never
+  opens the studio sees a Run that never says "Done." (the console line explains why).

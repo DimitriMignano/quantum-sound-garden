@@ -9429,7 +9429,7 @@ var ge, _e, ve = n((() => {
 //#region src/engine/qollab.ts
 function ye(e) {
 	let t = e instanceof Error ? e.message : String(e);
-	if (/Failed to fetch|ConnectionError|Connection aborted|POST/i.test(t)) return "the job could not be submitted from the browser: Qollab blocks POST requests from project code";
+	if (/Failed to fetch|ConnectionError|Connection aborted|POST/i.test(t)) return "the job could not be submitted from the browser (the browser’s request failed)";
 	let n = t.split("\n").map((e) => e.trim()).filter(Boolean), r = n[n.length - 1] ?? "unknown error";
 	return r.length > 180 ? r.slice(0, 177) + "…" : r;
 }
@@ -9459,7 +9459,9 @@ var xe, Se, Ce, D = n((() => {
 		jobConsumed = !1;
 		seedCounter = 1;
 		constructor(e) {
-			this.rt = e;
+			this.rt = e, this.describe().then((t) => {
+				t.remote ? console.log(`Quantum Beats Studio keeps this Run open so it can send its one job to ${t.label}: open the studio, pick that backend and press Loop. Stop ends the Run.`) : e.releaseRun?.();
+			});
 		}
 		async runFromJs(e, t, n) {
 			let r = this.rt.py.build_circuit_for_run, i = this.rt.py.normalize_counts_json;
@@ -9469,8 +9471,10 @@ var xe, Se, Ce, D = n((() => {
 			let o = await r.callPromising(e.nQubits, JSON.stringify(e.ops), n), s = (await (await a.run(o, { shots: t })).result()).get_counts(), c = s?.toJs?.(), l = c instanceof Map ? Object.fromEntries(c) : typeof s == "object" && s ? s : {}, u = await be(i, JSON.stringify(l), e.nQubits, t);
 			return JSON.parse(u);
 		}
-		async describe() {
-			if (this.device) return this.device;
+		describe() {
+			return this.device ??= this.describeOnce();
+		}
+		async describeOnce() {
 			let e = "the backend you picked", t = "qollab-local", n = !1;
 			try {
 				let r = JSON.parse(await be(this.rt.py.describe_backend_json, this.rt.backend));
@@ -9479,7 +9483,7 @@ var xe, Se, Ce, D = n((() => {
 				n = !0;
 			}
 			let r = t === "qollab-ionq";
-			return this.device = {
+			return {
 				id: "qollab",
 				label: r ? `IonQ via Qollab (${e})` : t === "qollab-noisy" ? `Qollab noise-model simulator (${e})` : n ? `Qollab backend (${e})` : `Qollab simulator (${e})`,
 				kind: t,
@@ -9488,7 +9492,7 @@ var xe, Se, Ce, D = n((() => {
 				remote: r,
 				available: !0,
 				oneJobPerRun: r
-			}, this.device;
+			};
 		}
 		statevectorBackend() {
 			return {
@@ -9565,7 +9569,7 @@ var xe, Se, Ce, D = n((() => {
 					let a = await Se(be(this.rt.py.run_json, this.rt.backend, e.nQubits, JSON.stringify(e.ops), t, o), 12e4, i.label);
 					n = JSON.parse(a);
 				}
-				return {
+				return i.remote && (console.log(`${i.label} answered: ${n.shots} shots in one job. This Run can end now.`), this.rt.releaseRun?.()), {
 					counts: n.counts,
 					shots: n.shots,
 					countsKind: n.counts_kind,
@@ -13375,9 +13379,12 @@ var pr, mr, hr = n((() => {
 	})), we().then((e) => {
 		Sr.render(/* @__PURE__ */ (0, br.jsx)(vr.StrictMode, { children: /* @__PURE__ */ (0, br.jsx)(fr, { engine: e }) }));
 	});
-})), wr = typeof backend < "u" ? backend : globalThis.backend;
+})), wr = typeof backend < "u" ? backend : globalThis.backend, Tr = () => {}, Er = new Promise((e) => {
+	Tr = e;
+});
 window.__QSG_QOLLAB__ = {
 	py: e,
-	backend: wr
-}, await Promise.resolve().then(() => (Cr(), _r));
+	backend: wr,
+	releaseRun: Tr
+}, await Promise.resolve().then(() => (Cr(), _r)), wr !== void 0 && await Er;
 //#endregion

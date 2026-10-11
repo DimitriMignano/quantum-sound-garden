@@ -30,6 +30,8 @@ export interface PyFn {
 export interface QollabRuntime {
   py: CircuitPyModule;
   backend: unknown;
+  /** lets main.js return, which ends the Qollab Run (see qollab-entry.ts) */
+  releaseRun?: () => void;
 }
 
 export class OneJobLimitError extends Error {
@@ -43,7 +45,7 @@ export class OneJobLimitError extends Error {
 export function shortReason(e: unknown): string {
   const text = e instanceof Error ? e.message : String(e);
   if (/Failed to fetch|ConnectionError|Connection aborted|POST/i.test(text)) {
-    return 'the job could not be submitted from the browser: Qollab blocks POST requests from project code';
+    return 'the job could not be submitted from the browser (the browser’s request failed)';
   }
   const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
   const last = lines[lines.length - 1] ?? 'unknown error';
@@ -65,16 +67,27 @@ async function call(fn: PyFn, ...args: unknown[]): Promise<string> {
 }
 
 export class QollabEngine implements QuantumEngine {
-  private device: BackendDescriptor | null = null;
+  private device: Promise<BackendDescriptor> | null = null;
   private jobConsumed = false;
   private seedCounter = 1;
 
-  constructor(private rt: QollabRuntime) {}
+  /**
+   * Qollab relays a remote (IonQ) job only while the Run is open, and a JS project's Run ends when main.js returns.
+   * Measured 2026-10-11 on qollab.xyz: the same `backend.run` that reached IonQ in 709 ms inside the Run failed with
+   * "Failed to fetch" 5 s after main.js returned, and succeeded 30 s in while main.js was still waiting. So the Run
+   * closes at once on a local simulator (its jobs run in the page) and stays open on IonQ until the one job is back.
+   */
+  constructor(private rt: QollabRuntime) {
+    void this.describe().then((d) => {
+      if (!d.remote) rt.releaseRun?.();
+      else console.log(`Quantum Beats Studio keeps this Run open so it can send its one job to ${d.label}: open the studio, pick that backend and press Loop. Stop ends the Run.`);
+    });
+  }
 
   /**
-   * Submit the job from JavaScript: `await backend.run(qc, { shots })`, then `await job.result()`. Qollab's runtime
-   * proxies a remote (IonQ) job only on this path; the same call made inside Python tries to POST from the sandbox
-   * and is blocked. Measured 2026-10-11 on qollab.xyz: 709 ms to an IonQ Aria 1 simulator job, counts returned.
+   * Submit the job from JavaScript: `await backend.run(qc, { shots })`, then `await job.result()`, the call Qollab's
+   * runtime docs give for a JS project. A remote job goes through only while the Run is open (see the constructor).
+   * Measured 2026-10-11 on qollab.xyz: 709 ms to an IonQ Aria 1 simulator job, counts returned.
    */
   private async runFromJs(circuit: Circuit, shots: number, basis: Basis): Promise<{ counts: Record<string, number>; shots: number; counts_kind: 'counts' | 'probabilities' }> {
     const build = this.rt.py.build_circuit_for_run, normalize = this.rt.py.normalize_counts_json;
@@ -91,8 +104,11 @@ export class QollabEngine implements QuantumEngine {
     return JSON.parse(raw) as { counts: Record<string, number>; shots: number; counts_kind: 'counts' | 'probabilities' };
   }
 
-  private async describe(): Promise<BackendDescriptor> {
-    if (this.device) return this.device;
+  private describe(): Promise<BackendDescriptor> {
+    return (this.device ??= this.describeOnce());
+  }
+
+  private async describeOnce(): Promise<BackendDescriptor> {
     let name = 'the backend you picked', kind: EngineKind = 'qollab-local', unknown = false;
     try {
       const d = JSON.parse(await call(this.rt.py.describe_backend_json, this.rt.backend)) as { name: string; kind: string };
@@ -104,7 +120,7 @@ export class QollabEngine implements QuantumEngine {
       unknown = true;
     }
     const ionq = kind === 'qollab-ionq';
-    this.device = {
+    return {
       id: 'qollab',
       label: ionq ? `IonQ via Qollab (${name})` : kind === 'qollab-noisy' ? `Qollab noise-model simulator (${name})` : unknown ? `Qollab backend (${name})` : `Qollab simulator (${name})`,
       kind,
@@ -114,7 +130,6 @@ export class QollabEngine implements QuantumEngine {
       available: true,
       oneJobPerRun: ionq,
     };
-    return this.device;
   }
 
   private statevectorBackend(): BackendDescriptor {
@@ -174,16 +189,20 @@ export class QollabEngine implements QuantumEngine {
       try {
         r = await withTimeout(this.runFromJs(circuit, shots, basis), 180_000, device.label);
       } catch (eJs) {
-        if (device.remote) throw eJs; // a remote job is only ever proxied on the JavaScript path
+        if (device.remote) throw eJs; // a remote job is sent from JavaScript only
         // a local simulator: the Python path (backend.run inside run_json) works there too
         const raw = await withTimeout(call(this.rt.py.run_json, this.rt.backend, circuit.nQubits, JSON.stringify(circuit.ops), shots, basis), 120_000, device.label);
         r = JSON.parse(raw) as typeof r;
       }
+      if (device.remote) {
+        console.log(`${device.label} answered: ${r.shots} shots in one job. This Run can end now.`);
+        this.rt.releaseRun?.();
+      }
       return { counts: r.counts, shots: r.shots, countsKind: r.counts_kind, backend: device, elapsedMs: Math.round(performance.now() - t0), basis };
     } catch (e) {
       if (!device.remote) throw new Error(`${device.label} could not run the circuit: ${shortReason(e)}`);
-      // A remote job that never left the sandbox (Qollab allows project code only GET requests) spent nothing: free the
-      // guard, answer from Qiskit's statevector, and SAY what was requested and why it fell back.
+      // A remote job that never reached IonQ spent nothing: free the guard (the Run stays open, so it can be tried
+      // again), answer from Qiskit's statevector, and SAY what was requested and why it fell back.
       this.jobConsumed = false;
       const ideal = await this.ideal(circuit);
       const counts = sampleCounts(ideal.probabilities, shots, random);

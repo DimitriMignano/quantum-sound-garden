@@ -63,6 +63,9 @@ npm install && (cd web && npm install)
 - Qubit 0 is the rightmost bit in every Qiskit bitstring (`'10'` = q1 is 1, q0 is 0). The UI maps outcome labels in
   one place (`web/src/engine/outcomes.ts`) and nowhere else.
 - Qollab allows ONE `backend.run` job per Run on IonQ backends; local simulators allow many. The UI must work in both.
+- A JS project's Run ends ("Done.") when main.js returns, and a remote (IonQ) job goes through only while the Run is
+  open; so on IonQ `qollab-entry.ts` keeps main.js waiting until the one job is back (`releaseRun`). Never let main.js
+  return before a job the person may still send.
 - Qollab's runtime allows only GET/OPTIONS network calls, no storage, no `<script>` in `index.html`; `main.js` runs in
   the page and may import Python modules by dotted name.
 
@@ -76,3 +79,7 @@ npm install && (cd web && npm install)
   2026-10-10
 - A gate joined to its commit with `;` is not a gate: a red `npm run check` still committed and pushed once here ·
   check: `npm run check && git commit … && git push`, never `;` · 2026-10-10
+- One probe that passed, one app that failed, and the wrong difference blamed: the fix moved the IonQ call from Python
+  to JavaScript, but the real variable was WHEN (the probe ran inside the Run, the app after "Done") · check: list every
+  difference between the passing probe and the failing app (when, from where, with what) and vary one at a time on the
+  real platform before shipping a fix · 2026-10-11

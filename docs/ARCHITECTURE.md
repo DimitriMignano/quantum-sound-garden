@@ -65,11 +65,19 @@ counts (`shotSequence`), identical on Replay.
   page and license, asserts every file and the 2 MB limit, and zips to `dist/`.
 
 ## How a job is submitted on Qollab (measured 2026-10-11)
-Qollab's runtime proxies a remote (IonQ) job only when JavaScript calls `await backend.run(qc, { shots })` and then
-`await job.result()`; the same `backend.run` made inside a Python function tries to POST from the sandbox and is
-blocked (project code may only GET). So on Qollab the engine asks Python for the measured circuit object
-(`build_circuit_for_run`), submits it from JavaScript, and hands the counts back to Python to normalize
-(`normalize_counts_json`). A local simulator also accepts the Python path (`run_json`), kept as the second try. If a
-remote job still fails, the result comes from Qiskit's statevector with a note that names what was requested and why,
-and the one-job guard is released because no job reached IonQ. Probe: a two-file project on qollab.xyz returned an
-IonQ Aria 1 simulator job in 709 ms with counts {00: 5, 11: 3}; the Python-side call in the same run failed.
+JavaScript calls `await backend.run(qc, { shots })` and then `await job.result()`, the call Qollab's runtime docs give
+for a JS project: the engine asks Python for the measured circuit object (`build_circuit_for_run`), submits it from
+JavaScript, and hands the counts back to Python to normalize (`normalize_counts_json`). A local simulator also accepts
+the Python path (`run_json`), kept as the second try.
+
+**A remote job goes through only while the Run is open.** A JS project's Run ends ("Done.") when main.js returns, and
+after that IonQ's request fails in the browser with `TypeError: Failed to fetch`. Probes on qollab.xyz, IonQ Aria 1
+simulator: a job sent while main.js was still running came back in 709 ms ({00: 5, 11: 3}); the same call 5 s after
+main.js returned failed in 253 ms; a job sent 30 s into a Run that main.js was holding open came back ({00: 6, 11: 2}).
+So `qollab-entry.ts` waits before returning until the engine releases it: at once on a local simulator, whose jobs run
+in the page, and after the one job has come back on IonQ (the console says why the Run is still open). Qollab's docs:
+"A run has no time limit. Stop ends it." If a remote job still fails, the result comes from Qiskit's statevector with a
+note that names what was requested and why, the one-job guard is released because no job reached IonQ, and the Run
+stays open so the job can be tried again. (The first diagnosis, that the Python-side call is blocked and the
+JavaScript one is not, did not explain the studio: its failures, on both paths, came after main.js had returned. A
+Python-side call inside an open Run was never tested on its own.)
